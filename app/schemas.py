@@ -27,3 +27,17 @@ class CalculationResponse(BaseModel):
     formula: str
     result: dict
     credits_remaining: int
+
+
+class LoginRequest(BaseModel):
+    api_key: str
+
+
+class ClientInfo(BaseModel):
+    id: int
+    name: str
+    status: str
+    credits: int
+
+    class Config:
+        from_attributes = True

@@ -1,11 +1,17 @@
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from app.auth import get_current_client
 from app.database import get_db, init_db
-from app.engine.logic import FORMULAS
+from app.engine.logic import FORMULA_META, FORMULAS
 from app.models import Client
-from app.schemas import CalculationRequest, CalculationResponse
+from app.schemas import (
+    CalculationRequest,
+    CalculationResponse,
+    ClientInfo,
+    LoginRequest,
+)
 
 app = FastAPI(
     title="Lexee — Calculation Engine",
@@ -13,7 +19,15 @@ app = FastAPI(
         "Moteur de calcul opaque : envoyez vos variables, "
         "recevez vos résultats. Les formules restent protégées."
     ),
-    version="0.1.0",
+    version="1.0.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
@@ -31,11 +45,30 @@ def health():
 
 
 # ---------------------------------------------------------------------------
-# Liste des formules disponibles (noms uniquement, pas le code)
+# Auth — login (valide la clé et renvoie les infos client)
+# ---------------------------------------------------------------------------
+@app.post("/auth/login", response_model=ClientInfo)
+def login(payload: LoginRequest, db: Session = Depends(get_db)):
+    client = db.query(Client).filter(Client.api_key == payload.api_key).first()
+    if client is None:
+        raise HTTPException(status_code=401, detail="Clé API invalide.")
+    return client
+
+
+# ---------------------------------------------------------------------------
+# Client info
+# ---------------------------------------------------------------------------
+@app.get("/me", response_model=ClientInfo)
+def me(client: Client = Depends(get_current_client)):
+    return client
+
+
+# ---------------------------------------------------------------------------
+# Liste des formules (métadonnées uniquement, JAMAIS le code)
 # ---------------------------------------------------------------------------
 @app.get("/formulas")
 def list_formulas(client: Client = Depends(get_current_client)):
-    return {"formulas": list(FORMULAS.keys())}
+    return {"formulas": FORMULA_META}
 
 
 # ---------------------------------------------------------------------------
