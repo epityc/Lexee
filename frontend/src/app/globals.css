@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Excel-style grid cells */
+.cell-input {
+  @apply w-full h-full px-2 py-1.5 border-0 bg-transparent text-sm
+         focus:outline-none focus:ring-2 focus:ring-lexee-500 focus:ring-inset;
+}
+
+.cell-readonly {
+  @apply px-2 py-1.5 text-sm bg-gray-50 text-gray-600 select-none;
+}
+
+.cell-result {
+  @apply px-2 py-1.5 text-sm bg-green-50 text-green-800 font-semibold;
+}
