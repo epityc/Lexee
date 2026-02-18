@@ -9,6 +9,8 @@ Ne jamais exposer le code source via l'API.
 from __future__ import annotations
 
 import calendar
+import math
+import random
 import re
 from datetime import date, datetime, timedelta
 
@@ -721,6 +723,684 @@ def formule_let_lambda(v: dict) -> dict:
     }
 
 
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                    ENGINE v3 — 30 NOUVELLES FORMULES                        ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STATISTIQUES & PERFORMANCE
+# ─────────────────────────────────────────────────────────────────────────────
+
+# 32. MAX.SI.ENS (MAXIFS)
+def formule_max_si_ens(v: dict) -> dict:
+    donnees = v["donnees"]
+    colonne_valeur = str(v["colonne_valeur"])
+    criteres = v["criteres"]
+    vals = [float(row[colonne_valeur]) for row in donnees if _match_row(row, criteres)]
+    if not vals:
+        raise ValueError("Aucune ligne ne correspond aux critères.")
+    return {"max": max(vals), "lignes_correspondantes": len(vals)}
+
+
+# 33. MIN.SI.ENS (MINIFS)
+def formule_min_si_ens(v: dict) -> dict:
+    donnees = v["donnees"]
+    colonne_valeur = str(v["colonne_valeur"])
+    criteres = v["criteres"]
+    vals = [float(row[colonne_valeur]) for row in donnees if _match_row(row, criteres)]
+    if not vals:
+        raise ValueError("Aucune ligne ne correspond aux critères.")
+    return {"min": min(vals), "lignes_correspondantes": len(vals)}
+
+
+# 34. RANG.EGAL (RANK.EQ)
+def formule_rang_egal(v: dict) -> dict:
+    nombre = float(v["nombre"])
+    valeurs = [float(x) for x in v["valeurs"]]
+    ordre = str(v.get("ordre", "desc")).lower()
+
+    sorted_vals = sorted(set(valeurs), reverse=(ordre == "desc"))
+    try:
+        rang = sorted_vals.index(nombre) + 1
+    except ValueError:
+        raise ValueError(f"La valeur {nombre} n'existe pas dans la liste.")
+
+    return {"rang": rang, "total": len(valeurs), "valeurs_distinctes": len(sorted_vals)}
+
+
+# 35. MEDIANE (MEDIAN)
+def formule_mediane(v: dict) -> dict:
+    valeurs = sorted(float(x) for x in v["valeurs"])
+    n = len(valeurs)
+    if n == 0:
+        raise ValueError("La liste est vide.")
+    if n % 2 == 1:
+        mediane = valeurs[n // 2]
+    else:
+        mediane = (valeurs[n // 2 - 1] + valeurs[n // 2]) / 2
+    return {"mediane": round(mediane, 6), "count": n}
+
+
+# 36. AGREGAT (AGGREGATE)
+_AGG_FUNCS = {
+    1: ("MOYENNE", lambda v: sum(v) / len(v)),
+    2: ("NB", lambda v: len(v)),
+    4: ("MAX", lambda v: max(v)),
+    5: ("MIN", lambda v: min(v)),
+    7: ("ECARTYPE", lambda v: math.sqrt(sum((x - sum(v)/len(v))**2 for x in v) / (len(v) - 1)) if len(v) > 1 else 0),
+    9: ("SOMME", lambda v: sum(v)),
+    12: ("MEDIANE", lambda v: sorted(v)[len(v)//2] if len(v) % 2 else (sorted(v)[len(v)//2-1]+sorted(v)[len(v)//2])/2),
+}
+
+
+def formule_agregat(v: dict) -> dict:
+    valeurs_brutes = v["valeurs"]
+    fonction = int(v["fonction"])
+    ignorer_erreurs = v.get("ignorer_erreurs", True)
+
+    valeurs = []
+    erreurs = 0
+    for val in valeurs_brutes:
+        try:
+            valeurs.append(float(val))
+        except (ValueError, TypeError):
+            erreurs += 1
+            if not ignorer_erreurs:
+                raise ValueError(f"Valeur non numérique : {val}")
+
+    if not valeurs:
+        raise ValueError("Aucune valeur numérique valide.")
+
+    if fonction not in _AGG_FUNCS:
+        raise ValueError(f"Fonction {fonction} non supportée. Disponibles : {list(_AGG_FUNCS.keys())}")
+
+    nom, fn = _AGG_FUNCS[fonction]
+    return {"resultat": round(fn(valeurs), 8), "fonction": nom, "erreurs_ignorees": erreurs}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# FINANCE HIGH-TICKET
+# ─────────────────────────────────────────────────────────────────────────────
+
+# 37. TAUX (RATE) — Newton-Raphson (précision bancaire)
+def formule_taux(v: dict) -> dict:
+    nper = int(v["nb_periodes"])
+    pmt = float(v["mensualite"])
+    pv = float(v["valeur_actuelle"])
+    fv = float(v.get("valeur_future", 0))
+    type_ = int(v.get("debut_periode", 0))
+
+    # f(r) = pv*(1+r)^n + pmt*(1+r*type)*((1+r)^n - 1)/r + fv = 0
+    guess = float(v.get("estimation", 1)) / 100
+
+    for _ in range(1000):
+        if abs(guess) < 1e-12:
+            guess = 1e-12
+        rn = (1 + guess) ** nper
+        f = pv * rn + pmt * (1 + guess * type_) * (rn - 1) / guess + fv
+
+        # Derivative
+        drn = nper * (1 + guess) ** (nper - 1)
+        df = (pv * drn
+              + pmt * type_ * (rn - 1) / guess
+              + pmt * (1 + guess * type_) * (drn * guess - (rn - 1)) / guess**2)
+
+        if abs(df) < 1e-18:
+            break
+        new_guess = guess - f / df
+        if abs(new_guess - guess) < 1e-12:
+            guess = new_guess
+            break
+        guess = new_guess
+
+    return {
+        "taux_periodique_pct": round(guess * 100, 8),
+        "taux_annuel_pct": round(guess * 12 * 100, 8),
+    }
+
+
+# 38. NPM (NPER)
+def formule_npm(v: dict) -> dict:
+    taux = float(v["taux_periodique"]) / 100
+    pmt = float(v["mensualite"])
+    pv = float(v["valeur_actuelle"])
+    fv = float(v.get("valeur_future", 0))
+
+    if taux == 0:
+        if pmt == 0:
+            raise ValueError("Mensualité ne peut pas être 0 avec taux 0.")
+        nper = -(pv + fv) / pmt
+    else:
+        # nper = log((pmt - fv*r) / (pmt + pv*r)) / log(1+r)
+        numerator = pmt - fv * taux
+        denominator = pmt + pv * taux
+        if denominator == 0 or numerator / denominator <= 0:
+            raise ValueError("Impossible de calculer NPER avec ces paramètres.")
+        nper = math.log(numerator / denominator) / math.log(1 + taux)
+
+    return {
+        "nb_periodes": round(nper, 6),
+        "nb_annees": round(nper / 12, 2),
+    }
+
+
+# 39. VC (FV — Future Value)
+def formule_vc(v: dict) -> dict:
+    taux = float(v["taux_periodique"]) / 100
+    nper = int(v["nb_periodes"])
+    pmt = float(v.get("mensualite", 0))
+    pv = float(v.get("valeur_actuelle", 0))
+    type_ = int(v.get("debut_periode", 0))
+
+    if taux == 0:
+        fv = -(pv + pmt * nper)
+    else:
+        rn = (1 + taux) ** nper
+        fv = -(pv * rn + pmt * (1 + taux * type_) * (rn - 1) / taux)
+
+    return {"valeur_future": round(fv, 2)}
+
+
+# 40. VA (PV — Present Value)
+def formule_va(v: dict) -> dict:
+    taux = float(v["taux_periodique"]) / 100
+    nper = int(v["nb_periodes"])
+    pmt = float(v.get("mensualite", 0))
+    fv = float(v.get("valeur_future", 0))
+    type_ = int(v.get("debut_periode", 0))
+
+    if taux == 0:
+        pv = -(fv + pmt * nper)
+    else:
+        rn = (1 + taux) ** nper
+        pv = -(fv / rn + pmt * (1 + taux * type_) * (rn - 1) / (taux * rn))
+
+    return {"valeur_actuelle": round(pv, 2)}
+
+
+# 41. FRACTION.ANNEE (YEARFRAC)
+def formule_fraction_annee(v: dict) -> dict:
+    d1 = _parse_date(str(v["date_debut"]))
+    d2 = _parse_date(str(v["date_fin"]))
+    base = int(v.get("base", 1))  # 0=US30/360, 1=Actual/Actual, 2=Actual/360, 3=Actual/365
+
+    if d1 > d2:
+        d1, d2 = d2, d1
+
+    days = (d2 - d1).days
+
+    if base == 0:  # US 30/360
+        y1, m1, day1 = d1.year, d1.month, min(d1.day, 30)
+        y2, m2, day2 = d2.year, d2.month, min(d2.day, 30)
+        if day1 == 30:
+            day2 = min(day2, 30)
+        fraction = ((y2 - y1) * 360 + (m2 - m1) * 30 + (day2 - day1)) / 360
+    elif base == 1:  # Actual/Actual
+        year_days = 366 if calendar.isleap(d1.year) else 365
+        fraction = days / year_days
+    elif base == 2:  # Actual/360
+        fraction = days / 360
+    elif base == 3:  # Actual/365
+        fraction = days / 365
+    else:
+        raise ValueError(f"Base {base} non supportée (0-3).")
+
+    return {"fraction": round(fraction, 10), "jours": days, "base": base}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MANIPULATION DE DONNÉES
+# ─────────────────────────────────────────────────────────────────────────────
+
+# 42. CHOISIR.LIGNES (CHOOSEROWS)
+def formule_choisir_lignes(v: dict) -> dict:
+    donnees = v["donnees"]
+    indices = [int(i) for i in v["indices"]]  # 1-indexed, négatif = depuis la fin
+
+    resultat = []
+    for idx in indices:
+        if idx > 0:
+            pos = idx - 1
+        else:
+            pos = len(donnees) + idx
+        if 0 <= pos < len(donnees):
+            resultat.append(donnees[pos])
+        else:
+            raise ValueError(f"Indice {idx} hors limites (1 à {len(donnees)}).")
+
+    return {"resultat": resultat, "lignes_selectionnees": len(resultat)}
+
+
+# 43. PRENDRE (TAKE)
+def formule_prendre(v: dict) -> dict:
+    donnees = v["donnees"]
+    nb = int(v["nb_lignes"])
+
+    if nb > 0:
+        resultat = donnees[:nb]
+    else:
+        resultat = donnees[nb:]  # négatif = depuis la fin
+
+    return {"resultat": resultat, "lignes": len(resultat)}
+
+
+# 44. EXCLURE (DROP)
+def formule_exclure(v: dict) -> dict:
+    donnees = v["donnees"]
+    nb = int(v["nb_lignes"])
+
+    if nb > 0:
+        resultat = donnees[nb:]
+    else:
+        resultat = donnees[:nb]  # négatif = exclure depuis la fin
+
+    return {"resultat": resultat, "lignes": len(resultat)}
+
+
+# 45. DÉVELOPPER (EXPAND)
+def formule_developper(v: dict) -> dict:
+    donnees = v["donnees"]
+    nb_lignes = int(v["nb_lignes"])
+    valeur_defaut = v.get("valeur_defaut", None)
+
+    resultat = list(donnees)
+    while len(resultat) < nb_lignes:
+        resultat.append(valeur_defaut)
+
+    return {"resultat": resultat[:nb_lignes], "lignes": nb_lignes}
+
+
+# 46. FRACTIONNER.TEXTE (TEXTSPLIT)
+def formule_fractionner_texte(v: dict) -> dict:
+    texte = str(v["texte"])
+    delimiteur_col = str(v.get("delimiteur_col", ","))
+    delimiteur_ligne = v.get("delimiteur_ligne")
+
+    if delimiteur_ligne:
+        lignes = texte.split(str(delimiteur_ligne))
+        resultat = [ligne.split(delimiteur_col) for ligne in lignes]
+        resultat = [[c.strip() for c in row] for row in resultat]
+    else:
+        resultat = [c.strip() for c in texte.split(delimiteur_col)]
+
+    return {"resultat": resultat}
+
+
+# 47. UNICODE / CAR (UNICODE / CHAR)
+def formule_unicode_car(v: dict) -> dict:
+    resultats = {}
+    if "caractere" in v:
+        c = str(v["caractere"])
+        if len(c) != 1:
+            raise ValueError("Un seul caractère attendu.")
+        resultats["code_unicode"] = ord(c)
+    if "code" in v:
+        code = int(v["code"])
+        resultats["caractere"] = chr(code)
+    if not resultats:
+        raise ValueError("Fournir 'caractere' ou 'code'.")
+    return resultats
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# LOGIQUE & VALIDATION
+# ─────────────────────────────────────────────────────────────────────────────
+
+# 48. EXACT
+def formule_exact(v: dict) -> dict:
+    texte1 = str(v["texte1"])
+    texte2 = str(v["texte2"])
+    return {"identique": texte1 == texte2}
+
+
+# 49. ESTNUM (ISNUMBER)
+def formule_estnum(v: dict) -> dict:
+    valeurs = v["valeurs"]
+    resultats = []
+    for val in valeurs:
+        try:
+            float(val)
+            resultats.append(True)
+        except (ValueError, TypeError):
+            resultats.append(False)
+    return {"resultats": resultats, "nb_numeriques": sum(resultats)}
+
+
+# 50. ESTTEXTE (ISTEXT)
+def formule_esttexte(v: dict) -> dict:
+    valeurs = v["valeurs"]
+    resultats = []
+    for val in valeurs:
+        is_text = isinstance(val, str) and val.strip() != ""
+        try:
+            float(val)
+            is_text = False  # C'est un nombre représenté en texte
+        except (ValueError, TypeError):
+            pass
+        resultats.append(is_text)
+    return {"resultats": resultats, "nb_textes": sum(resultats)}
+
+
+# 51. CHANGER (SWITCH)
+def formule_changer(v: dict) -> dict:
+    expression = v["expression"]
+    cas = v["cas"]  # [{"valeur": "A", "resultat": "Alpha"}, ...]
+    defaut = v.get("defaut")
+
+    expr_str = str(expression).lower().strip()
+    for c in cas:
+        if str(c["valeur"]).lower().strip() == expr_str:
+            return {"resultat": c["resultat"], "cas_matche": c["valeur"]}
+
+    return {"resultat": defaut, "cas_matche": None}
+
+
+# 52. RECHERCHEH (HLOOKUP)
+def formule_rechercheh(v: dict) -> dict:
+    valeur_cherchee = v["valeur_cherchee"]
+    en_tetes = v["en_tetes"]  # première ligne
+    donnees = v["donnees"]    # lignes suivantes (liste de listes)
+    ligne_retour = int(v.get("ligne_retour", 1)) - 1
+
+    needle = str(valeur_cherchee).lower()
+    for col_idx, header in enumerate(en_tetes):
+        if str(header).lower() == needle:
+            if ligne_retour < 0 or ligne_retour >= len(donnees):
+                raise ValueError(f"Ligne {ligne_retour+1} hors limites.")
+            return {
+                "resultat": donnees[ligne_retour][col_idx] if col_idx < len(donnees[ligne_retour]) else None,
+                "colonne": col_idx + 1,
+                "trouve": True,
+            }
+
+    return {"resultat": None, "colonne": -1, "trouve": False}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ANALYSE & PRÉDICTION
+# ─────────────────────────────────────────────────────────────────────────────
+
+# 53. PREVISION.ETS (FORECAST — régression linéaire)
+def formule_prevision(v: dict) -> dict:
+    x_cible = float(v["x_cible"])
+    x_connus = [float(x) for x in v["x_connus"]]
+    y_connus = [float(y) for y in v["y_connus"]]
+
+    if len(x_connus) != len(y_connus):
+        raise ValueError("x_connus et y_connus doivent avoir la même taille.")
+    n = len(x_connus)
+    if n < 2:
+        raise ValueError("Au moins 2 points requis.")
+
+    x_mean = sum(x_connus) / n
+    y_mean = sum(y_connus) / n
+
+    ss_xy = sum((x - x_mean) * (y - y_mean) for x, y in zip(x_connus, y_connus))
+    ss_xx = sum((x - x_mean) ** 2 for x in x_connus)
+
+    if ss_xx == 0:
+        raise ValueError("Les valeurs x sont toutes identiques.")
+
+    pente = ss_xy / ss_xx
+    ordonnee = y_mean - pente * x_mean
+    y_prevu = ordonnee + pente * x_cible
+
+    # R² (coefficient de détermination)
+    ss_yy = sum((y - y_mean) ** 2 for y in y_connus)
+    r_squared = (ss_xy ** 2) / (ss_xx * ss_yy) if ss_yy > 0 else 1.0
+
+    return {
+        "prevision": round(y_prevu, 8),
+        "pente": round(pente, 8),
+        "ordonnee_origine": round(ordonnee, 8),
+        "r_carre": round(r_squared, 8),
+    }
+
+
+# 54. FREQUENCE (FREQUENCY)
+def formule_frequence(v: dict) -> dict:
+    donnees = [float(x) for x in v["donnees"]]
+    bornes = sorted(float(b) for b in v["bornes"])
+
+    freq = [0] * (len(bornes) + 1)
+    for val in donnees:
+        placed = False
+        for i, borne in enumerate(bornes):
+            if val <= borne:
+                freq[i] += 1
+                placed = True
+                break
+        if not placed:
+            freq[-1] += 1
+
+    labels = []
+    for i, borne in enumerate(bornes):
+        if i == 0:
+            labels.append(f"<= {borne}")
+        else:
+            labels.append(f"{bornes[i-1]} - {borne}")
+    labels.append(f"> {bornes[-1]}")
+
+    return {"frequences": freq, "labels": labels, "total": len(donnees)}
+
+
+# 55. ALEA.ENTRE.BORNES (RANDBETWEEN)
+def formule_alea_entre_bornes(v: dict) -> dict:
+    borne_inf = int(v["borne_inf"])
+    borne_sup = int(v["borne_sup"])
+    nb = int(v.get("nombre", 1))
+
+    if borne_inf > borne_sup:
+        raise ValueError("borne_inf doit être <= borne_sup.")
+    if nb < 1 or nb > 10000:
+        raise ValueError("nombre doit être entre 1 et 10 000.")
+
+    valeurs = [random.randint(borne_inf, borne_sup) for _ in range(nb)]
+    return {
+        "valeurs": valeurs if nb > 1 else valeurs[0],
+        "nombre_genere": nb,
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STRUCTURE & TABLEAUX
+# ─────────────────────────────────────────────────────────────────────────────
+
+# 56. SCAN / MAP / REDUCE
+def formule_scan_map_reduce(v: dict) -> dict:
+    valeurs = v["valeurs"]
+    operation = str(v["operation"]).lower()
+
+    allowed_ops = set("0123456789+-*/.() xval")
+    safe_globals = {"__builtins__": {}, "abs": abs, "round": round,
+                    "min": min, "max": max, "sqrt": math.sqrt,
+                    "pow": pow, "log": math.log}
+
+    if operation == "somme_cumul":
+        # SCAN — somme cumulée
+        acc = 0
+        result = []
+        for val in valeurs:
+            acc += float(val)
+            result.append(round(acc, 6))
+        return {"resultat": result, "operation": "scan_somme_cumulee"}
+
+    elif operation == "produit_cumul":
+        acc = 1
+        result = []
+        for val in valeurs:
+            acc *= float(val)
+            result.append(round(acc, 6))
+        return {"resultat": result, "operation": "scan_produit_cumule"}
+
+    elif operation == "somme":
+        # REDUCE — somme
+        return {"resultat": round(sum(float(x) for x in valeurs), 6), "operation": "reduce_somme"}
+
+    elif operation == "produit":
+        acc = 1
+        for val in valeurs:
+            acc *= float(val)
+        return {"resultat": round(acc, 6), "operation": "reduce_produit"}
+
+    elif operation == "carre":
+        # MAP — carré
+        return {"resultat": [round(float(x)**2, 6) for x in valeurs], "operation": "map_carre"}
+
+    elif operation == "racine":
+        return {"resultat": [round(math.sqrt(float(x)), 6) for x in valeurs], "operation": "map_racine"}
+
+    elif operation == "abs":
+        return {"resultat": [abs(float(x)) for x in valeurs], "operation": "map_abs"}
+
+    else:
+        raise ValueError(f"Opération inconnue : {operation}. "
+                         "Disponibles : somme_cumul, produit_cumul, somme, produit, carre, racine, abs")
+
+
+# 57. DANSCOL (TOCOL)
+def formule_danscol(v: dict) -> dict:
+    donnees = v["donnees"]
+    resultat = []
+    for item in donnees:
+        if isinstance(item, list):
+            resultat.extend(item)
+        elif isinstance(item, dict):
+            resultat.extend(item.values())
+        else:
+            resultat.append(item)
+    return {"resultat": resultat, "total": len(resultat)}
+
+
+# 58. DANSLIGNE (TOROW)
+def formule_dansligne(v: dict) -> dict:
+    donnees = v["donnees"]
+    resultat = []
+    for item in donnees:
+        if isinstance(item, list):
+            resultat.extend(item)
+        elif isinstance(item, dict):
+            resultat.extend(item.values())
+        else:
+            resultat.append(item)
+    return {"resultat": resultat, "total": len(resultat)}
+
+
+# 59. WRAPROWS / WRAPCOLS
+def formule_wraprows_wrapcols(v: dict) -> dict:
+    valeurs = v["valeurs"]
+    taille = int(v["taille"])
+    mode = str(v.get("mode", "rows")).lower()  # rows ou cols
+    pad = v.get("valeur_pad")
+
+    if taille <= 0:
+        raise ValueError("taille doit être > 0.")
+
+    flat = list(valeurs)
+    # Compléter pour que la taille soit divisible
+    while len(flat) % taille != 0:
+        flat.append(pad)
+
+    if mode in ("rows", "lignes"):
+        resultat = [flat[i:i + taille] for i in range(0, len(flat), taille)]
+    else:
+        nb_cols = taille
+        nb_rows = len(flat) // nb_cols
+        resultat = [[flat[r * nb_cols + c] for c in range(nb_cols)] for r in range(nb_rows)]
+
+    return {"resultat": resultat, "dimensions": f"{len(resultat)}x{taille}"}
+
+
+# 60. ASSEMB.H (HSTACK)
+def formule_assemb_h(v: dict) -> dict:
+    tableaux = v["tableaux"]
+
+    if not tableaux:
+        raise ValueError("Au moins un tableau requis.")
+
+    # Déterminer la hauteur max
+    max_len = max(len(t) if isinstance(t, list) else 1 for t in tableaux)
+
+    # Normaliser : chaque tableau = liste de listes (lignes)
+    normalized = []
+    for t in tableaux:
+        if not isinstance(t, list):
+            normalized.append([[t]] * max_len)
+        elif not t:
+            normalized.append([[None]] * max_len)
+        elif not isinstance(t[0], list):
+            # Colonne simple → transformer en liste de listes
+            col = [[item] for item in t]
+            while len(col) < max_len:
+                col.append([None])
+            normalized.append(col)
+        else:
+            while len(t) < max_len:
+                t.append([None] * len(t[0]))
+            normalized.append(t)
+
+    # Assembler horizontalement
+    resultat = []
+    for row_idx in range(max_len):
+        row = []
+        for t in normalized:
+            row.extend(t[row_idx] if row_idx < len(t) else [None])
+        resultat.append(row)
+
+    return {"resultat": resultat, "lignes": len(resultat)}
+
+
+# 61. VALEURNOMB (NUMBERVALUE)
+def formule_valeurnomb(v: dict) -> dict:
+    texte = str(v["texte"]).strip()
+    sep_decimal = str(v.get("sep_decimal", "."))
+    sep_milliers = str(v.get("sep_milliers", ""))
+
+    cleaned = texte
+    if sep_milliers:
+        cleaned = cleaned.replace(sep_milliers, "")
+    if sep_decimal != ".":
+        cleaned = cleaned.replace(sep_decimal, ".")
+
+    # Supprimer symboles monétaires courants
+    for sym in ("€", "$", "£", "¥", "%", " "):
+        cleaned = cleaned.replace(sym, "")
+
+    is_pct = "%" in texte
+    nombre = float(cleaned)
+    if is_pct:
+        nombre /= 100
+
+    return {"nombre": nombre}
+
+
+# 62. RECHERCHE Vector (LOOKUP)
+def formule_recherche_v(v: dict) -> dict:
+    valeur_cherchee = float(v["valeur_cherchee"])
+    vecteur_recherche = [float(x) for x in v["vecteur_recherche"]]
+    vecteur_retour = v["vecteur_retour"]
+
+    if len(vecteur_recherche) != len(vecteur_retour):
+        raise ValueError("Les vecteurs doivent avoir la même taille.")
+
+    # LOOKUP recherche la plus grande valeur <= valeur_cherchée (vecteur trié croissant)
+    result_idx = -1
+    for i, val in enumerate(vecteur_recherche):
+        if val <= valeur_cherchee:
+            result_idx = i
+        else:
+            break
+
+    if result_idx == -1:
+        raise ValueError("Aucune valeur <= à la valeur cherchée.")
+
+    return {
+        "resultat": vecteur_retour[result_idx],
+        "position": result_idx + 1,
+        "valeur_exacte": vecteur_recherche[result_idx],
+    }
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # REGISTRE DES FORMULES (clé → fonction)
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -762,6 +1442,43 @@ FORMULAS: dict[str, callable] = {
     "index_equiv": formule_index_equiv,
     "arrondi": formule_arrondi,
     "let_lambda": formule_let_lambda,
+    # v3 — Statistiques & Performance
+    "max_si_ens": formule_max_si_ens,
+    "min_si_ens": formule_min_si_ens,
+    "rang_egal": formule_rang_egal,
+    "mediane": formule_mediane,
+    "agregat": formule_agregat,
+    # v3 — Finance High-Ticket
+    "taux": formule_taux,
+    "npm": formule_npm,
+    "vc": formule_vc,
+    "va": formule_va,
+    "fraction_annee": formule_fraction_annee,
+    # v3 — Manipulation de Données
+    "choisir_lignes": formule_choisir_lignes,
+    "prendre": formule_prendre,
+    "exclure": formule_exclure,
+    "developper": formule_developper,
+    "fractionner_texte": formule_fractionner_texte,
+    "unicode_car": formule_unicode_car,
+    # v3 — Logique & Validation
+    "exact": formule_exact,
+    "estnum": formule_estnum,
+    "esttexte": formule_esttexte,
+    "changer": formule_changer,
+    "rechercheh": formule_rechercheh,
+    # v3 — Analyse & Prédiction
+    "prevision": formule_prevision,
+    "frequence": formule_frequence,
+    "alea_entre_bornes": formule_alea_entre_bornes,
+    # v3 — Structure & Tableaux
+    "scan_map_reduce": formule_scan_map_reduce,
+    "danscol": formule_danscol,
+    "dansligne": formule_dansligne,
+    "wraprows_wrapcols": formule_wraprows_wrapcols,
+    "assemb_h": formule_assemb_h,
+    "valeurnomb": formule_valeurnomb,
+    "recherche_v": formule_recherche_v,
 }
 
 
@@ -1168,6 +1885,409 @@ FORMULA_META: dict[str, dict] = {
              "placeholder": '{"prix":100,"taxe":0.2,"remise":0.1}'},
             {"name": "expression", "label": "Expression à évaluer", "type": "string",
              "required": True, "placeholder": "prix * (1 + taxe) * (1 - remise)"},
+        ],
+    },
+
+    # ── v3 — Statistiques & Performance ────────────────────────────────────
+    "max_si_ens": {
+        "name": "MAX.SI.ENS (MAXIFS)",
+        "description": "Renvoie la valeur maximale parmi les cellules correspondant à plusieurs critères",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "donnees", "label": "Données (table JSON)", "type": "json",
+             "required": True,
+             "placeholder": '[{"dept":"Ventes","trimestre":"T1","ca":120000}]'},
+            {"name": "colonne_valeur", "label": "Colonne à évaluer", "type": "string",
+             "required": True, "placeholder": "ca"},
+            {"name": "criteres", "label": "Critères (JSON)", "type": "json",
+             "required": True,
+             "placeholder": '[{"colonne":"dept","valeur":"Ventes"}]'},
+        ],
+    },
+    "min_si_ens": {
+        "name": "MIN.SI.ENS (MINIFS)",
+        "description": "Renvoie la valeur minimale parmi les cellules correspondant à plusieurs critères",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "donnees", "label": "Données (table JSON)", "type": "json",
+             "required": True,
+             "placeholder": '[{"dept":"RH","trimestre":"T2","ca":45000}]'},
+            {"name": "colonne_valeur", "label": "Colonne à évaluer", "type": "string",
+             "required": True, "placeholder": "ca"},
+            {"name": "criteres", "label": "Critères (JSON)", "type": "json",
+             "required": True,
+             "placeholder": '[{"colonne":"dept","valeur":"RH"}]'},
+        ],
+    },
+    "rang_egal": {
+        "name": "RANG.EGAL (RANK.EQ)",
+        "description": "Renvoie le rang d'un nombre dans une série (classement)",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "nombre", "label": "Nombre à classer", "type": "number",
+             "required": True, "placeholder": "85"},
+            {"name": "valeurs", "label": "Série de valeurs", "type": "number[]",
+             "required": True, "placeholder": "95, 85, 70, 60, 90"},
+            {"name": "ordre", "label": "Ordre (asc/desc)", "type": "string",
+             "required": False, "placeholder": "desc"},
+        ],
+    },
+    "mediane": {
+        "name": "MEDIANE (MEDIAN)",
+        "description": "Renvoie la valeur médiane d'une série de nombres",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "number[]",
+             "required": True, "placeholder": "12, 7, 3, 14, 9"},
+        ],
+    },
+    "agregat": {
+        "name": "AGREGAT (AGGREGATE)",
+        "description": "Appliquer une fonction d'agrégation (MOYENNE, SOMME, MAX, etc.) en ignorant les erreurs",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (peut contenir des erreurs)", "type": "json",
+             "required": True, "placeholder": '[10, 20, "erreur", 30, 40]'},
+            {"name": "fonction", "label": "N° fonction (1=MOY, 4=MAX, 5=MIN, 9=SOMME)", "type": "number",
+             "required": True, "placeholder": "9"},
+            {"name": "ignorer_erreurs", "label": "Ignorer les erreurs (true/false)", "type": "string",
+             "required": False, "placeholder": "true"},
+        ],
+    },
+
+    # ── v3 — Finance High-Ticket ──────────────────────────────────────────
+    "taux": {
+        "name": "TAUX (RATE)",
+        "description": "Calculer le taux d'intérêt par période d'un emprunt (Newton-Raphson, précision bancaire)",
+        "category": "Finance",
+        "variables": [
+            {"name": "nb_periodes", "label": "Nombre de mensualités", "type": "number",
+             "required": True, "placeholder": "240"},
+            {"name": "mensualite", "label": "Mensualité (€)", "type": "number",
+             "required": True, "placeholder": "-1319.91"},
+            {"name": "valeur_actuelle", "label": "Montant emprunté (€)", "type": "number",
+             "required": True, "placeholder": "200000"},
+            {"name": "valeur_future", "label": "Valeur future (€)", "type": "number",
+             "required": False, "placeholder": "0"},
+            {"name": "debut_periode", "label": "Paiement début de période (0/1)", "type": "number",
+             "required": False, "placeholder": "0"},
+            {"name": "estimation", "label": "Estimation initiale (%)", "type": "number",
+             "required": False, "placeholder": "1"},
+        ],
+    },
+    "npm": {
+        "name": "NPM (NPER)",
+        "description": "Calculer le nombre de périodes nécessaires pour rembourser un emprunt",
+        "category": "Finance",
+        "variables": [
+            {"name": "taux_periodique", "label": "Taux par période (%)", "type": "number",
+             "required": True, "placeholder": "0.5"},
+            {"name": "mensualite", "label": "Mensualité (€)", "type": "number",
+             "required": True, "placeholder": "-1500"},
+            {"name": "valeur_actuelle", "label": "Montant emprunté (€)", "type": "number",
+             "required": True, "placeholder": "200000"},
+            {"name": "valeur_future", "label": "Valeur future (€)", "type": "number",
+             "required": False, "placeholder": "0"},
+        ],
+    },
+    "vc": {
+        "name": "VC (FV)",
+        "description": "Calculer la valeur future d'un investissement à versements périodiques constants",
+        "category": "Finance",
+        "variables": [
+            {"name": "taux_periodique", "label": "Taux par période (%)", "type": "number",
+             "required": True, "placeholder": "0.5"},
+            {"name": "nb_periodes", "label": "Nombre de périodes", "type": "number",
+             "required": True, "placeholder": "120"},
+            {"name": "mensualite", "label": "Versement périodique (€)", "type": "number",
+             "required": False, "placeholder": "-500"},
+            {"name": "valeur_actuelle", "label": "Valeur initiale (€)", "type": "number",
+             "required": False, "placeholder": "-10000"},
+            {"name": "debut_periode", "label": "Paiement début de période (0/1)", "type": "number",
+             "required": False, "placeholder": "0"},
+        ],
+    },
+    "va": {
+        "name": "VA (PV)",
+        "description": "Calculer la valeur actuelle d'un investissement (flux futurs actualisés)",
+        "category": "Finance",
+        "variables": [
+            {"name": "taux_periodique", "label": "Taux par période (%)", "type": "number",
+             "required": True, "placeholder": "0.5"},
+            {"name": "nb_periodes", "label": "Nombre de périodes", "type": "number",
+             "required": True, "placeholder": "120"},
+            {"name": "mensualite", "label": "Versement périodique (€)", "type": "number",
+             "required": False, "placeholder": "-500"},
+            {"name": "valeur_future", "label": "Valeur future (€)", "type": "number",
+             "required": False, "placeholder": "0"},
+            {"name": "debut_periode", "label": "Paiement début de période (0/1)", "type": "number",
+             "required": False, "placeholder": "0"},
+        ],
+    },
+    "fraction_annee": {
+        "name": "FRACTION.ANNEE (YEARFRAC)",
+        "description": "Calculer la fraction d'année entre deux dates (conventions bancaires US30/360, Actual/Actual, etc.)",
+        "category": "Finance",
+        "variables": [
+            {"name": "date_debut", "label": "Date de début", "type": "string",
+             "required": True, "placeholder": "2024-01-15"},
+            {"name": "date_fin", "label": "Date de fin", "type": "string",
+             "required": True, "placeholder": "2024-07-15"},
+            {"name": "base", "label": "Convention (0=US30/360, 1=Actual/Actual, 2=Actual/360, 3=Actual/365)", "type": "number",
+             "required": False, "placeholder": "1"},
+        ],
+    },
+
+    # ── v3 — Manipulation de Données ──────────────────────────────────────
+    "choisir_lignes": {
+        "name": "CHOISIR.LIGNES (CHOOSEROWS)",
+        "description": "Extraire des lignes spécifiques d'un tableau par leurs indices (positifs ou négatifs)",
+        "category": "Données",
+        "variables": [
+            {"name": "donnees", "label": "Données (JSON array)", "type": "json",
+             "required": True, "placeholder": '["Alice", "Bob", "Charlie", "Diana"]'},
+            {"name": "indices", "label": "Indices (1=premier, -1=dernier)", "type": "number[]",
+             "required": True, "placeholder": "1, -1"},
+        ],
+    },
+    "prendre": {
+        "name": "PRENDRE (TAKE)",
+        "description": "Prendre les N premières ou dernières lignes d'un tableau",
+        "category": "Données",
+        "variables": [
+            {"name": "donnees", "label": "Données (JSON array)", "type": "json",
+             "required": True, "placeholder": '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]'},
+            {"name": "nb_lignes", "label": "Nombre de lignes (négatif = depuis la fin)", "type": "number",
+             "required": True, "placeholder": "3"},
+        ],
+    },
+    "exclure": {
+        "name": "EXCLURE (DROP)",
+        "description": "Exclure les N premières ou dernières lignes d'un tableau",
+        "category": "Données",
+        "variables": [
+            {"name": "donnees", "label": "Données (JSON array)", "type": "json",
+             "required": True, "placeholder": '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]'},
+            {"name": "nb_lignes", "label": "Lignes à exclure (négatif = depuis la fin)", "type": "number",
+             "required": True, "placeholder": "2"},
+        ],
+    },
+    "developper": {
+        "name": "DÉVELOPPER (EXPAND)",
+        "description": "Étendre un tableau à un nombre de lignes donné en remplissant avec une valeur par défaut",
+        "category": "Données",
+        "variables": [
+            {"name": "donnees", "label": "Données (JSON array)", "type": "json",
+             "required": True, "placeholder": '["A", "B", "C"]'},
+            {"name": "nb_lignes", "label": "Nombre total de lignes", "type": "number",
+             "required": True, "placeholder": "6"},
+            {"name": "valeur_defaut", "label": "Valeur de remplissage", "type": "string",
+             "required": False, "placeholder": "N/A"},
+        ],
+    },
+    "fractionner_texte": {
+        "name": "FRACTIONNER.TEXTE (TEXTSPLIT)",
+        "description": "Découper un texte en colonnes et/ou lignes selon des délimiteurs",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte à fractionner", "type": "string",
+             "required": True, "placeholder": "Jean,Dupont,Paris"},
+            {"name": "delimiteur_col", "label": "Délimiteur de colonnes", "type": "string",
+             "required": False, "placeholder": ","},
+            {"name": "delimiteur_ligne", "label": "Délimiteur de lignes", "type": "string",
+             "required": False, "placeholder": ";"},
+        ],
+    },
+    "unicode_car": {
+        "name": "UNICODE / CAR",
+        "description": "Convertir un caractère en code Unicode ou un code en caractère",
+        "category": "Texte",
+        "variables": [
+            {"name": "caractere", "label": "Caractère → code", "type": "string",
+             "required": False, "placeholder": "A"},
+            {"name": "code", "label": "Code → caractère", "type": "number",
+             "required": False, "placeholder": "65"},
+        ],
+    },
+
+    # ── v3 — Logique & Validation ─────────────────────────────────────────
+    "exact": {
+        "name": "EXACT",
+        "description": "Comparer deux textes de manière stricte (sensible à la casse)",
+        "category": "Logique",
+        "variables": [
+            {"name": "texte1", "label": "Texte 1", "type": "string",
+             "required": True, "placeholder": "Excel"},
+            {"name": "texte2", "label": "Texte 2", "type": "string",
+             "required": True, "placeholder": "excel"},
+        ],
+    },
+    "estnum": {
+        "name": "ESTNUM (ISNUMBER)",
+        "description": "Vérifier quelles valeurs sont numériques dans une liste",
+        "category": "Logique",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs à tester", "type": "json",
+             "required": True, "placeholder": '[42, "texte", 3.14, null, "100"]'},
+        ],
+    },
+    "esttexte": {
+        "name": "ESTTEXTE (ISTEXT)",
+        "description": "Vérifier quelles valeurs sont du texte (non numérique) dans une liste",
+        "category": "Logique",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs à tester", "type": "json",
+             "required": True, "placeholder": '["Paris", 42, "hello", 3.14]'},
+        ],
+    },
+    "changer": {
+        "name": "CHANGER (SWITCH)",
+        "description": "Évaluer une expression et renvoyer un résultat selon le premier cas correspondant",
+        "category": "Logique",
+        "variables": [
+            {"name": "expression", "label": "Expression à évaluer", "type": "string",
+             "required": True, "placeholder": "B"},
+            {"name": "cas", "label": "Cas (JSON)", "type": "json",
+             "required": True,
+             "placeholder": '[{"valeur":"A","resultat":"Alpha"},{"valeur":"B","resultat":"Beta"}]'},
+            {"name": "defaut", "label": "Valeur par défaut", "type": "string",
+             "required": False, "placeholder": "Inconnu"},
+        ],
+    },
+    "rechercheh": {
+        "name": "RECHERCHEH (HLOOKUP)",
+        "description": "Recherche horizontale dans un tableau (chercher dans les en-têtes, retourner une ligne)",
+        "category": "Recherche",
+        "variables": [
+            {"name": "valeur_cherchee", "label": "Valeur cherchée", "type": "string",
+             "required": True, "placeholder": "Mars"},
+            {"name": "en_tetes", "label": "En-têtes (première ligne)", "type": "json",
+             "required": True, "placeholder": '["Janvier","Février","Mars","Avril"]'},
+            {"name": "donnees", "label": "Lignes de données (JSON)", "type": "json",
+             "required": True, "placeholder": '[[100, 200, 350, 400], [50, 80, 120, 150]]'},
+            {"name": "ligne_retour", "label": "Ligne de retour (1=première)", "type": "number",
+             "required": False, "placeholder": "1"},
+        ],
+    },
+
+    # ── v3 — Analyse & Prédiction ─────────────────────────────────────────
+    "prevision": {
+        "name": "PREVISION.ETS (FORECAST)",
+        "description": "Prédire une valeur par régression linéaire (avec R² et pente)",
+        "category": "Analyse",
+        "variables": [
+            {"name": "x_cible", "label": "Valeur X à prédire", "type": "number",
+             "required": True, "placeholder": "13"},
+            {"name": "x_connus", "label": "Valeurs X connues", "type": "number[]",
+             "required": True, "placeholder": "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"},
+            {"name": "y_connus", "label": "Valeurs Y connues", "type": "number[]",
+             "required": True, "placeholder": "100, 120, 135, 160, 180, 200, 215, 240, 260, 280, 300, 320"},
+        ],
+    },
+    "frequence": {
+        "name": "FREQUENCE (FREQUENCY)",
+        "description": "Calculer la distribution de fréquence d'un jeu de données par tranches",
+        "category": "Analyse",
+        "variables": [
+            {"name": "donnees", "label": "Données", "type": "number[]",
+             "required": True, "placeholder": "45, 72, 38, 91, 55, 67, 83, 29, 60, 74"},
+            {"name": "bornes", "label": "Bornes des tranches", "type": "number[]",
+             "required": True, "placeholder": "30, 50, 70, 90"},
+        ],
+    },
+    "alea_entre_bornes": {
+        "name": "ALEA.ENTRE.BORNES (RANDBETWEEN)",
+        "description": "Générer un ou plusieurs nombres entiers aléatoires entre deux bornes",
+        "category": "Analyse",
+        "variables": [
+            {"name": "borne_inf", "label": "Borne inférieure", "type": "number",
+             "required": True, "placeholder": "1"},
+            {"name": "borne_sup", "label": "Borne supérieure", "type": "number",
+             "required": True, "placeholder": "100"},
+            {"name": "nombre", "label": "Nombre de valeurs à générer", "type": "number",
+             "required": False, "placeholder": "1"},
+        ],
+    },
+
+    # ── v3 — Structure & Tableaux ─────────────────────────────────────────
+    "scan_map_reduce": {
+        "name": "SCAN / MAP / REDUCE",
+        "description": "Appliquer une opération sur chaque élément (MAP), cumuler (SCAN) ou réduire (REDUCE) une liste",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "json",
+             "required": True, "placeholder": '[10, 20, 30, 40, 50]'},
+            {"name": "operation", "label": "Opération", "type": "string",
+             "required": True, "placeholder": "somme_cumul"},
+        ],
+    },
+    "danscol": {
+        "name": "DANSCOL (TOCOL)",
+        "description": "Aplatir un tableau 2D en une seule colonne",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "donnees", "label": "Données (2D ou nested)", "type": "json",
+             "required": True, "placeholder": '[[1,2,3],[4,5,6]]'},
+        ],
+    },
+    "dansligne": {
+        "name": "DANSLIGNE (TOROW)",
+        "description": "Aplatir un tableau 2D en une seule ligne",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "donnees", "label": "Données (2D ou nested)", "type": "json",
+             "required": True, "placeholder": '[[1,2,3],[4,5,6]]'},
+        ],
+    },
+    "wraprows_wrapcols": {
+        "name": "WRAPROWS / WRAPCOLS",
+        "description": "Réorganiser un vecteur plat en grille 2D (par lignes ou par colonnes)",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs à réorganiser", "type": "json",
+             "required": True, "placeholder": '[1,2,3,4,5,6,7,8,9]'},
+            {"name": "taille", "label": "Taille (nb éléments par ligne/colonne)", "type": "number",
+             "required": True, "placeholder": "3"},
+            {"name": "mode", "label": "Mode (rows/cols)", "type": "string",
+             "required": False, "placeholder": "rows"},
+            {"name": "valeur_pad", "label": "Valeur de remplissage", "type": "string",
+             "required": False, "placeholder": ""},
+        ],
+    },
+    "assemb_h": {
+        "name": "ASSEMB.H (HSTACK)",
+        "description": "Assembler horizontalement plusieurs tableaux côte à côte",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "tableaux", "label": "Tableaux à assembler (JSON)", "type": "json",
+             "required": True,
+             "placeholder": '[["A","B","C"], [1,2,3]]'},
+        ],
+    },
+    "valeurnomb": {
+        "name": "VALEURNOMB (NUMBERVALUE)",
+        "description": "Convertir un texte formaté en nombre (gère les séparateurs et symboles monétaires)",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte à convertir", "type": "string",
+             "required": True, "placeholder": "1 234,56 €"},
+            {"name": "sep_decimal", "label": "Séparateur décimal", "type": "string",
+             "required": False, "placeholder": ","},
+            {"name": "sep_milliers", "label": "Séparateur de milliers", "type": "string",
+             "required": False, "placeholder": " "},
+        ],
+    },
+    "recherche_v": {
+        "name": "RECHERCHE (LOOKUP)",
+        "description": "Recherche vectorielle : trouver la plus grande valeur ≤ à la cible dans un vecteur trié",
+        "category": "Recherche",
+        "variables": [
+            {"name": "valeur_cherchee", "label": "Valeur cherchée", "type": "number",
+             "required": True, "placeholder": "75"},
+            {"name": "vecteur_recherche", "label": "Vecteur de recherche (trié)", "type": "number[]",
+             "required": True, "placeholder": "10, 20, 50, 80, 100"},
+            {"name": "vecteur_retour", "label": "Vecteur de retour", "type": "json",
+             "required": True, "placeholder": '["F","E","D","C","B"]'},
         ],
     },
 }
