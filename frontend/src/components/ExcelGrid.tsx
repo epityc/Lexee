@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import type { FormulaMeta, CalculationResponse } from "@/lib/api";
 import { calculate } from "@/lib/api";
 
@@ -11,6 +11,38 @@ interface ExcelGridProps {
   onCreditsUpdate: (credits: number) => void;
 }
 
+/**
+ * Validate a raw input string against the expected variable type.
+ * Returns an error message or "" if valid.
+ */
+function validateField(raw: string, type: string, required: boolean): string {
+  const trimmed = raw.trim();
+  if (!trimmed) return required ? "Ce champ est requis." : "";
+
+  if (type === "number") {
+    if (isNaN(Number(trimmed))) return "Veuillez entrer un nombre valide (ex: 42 ou 3.14).";
+  }
+
+  if (type === "number[]") {
+    const parts = trimmed.split(",");
+    for (const part of parts) {
+      const p = part.trim();
+      if (p === "") continue;
+      if (isNaN(Number(p))) return `"${p}" n'est pas un nombre valide.`;
+    }
+  }
+
+  if (type === "json") {
+    try {
+      JSON.parse(trimmed);
+    } catch {
+      return "JSON invalide. Verifiez la syntaxe (guillemets, crochets, virgules).";
+    }
+  }
+
+  return "";
+}
+
 export default function ExcelGrid({
   apiKey,
   formulaKey,
@@ -18,17 +50,27 @@ export default function ExcelGrid({
   onCreditsUpdate,
 }: ExcelGridProps) {
   const [values, setValues] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [result, setResult] = useState<CalculationResponse | null>(null);
-  const [error, setError] = useState("");
+  const [globalError, setGlobalError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  function setValue(name: string, val: string) {
+  const setValue = useCallback((name: string, val: string, type: string, required: boolean) => {
     setValues((prev) => ({ ...prev, [name]: val }));
-  }
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    const err = validateField(val, type, required);
+    setErrors((prev) => ({ ...prev, [name]: err }));
+  }, []);
+
+  const handleBlur = useCallback((name: string, type: string, required: boolean) => {
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    const err = validateField(values[name] ?? "", type, required);
+    setErrors((prev) => ({ ...prev, [name]: err }));
+  }, [values]);
 
   function parseValue(raw: string, type: string): unknown {
     if (!raw.trim()) return undefined;
-
     if (type === "number") return parseFloat(raw);
     if (type === "number[]")
       return raw.split(",").map((s) => parseFloat(s.trim()));
@@ -39,7 +81,28 @@ export default function ExcelGrid({
   }
 
   async function handleCalculate() {
-    setError("");
+    // Validate all fields before submitting
+    let hasError = false;
+    const newErrors: Record<string, string> = {};
+    const newTouched: Record<string, boolean> = {};
+
+    for (const v of meta.variables) {
+      const raw = values[v.name] ?? "";
+      newTouched[v.name] = true;
+      const err = validateField(raw, v.type, v.required);
+      newErrors[v.name] = err;
+      if (err) hasError = true;
+    }
+
+    setTouched(newTouched);
+    setErrors(newErrors);
+
+    if (hasError) {
+      setGlobalError("Corrigez les erreurs dans les champs avant de calculer.");
+      return;
+    }
+
+    setGlobalError("");
     setResult(null);
     setLoading(true);
 
@@ -47,11 +110,6 @@ export default function ExcelGrid({
       const variables: Record<string, unknown> = {};
       for (const v of meta.variables) {
         const raw = values[v.name] ?? "";
-        if (v.required && !raw.trim()) {
-          setError(`Le champ "${v.label}" est requis.`);
-          setLoading(false);
-          return;
-        }
         const parsed = parseValue(raw, v.type);
         if (parsed !== undefined) variables[v.name] = parsed;
       }
@@ -60,109 +118,154 @@ export default function ExcelGrid({
       setResult(res);
       onCreditsUpdate(res.credits_remaining);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur de calcul");
+      setGlobalError(err instanceof Error ? err.message : "Erreur de calcul");
     } finally {
       setLoading(false);
     }
   }
 
-  const colA = "w-[220px]";
-  const colB = "flex-1";
+  const hasErrors = Object.values(errors).some((e) => e !== "");
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Formula bar */}
-      <div className="flex items-center bg-gray-50 border-b border-gray-300 px-3 py-2 gap-3">
-        <span className="text-xs font-mono bg-white border border-gray-300 rounded px-2 py-1 text-gray-500">
+    <div className="flex flex-col h-full bg-gray-50/30">
+      {/* Formula bar — spacious */}
+      <div className="flex items-center bg-white border-b border-gray-200 px-6 py-4 gap-4 shadow-sm">
+        <span className="text-xs font-mono bg-gray-100 border border-gray-200 rounded-md px-3 py-1.5 text-gray-500 tracking-wide">
           fx
         </span>
-        <span className="text-sm font-semibold text-gray-800">
-          ={meta.name}(...)
-        </span>
-        <span className="text-xs text-gray-400 ml-auto">
-          Formule protegee — code source masque
-        </span>
+        <div className="flex flex-col">
+          <span className="text-base font-semibold text-gray-800">
+            ={meta.name}(...)
+          </span>
+          <span className="text-xs text-gray-400 mt-0.5">
+            Formule protegee — code source masque
+          </span>
+        </div>
       </div>
 
       {/* Column headers */}
-      <div className="flex border-b border-gray-400 bg-gray-100 text-xs font-semibold text-gray-600 select-none">
-        <div className="w-10 text-center border-r border-gray-300 py-1"></div>
-        <div className={`${colA} border-r border-gray-300 px-2 py-1 text-center`}>
-          A
+      <div className="flex border-b border-gray-300 bg-gray-100 text-xs font-semibold text-gray-500 uppercase tracking-wider select-none">
+        <div className="w-12 text-center border-r border-gray-200 py-2.5"></div>
+        <div className="w-[260px] border-r border-gray-200 px-4 py-2.5 text-center">
+          Variable
         </div>
-        <div className={`${colB} px-2 py-1 text-center`}>B</div>
+        <div className="flex-1 px-4 py-2.5 text-center">Valeur</div>
       </div>
 
-      {/* Input rows */}
+      {/* Input rows — spacious */}
       <div className="flex-1 overflow-y-auto">
-        {meta.variables.map((v, i) => (
-          <div
-            key={v.name}
-            className="flex border-b border-gray-200 hover:bg-blue-50/30 transition-colors"
-          >
-            {/* Row number */}
-            <div className="w-10 text-center text-xs text-gray-400 py-2 bg-gray-50 border-r border-gray-200 select-none">
-              {i + 1}
-            </div>
-            {/* Col A — label */}
-            <div
-              className={`${colA} border-r border-gray-200 cell-readonly flex items-center gap-1`}
-            >
-              <span>{v.label}</span>
-              {v.required && <span className="text-red-400 text-xs">*</span>}
-            </div>
-            {/* Col B — input */}
-            <div className={`${colB}`}>
-              {v.type === "json" ? (
-                <textarea
-                  value={values[v.name] ?? ""}
-                  onChange={(e) => setValue(v.name, e.target.value)}
-                  placeholder={v.placeholder}
-                  rows={2}
-                  className="cell-input resize-y font-mono text-xs"
-                />
-              ) : (
-                <input
-                  type="text"
-                  value={values[v.name] ?? ""}
-                  onChange={(e) => setValue(v.name, e.target.value)}
-                  placeholder={v.placeholder}
-                  className="cell-input"
-                />
-              )}
-            </div>
-          </div>
-        ))}
+        {meta.variables.map((v, i) => {
+          const fieldError = touched[v.name] ? errors[v.name] : "";
+          const hasFieldError = !!fieldError;
 
-        {/* Calculate button row */}
-        <div className="px-4 py-4 bg-gray-50 border-b border-gray-300">
+          return (
+            <div key={v.name} className="group">
+              <div
+                className={`flex transition-colors ${
+                  hasFieldError
+                    ? "bg-red-50/60"
+                    : "hover:bg-blue-50/20"
+                }`}
+              >
+                {/* Row number */}
+                <div className={`w-12 text-center text-xs py-5 border-r select-none ${
+                  hasFieldError
+                    ? "text-red-400 bg-red-50/40 border-red-200"
+                    : "text-gray-400 bg-gray-50/80 border-gray-200"
+                }`}>
+                  {i + 1}
+                </div>
+
+                {/* Col A — label */}
+                <div className={`w-[260px] border-r px-5 py-4 flex flex-col justify-center ${
+                  hasFieldError ? "border-red-200" : "border-gray-200"
+                }`}>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm font-medium text-gray-700">{v.label}</span>
+                    {v.required && (
+                      <span className="text-red-400 text-xs font-bold">*</span>
+                    )}
+                  </div>
+                  <span className="text-[11px] text-gray-400 mt-0.5">
+                    {v.type === "number" && "Nombre"}
+                    {v.type === "number[]" && "Nombres separes par des virgules"}
+                    {v.type === "string" && "Texte"}
+                    {v.type === "string[]" && "Textes separes par des virgules"}
+                    {v.type === "json" && "Format JSON"}
+                  </span>
+                </div>
+
+                {/* Col B — input */}
+                <div className="flex-1 px-4 py-3 flex flex-col justify-center">
+                  {v.type === "json" ? (
+                    <textarea
+                      value={values[v.name] ?? ""}
+                      onChange={(e) => setValue(v.name, e.target.value, v.type, v.required)}
+                      onBlur={() => handleBlur(v.name, v.type, v.required)}
+                      placeholder={v.placeholder}
+                      rows={2}
+                      className={`w-full rounded-lg border px-4 py-3 text-xs font-mono
+                        resize-y transition-all duration-150
+                        focus:outline-none focus:ring-2 focus:ring-offset-1
+                        ${hasFieldError
+                          ? "border-red-300 bg-red-50 text-red-800 focus:ring-red-400 placeholder-red-300"
+                          : "border-gray-200 bg-white text-gray-800 focus:ring-lexee-500 focus:border-lexee-500 placeholder-gray-400"
+                        }`}
+                    />
+                  ) : (
+                    <input
+                      type="text"
+                      value={values[v.name] ?? ""}
+                      onChange={(e) => setValue(v.name, e.target.value, v.type, v.required)}
+                      onBlur={() => handleBlur(v.name, v.type, v.required)}
+                      placeholder={v.placeholder}
+                      className={`w-full rounded-lg border px-4 py-3 text-sm
+                        transition-all duration-150
+                        focus:outline-none focus:ring-2 focus:ring-offset-1
+                        ${hasFieldError
+                          ? "border-red-300 bg-red-50 text-red-800 focus:ring-red-400 placeholder-red-300"
+                          : "border-gray-200 bg-white text-gray-800 focus:ring-lexee-500 focus:border-lexee-500 placeholder-gray-400"
+                        }`}
+                    />
+                  )}
+
+                  {/* Inline error message */}
+                  {hasFieldError && (
+                    <div className="flex items-center gap-1.5 mt-2 animate-fade-in">
+                      <svg className="w-3.5 h-3.5 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-xs text-red-600 font-medium">{fieldError}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Separator between rows */}
+              <div className="border-b border-gray-100 mx-4" />
+            </div>
+          );
+        })}
+
+        {/* Calculate button — spacious */}
+        <div className="px-6 py-6">
           <button
             onClick={handleCalculate}
             disabled={loading}
-            className="w-full py-2.5 bg-green-600 hover:bg-green-700 disabled:bg-gray-300
-                       text-white font-semibold rounded-lg transition-colors text-sm
-                       flex items-center justify-center gap-2"
+            className={`w-full py-3.5 font-semibold rounded-xl transition-all duration-200 text-sm
+                       flex items-center justify-center gap-2 shadow-sm
+                       ${loading
+                         ? "bg-gray-200 text-gray-500 cursor-wait"
+                         : hasErrors
+                           ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                           : "bg-lexee-600 hover:bg-lexee-700 active:scale-[0.99] text-white shadow-green-200"
+                       }`}
           >
             {loading ? (
               <>
-                <svg
-                  className="animate-spin h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                  />
+                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
                 Calcul en cours...
               </>
@@ -172,43 +275,44 @@ export default function ExcelGrid({
           </button>
         </div>
 
-        {/* Error */}
-        {error && (
-          <div className="mx-4 mt-3 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-            {error}
+        {/* Global error */}
+        {globalError && (
+          <div className="mx-6 mb-4 bg-red-50 border border-red-200 text-red-700 px-5 py-4 rounded-xl text-sm flex items-start gap-3">
+            <svg className="w-5 h-5 text-red-400 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            </svg>
+            <span>{globalError}</span>
           </div>
         )}
 
-        {/* Results */}
+        {/* Results — spacious */}
         {result && (
-          <div className="mt-1">
-            <div className="flex border-b border-gray-400 bg-green-50 text-xs font-semibold text-green-800 select-none">
-              <div className="w-10 text-center border-r border-gray-300 py-1"></div>
-              <div
-                className={`${colA} border-r border-gray-300 px-2 py-1 text-center`}
-              >
-                RESULTAT
-              </div>
-              <div className={`${colB} px-2 py-1 text-center`}>VALEUR</div>
-            </div>
-            {Object.entries(result.result).map(([key, val], i) => (
-              <div
-                key={key}
-                className="flex border-b border-green-100 hover:bg-green-50/50"
-              >
-                <div className="w-10 text-center text-xs text-green-400 py-2 bg-green-50/50 border-r border-green-100 select-none">
-                  R{i + 1}
+          <div className="mx-6 mb-6">
+            <div className="rounded-xl border border-green-200 overflow-hidden shadow-sm">
+              <div className="flex bg-green-50 text-xs font-semibold text-green-700 uppercase tracking-wider select-none border-b border-green-200">
+                <div className="w-12 text-center border-r border-green-200 py-3"></div>
+                <div className="w-[240px] border-r border-green-200 px-5 py-3 text-center">
+                  Resultat
                 </div>
+                <div className="flex-1 px-5 py-3 text-center">Valeur</div>
+              </div>
+              {Object.entries(result.result).map(([key, val], i) => (
                 <div
-                  className={`${colA} border-r border-green-100 cell-readonly text-green-700`}
+                  key={key}
+                  className="flex border-b border-green-100 last:border-b-0 hover:bg-green-50/50 transition-colors"
                 >
-                  {key}
+                  <div className="w-12 text-center text-xs text-green-400 py-4 bg-green-50/30 border-r border-green-100 select-none">
+                    R{i + 1}
+                  </div>
+                  <div className="w-[240px] border-r border-green-100 px-5 py-4 text-sm text-green-700 font-medium">
+                    {key}
+                  </div>
+                  <div className="flex-1 px-5 py-4 text-sm text-green-800 font-semibold font-mono">
+                    {typeof val === "object" ? JSON.stringify(val, null, 1) : String(val)}
+                  </div>
                 </div>
-                <div className={`${colB} cell-result`}>
-                  {typeof val === "object" ? JSON.stringify(val) : String(val)}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
       </div>

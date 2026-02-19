@@ -7,16 +7,25 @@ body {
     "Helvetica Neue", Arial, sans-serif;
 }
 
-/* Excel-style grid cells */
-.cell-input {
-  @apply w-full h-full px-2 py-1.5 border-0 bg-transparent text-sm
-         focus:outline-none focus:ring-2 focus:ring-lexee-500 focus:ring-inset;
+/* Smooth scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
 }
 
-.cell-readonly {
-  @apply px-2 py-1.5 text-sm bg-gray-50 text-gray-600 select-none;
-}
-
-.cell-result {
-  @apply px-2 py-1.5 text-sm bg-green-50 text-green-800 font-semibold;
+/* Line clamp utility for description truncation */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
