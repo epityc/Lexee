@@ -11,10 +11,6 @@ interface ExcelGridProps {
   onCreditsUpdate: (credits: number) => void;
 }
 
-/**
- * Validate a raw input string against the expected variable type.
- * Returns an error message or "" if valid.
- */
 function validateField(raw: string, type: string, required: boolean): string {
   const trimmed = raw.trim();
   if (!trimmed) return required ? "Ce champ est requis." : "";
@@ -81,7 +77,6 @@ export default function ExcelGrid({
   }
 
   async function handleCalculate() {
-    // Validate all fields before submitting
     let hasError = false;
     const newErrors: Record<string, string> = {};
     const newTouched: Record<string, boolean> = {};
@@ -127,10 +122,10 @@ export default function ExcelGrid({
   const hasErrors = Object.values(errors).some((e) => e !== "");
 
   return (
-    <div className="flex flex-col h-full bg-gray-50/30">
-      {/* Formula bar — spacious */}
-      <div className="flex items-center bg-white border-b border-gray-200 px-6 py-4 gap-4 shadow-sm">
-        <span className="text-xs font-mono bg-gray-100 border border-gray-200 rounded-md px-3 py-1.5 text-gray-500 tracking-wide">
+    <div className="flex flex-col h-full bg-theme-body theme-transition">
+      {/* Formula bar */}
+      <div className="flex items-center bg-theme-sidebar border-b border-theme-grid px-6 py-4 gap-4 shadow-sm theme-transition">
+        <span className="text-xs font-mono bg-theme-grid-header border border-theme-grid rounded-md px-3 py-1.5 text-gray-500 tracking-wide theme-transition">
           fx
         </span>
         <div className="flex flex-col">
@@ -144,15 +139,15 @@ export default function ExcelGrid({
       </div>
 
       {/* Column headers */}
-      <div className="flex border-b border-gray-300 bg-gray-100 text-xs font-semibold text-gray-500 uppercase tracking-wider select-none">
-        <div className="w-12 text-center border-r border-gray-200 py-2.5"></div>
-        <div className="w-[260px] border-r border-gray-200 px-4 py-2.5 text-center">
+      <div className="flex border-b border-theme-grid bg-theme-grid-header text-xs font-semibold text-gray-500 uppercase tracking-wider select-none theme-transition">
+        <div className="w-12 text-center border-r border-theme-grid py-2.5"></div>
+        <div className="w-[260px] border-r border-theme-grid px-4 py-2.5 text-center">
           Variable
         </div>
         <div className="flex-1 px-4 py-2.5 text-center">Valeur</div>
       </div>
 
-      {/* Input rows — spacious */}
+      {/* Input rows */}
       <div className="flex-1 overflow-y-auto">
         {meta.variables.map((v, i) => {
           const fieldError = touched[v.name] ? errors[v.name] : "";
@@ -162,23 +157,21 @@ export default function ExcelGrid({
             <div key={v.name} className="group">
               <div
                 className={`flex transition-colors ${
-                  hasFieldError
-                    ? "bg-red-50/60"
-                    : "hover:bg-blue-50/20"
+                  hasFieldError ? "bg-red-50/60" : "hover:bg-black/[0.02]"
                 }`}
               >
                 {/* Row number */}
-                <div className={`w-12 text-center text-xs py-5 border-r select-none ${
+                <div className={`w-12 text-center text-xs py-5 border-r select-none theme-transition ${
                   hasFieldError
                     ? "text-red-400 bg-red-50/40 border-red-200"
-                    : "text-gray-400 bg-gray-50/80 border-gray-200"
+                    : "text-gray-400 bg-theme-grid-header border-theme-grid"
                 }`}>
                   {i + 1}
                 </div>
 
                 {/* Col A — label */}
-                <div className={`w-[260px] border-r px-5 py-4 flex flex-col justify-center ${
-                  hasFieldError ? "border-red-200" : "border-gray-200"
+                <div className={`w-[260px] border-r px-5 py-4 flex flex-col justify-center theme-transition ${
+                  hasFieldError ? "border-red-200" : "border-theme-grid"
                 }`}>
                   <div className="flex items-center gap-1.5">
                     <span className="text-sm font-medium text-gray-700">{v.label}</span>
@@ -206,10 +199,9 @@ export default function ExcelGrid({
                       rows={2}
                       className={`w-full rounded-lg border px-4 py-3 text-xs font-mono
                         resize-y transition-all duration-150
-                        focus:outline-none focus:ring-2 focus:ring-offset-1
                         ${hasFieldError
-                          ? "border-red-300 bg-red-50 text-red-800 focus:ring-red-400 placeholder-red-300"
-                          : "border-gray-200 bg-white text-gray-800 focus:ring-lexee-500 focus:border-lexee-500 placeholder-gray-400"
+                          ? "border-red-300 bg-red-50 text-red-800 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1 placeholder-red-300"
+                          : "border-gray-200 bg-white text-gray-800 focus-ring-theme placeholder-gray-400"
                         }`}
                     />
                   ) : (
@@ -221,15 +213,13 @@ export default function ExcelGrid({
                       placeholder={v.placeholder}
                       className={`w-full rounded-lg border px-4 py-3 text-sm
                         transition-all duration-150
-                        focus:outline-none focus:ring-2 focus:ring-offset-1
                         ${hasFieldError
-                          ? "border-red-300 bg-red-50 text-red-800 focus:ring-red-400 placeholder-red-300"
-                          : "border-gray-200 bg-white text-gray-800 focus:ring-lexee-500 focus:border-lexee-500 placeholder-gray-400"
+                          ? "border-red-300 bg-red-50 text-red-800 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1 placeholder-red-300"
+                          : "border-gray-200 bg-white text-gray-800 focus-ring-theme placeholder-gray-400"
                         }`}
                     />
                   )}
 
-                  {/* Inline error message */}
                   {hasFieldError && (
                     <div className="flex items-center gap-1.5 mt-2 animate-fade-in">
                       <svg className="w-3.5 h-3.5 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -241,24 +231,23 @@ export default function ExcelGrid({
                 </div>
               </div>
 
-              {/* Separator between rows */}
-              <div className="border-b border-gray-100 mx-4" />
+              <div className="border-b border-theme-grid mx-4 theme-transition" />
             </div>
           );
         })}
 
-        {/* Calculate button — spacious */}
+        {/* Calculate button */}
         <div className="px-6 py-6">
           <button
             onClick={handleCalculate}
             disabled={loading}
-            className={`w-full py-3.5 font-semibold rounded-xl transition-all duration-200 text-sm
+            className={`w-full py-3.5 font-semibold rounded-xl text-sm
                        flex items-center justify-center gap-2 shadow-sm
                        ${loading
                          ? "bg-gray-200 text-gray-500 cursor-wait"
                          : hasErrors
                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                           : "bg-lexee-600 hover:bg-lexee-700 active:scale-[0.99] text-white shadow-green-200"
+                           : "btn-primary text-white"
                        }`}
           >
             {loading ? (
@@ -285,13 +274,13 @@ export default function ExcelGrid({
           </div>
         )}
 
-        {/* Results — spacious */}
+        {/* Results — theme-aware */}
         {result && (
           <div className="mx-6 mb-6">
-            <div className="rounded-xl border border-green-200 overflow-hidden shadow-sm">
-              <div className="flex bg-green-50 text-xs font-semibold text-green-700 uppercase tracking-wider select-none border-b border-green-200">
-                <div className="w-12 text-center border-r border-green-200 py-3"></div>
-                <div className="w-[240px] border-r border-green-200 px-5 py-3 text-center">
+            <div className="rounded-xl result-border border overflow-hidden shadow-sm">
+              <div className="flex result-header-bg text-xs font-semibold result-text uppercase tracking-wider select-none border-b result-border theme-transition">
+                <div className="w-12 text-center border-r result-border py-3"></div>
+                <div className="w-[240px] border-r result-border px-5 py-3 text-center">
                   Resultat
                 </div>
                 <div className="flex-1 px-5 py-3 text-center">Valeur</div>
@@ -299,15 +288,15 @@ export default function ExcelGrid({
               {Object.entries(result.result).map(([key, val], i) => (
                 <div
                   key={key}
-                  className="flex border-b border-green-100 last:border-b-0 hover:bg-green-50/50 transition-colors"
+                  className="flex border-b result-border last:border-b-0 result-row-hover transition-colors"
                 >
-                  <div className="w-12 text-center text-xs text-green-400 py-4 bg-green-50/30 border-r border-green-100 select-none">
+                  <div className="w-12 text-center text-xs py-4 result-text opacity-50 border-r result-border select-none">
                     R{i + 1}
                   </div>
-                  <div className="w-[240px] border-r border-green-100 px-5 py-4 text-sm text-green-700 font-medium">
+                  <div className="w-[240px] border-r result-border px-5 py-4 text-sm result-text font-medium">
                     {key}
                   </div>
-                  <div className="flex-1 px-5 py-4 text-sm text-green-800 font-semibold font-mono">
+                  <div className="flex-1 px-5 py-4 text-sm result-text font-semibold font-mono">
                     {typeof val === "object" ? JSON.stringify(val, null, 1) : String(val)}
                   </div>
                 </div>

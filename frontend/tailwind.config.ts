@@ -19,6 +19,7 @@ const config: Config = {
       animation: {
         "fade-in": "fadeIn 0.2s ease-out",
         "tooltip-in": "tooltipIn 0.15s ease-out",
+        "swatch-pop": "swatchPop 0.2s ease-out",
       },
       keyframes: {
         fadeIn: {
@@ -28,6 +29,10 @@ const config: Config = {
         tooltipIn: {
           "0%": { opacity: "0", transform: "translateX(-4px) translateY(-50%)" },
           "100%": { opacity: "1", transform: "translateX(0) translateY(-50%)" },
+        },
+        swatchPop: {
+          "0%": { transform: "scale(0.8)", opacity: "0" },
+          "100%": { transform: "scale(1)", opacity: "1" },
         },
       },
     },

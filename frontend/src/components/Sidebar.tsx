@@ -24,7 +24,6 @@ interface SidebarProps {
   onSelect: (key: string) => void;
 }
 
-/** Tooltip component — appears on hover */
 function Tooltip({ text, children }: { text: string; children: React.ReactNode }) {
   const [show, setShow] = useState(false);
 
@@ -40,7 +39,6 @@ function Tooltip({ text, children }: { text: string; children: React.ReactNode }
                         bg-gray-900 text-white text-xs rounded-lg px-3 py-2
                         shadow-lg max-w-[240px] leading-relaxed
                         pointer-events-none animate-tooltip-in">
-          {/* Arrow */}
           <div className="absolute right-full top-1/2 -translate-y-1/2
                           border-4 border-transparent border-r-gray-900" />
           {text}
@@ -51,7 +49,6 @@ function Tooltip({ text, children }: { text: string; children: React.ReactNode }
 }
 
 export default function Sidebar({ formulas, selected, onSelect }: SidebarProps) {
-  // Group by category
   const categories: Record<string, { key: string; meta: FormulaMeta }[]> = {};
   for (const [key, meta] of Object.entries(formulas)) {
     const cat = meta.category;
@@ -60,8 +57,8 @@ export default function Sidebar({ formulas, selected, onSelect }: SidebarProps) 
   }
 
   return (
-    <aside className="w-72 bg-white border-r border-gray-200 flex flex-col h-full overflow-y-auto">
-      <div className="px-5 py-4 border-b border-gray-100">
+    <aside className="w-72 bg-theme-sidebar border-r border-theme-grid flex flex-col h-full overflow-y-auto theme-transition">
+      <div className="px-5 py-4 border-b border-theme-grid">
         <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
           Formules disponibles
         </h2>
@@ -87,14 +84,23 @@ export default function Sidebar({ formulas, selected, onSelect }: SidebarProps) 
                   <Tooltip text={meta.description}>
                     <button
                       onClick={() => onSelect(key)}
-                      className={`w-full text-left px-4 py-3 rounded-lg text-sm transition-all duration-150 ${
+                      className={`w-full text-left px-4 py-3 rounded-lg text-sm transition-all duration-150 border ${
                         selected === key
-                          ? "bg-lexee-50 text-lexee-800 font-medium border border-lexee-200 shadow-sm"
-                          : "text-gray-700 hover:bg-gray-50 border border-transparent"
+                          ? "sidebar-selected font-medium shadow-sm"
+                          : "text-gray-700 hover:bg-gray-50 border-transparent"
                       }`}
                     >
-                      <div className="font-medium text-[13px] leading-tight">{meta.name}</div>
-                      <div className="text-[11px] text-gray-400 mt-1 line-clamp-1">
+                      <div className="flex items-center gap-2">
+                        {/* Small accent dot */}
+                        <div
+                          className={`w-1.5 h-1.5 rounded-full shrink-0 theme-transition ${
+                            selected === key ? "bg-theme-primary" : "bg-gray-300"
+                          }`}
+                          style={selected === key ? { backgroundColor: "rgb(var(--color-primary))" } : {}}
+                        />
+                        <span className="font-medium text-[13px] leading-tight">{meta.name}</span>
+                      </div>
+                      <div className="text-[11px] text-gray-400 mt-1 ml-3.5 line-clamp-1">
                         {meta.description}
                       </div>
                     </button>
