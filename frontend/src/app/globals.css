@@ -2,21 +2,244 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   THEME SYSTEM — 7 themes via CSS custom properties on [data-theme]
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* 1. Emerald Eco (default) — Blanc, Vert, Noir */
+:root,
+[data-theme="emerald"] {
+  --color-primary: 22 163 74;       /* green-600 */
+  --color-primary-hover: 21 128 61; /* green-700 */
+  --color-primary-light: 240 253 244; /* green-50 */
+  --color-primary-100: 220 252 231;
+  --color-primary-200: 187 247 208;
+  --color-primary-text: 22 101 52;  /* green-800 */
+  --color-accent: 74 222 128;       /* green-400 — logo accent */
+  --color-header-bg: 17 24 39;      /* gray-900 */
+  --color-header-text: 255 255 255;
+  --color-sidebar-bg: 255 255 255;
+  --color-body-bg: 249 250 251;     /* gray-50 */
+  --color-footer-bg: 22 163 74;
+  --color-footer-text: 255 255 255;
+  --color-grid-border: 229 231 235; /* gray-200 */
+  --color-grid-header-bg: 243 244 246; /* gray-100 */
+  --color-input-focus-ring: 22 163 74;
+}
+
+/* 2. Finance Pro — Blanc, Bleu Marine, Noir */
+[data-theme="finance"] {
+  --color-primary: 30 64 175;       /* blue-800 */
+  --color-primary-hover: 29 78 216; /* blue-700 */
+  --color-primary-light: 239 246 255; /* blue-50 */
+  --color-primary-100: 219 234 254;
+  --color-primary-200: 191 219 254;
+  --color-primary-text: 30 58 138;  /* blue-900 */
+  --color-accent: 96 165 250;       /* blue-400 */
+  --color-header-bg: 15 23 42;      /* slate-900 */
+  --color-header-text: 255 255 255;
+  --color-sidebar-bg: 248 250 252;  /* slate-50 */
+  --color-body-bg: 241 245 249;     /* slate-100 */
+  --color-footer-bg: 30 64 175;
+  --color-footer-text: 255 255 255;
+  --color-grid-border: 203 213 225; /* slate-300 */
+  --color-grid-header-bg: 241 245 249;
+  --color-input-focus-ring: 30 64 175;
+}
+
+/* 3. Vibrant Creative — Blanc, Rose, Violet */
+[data-theme="vibrant"] {
+  --color-primary: 192 38 211;      /* fuchsia-600 */
+  --color-primary-hover: 162 28 175; /* fuchsia-700 */
+  --color-primary-light: 253 244 255; /* fuchsia-50 */
+  --color-primary-100: 250 232 255;
+  --color-primary-200: 245 208 254;
+  --color-primary-text: 134 25 143; /* fuchsia-800 */
+  --color-accent: 232 121 249;      /* fuchsia-400 */
+  --color-header-bg: 59 7 100;      /* purple-950 */
+  --color-header-text: 255 255 255;
+  --color-sidebar-bg: 253 244 255;
+  --color-body-bg: 250 245 255;     /* violet-50 */
+  --color-footer-bg: 192 38 211;
+  --color-footer-text: 255 255 255;
+  --color-grid-border: 233 213 255;
+  --color-grid-header-bg: 250 245 255;
+  --color-input-focus-ring: 192 38 211;
+}
+
+/* 4. Modern Energy — Blanc, Orange vif, Noir */
+[data-theme="energy"] {
+  --color-primary: 234 88 12;       /* orange-600 */
+  --color-primary-hover: 194 65 12; /* orange-700 */
+  --color-primary-light: 255 247 237; /* orange-50 */
+  --color-primary-100: 255 237 213;
+  --color-primary-200: 254 215 170;
+  --color-primary-text: 154 52 18;  /* orange-800 */
+  --color-accent: 251 146 60;       /* orange-400 */
+  --color-header-bg: 23 23 23;      /* neutral-900 */
+  --color-header-text: 255 255 255;
+  --color-sidebar-bg: 255 255 255;
+  --color-body-bg: 250 250 250;     /* neutral-50 */
+  --color-footer-bg: 234 88 12;
+  --color-footer-text: 255 255 255;
+  --color-grid-border: 229 229 229;
+  --color-grid-header-bg: 245 245 245;
+  --color-input-focus-ring: 234 88 12;
+}
+
+/* 5. Minimalist — Blanc et Noir */
+[data-theme="minimal"] {
+  --color-primary: 23 23 23;        /* neutral-900 */
+  --color-primary-hover: 38 38 38;  /* neutral-800 */
+  --color-primary-light: 250 250 250; /* neutral-50 */
+  --color-primary-100: 245 245 245;
+  --color-primary-200: 229 229 229;
+  --color-primary-text: 23 23 23;
+  --color-accent: 163 163 163;      /* neutral-400 */
+  --color-header-bg: 10 10 10;
+  --color-header-text: 255 255 255;
+  --color-sidebar-bg: 255 255 255;
+  --color-body-bg: 250 250 250;
+  --color-footer-bg: 23 23 23;
+  --color-footer-text: 255 255 255;
+  --color-grid-border: 212 212 212;
+  --color-grid-header-bg: 245 245 245;
+  --color-input-focus-ring: 23 23 23;
+}
+
+/* 6. Chic Bold — Blanc, Rose, Noir */
+[data-theme="chic"] {
+  --color-primary: 219 39 119;      /* pink-600 */
+  --color-primary-hover: 190 24 93; /* pink-700 */
+  --color-primary-light: 253 242 248; /* pink-50 */
+  --color-primary-100: 252 231 243;
+  --color-primary-200: 251 207 232;
+  --color-primary-text: 157 23 77;  /* pink-800 */
+  --color-accent: 244 114 182;      /* pink-400 */
+  --color-header-bg: 17 24 39;      /* gray-900 */
+  --color-header-text: 255 255 255;
+  --color-sidebar-bg: 255 255 255;
+  --color-body-bg: 253 242 248;
+  --color-footer-bg: 219 39 119;
+  --color-footer-text: 255 255 255;
+  --color-grid-border: 251 207 232;
+  --color-grid-header-bg: 253 242 248;
+  --color-input-focus-ring: 219 39 119;
+}
+
+/* 7. Earth Elegant — Marron, Noir */
+[data-theme="earth"] {
+  --color-primary: 120 53 15;       /* amber-900 */
+  --color-primary-hover: 146 64 14; /* amber-800 */
+  --color-primary-light: 255 251 235; /* amber-50 */
+  --color-primary-100: 254 243 199;
+  --color-primary-200: 253 230 138;
+  --color-primary-text: 69 26 3;    /* brown/amber-950 */
+  --color-accent: 217 119 6;        /* amber-600 */
+  --color-header-bg: 28 25 23;      /* stone-900 */
+  --color-header-text: 255 255 255;
+  --color-sidebar-bg: 250 250 249;  /* stone-50 */
+  --color-body-bg: 245 245 244;     /* stone-100 */
+  --color-footer-bg: 120 53 15;
+  --color-footer-text: 255 255 255;
+  --color-grid-border: 214 211 209; /* stone-300 */
+  --color-grid-header-bg: 245 245 244;
+  --color-input-focus-ring: 120 53 15;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
+  background-color: rgb(var(--color-body-bg));
+  transition: background-color 0.3s ease;
 }
 
-/* Excel-style grid cells */
-.cell-input {
-  @apply w-full h-full px-2 py-1.5 border-0 bg-transparent text-sm
-         focus:outline-none focus:ring-2 focus:ring-lexee-500 focus:ring-inset;
+/* Smooth scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
 }
 
-.cell-readonly {
-  @apply px-2 py-1.5 text-sm bg-gray-50 text-gray-600 select-none;
+/* Line clamp utility */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.cell-result {
-  @apply px-2 py-1.5 text-sm bg-green-50 text-green-800 font-semibold;
+/* ═══════════════════════════════════════════════════════════════════════════
+   THEME-AWARE UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Primary button */
+.btn-primary {
+  background-color: rgb(var(--color-primary));
+  color: rgb(var(--color-footer-text));
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.btn-primary:hover {
+  background-color: rgb(var(--color-primary-hover));
+}
+.btn-primary:active {
+  transform: scale(0.99);
+}
+
+/* Theme-aware backgrounds */
+.bg-theme-header { background-color: rgb(var(--color-header-bg)); }
+.bg-theme-sidebar { background-color: rgb(var(--color-sidebar-bg)); }
+.bg-theme-body { background-color: rgb(var(--color-body-bg)); }
+.bg-theme-footer { background-color: rgb(var(--color-footer-bg)); }
+.bg-theme-primary { background-color: rgb(var(--color-primary)); }
+.bg-theme-primary-light { background-color: rgb(var(--color-primary-light)); }
+.bg-theme-primary-100 { background-color: rgb(var(--color-primary-100)); }
+.bg-theme-grid-header { background-color: rgb(var(--color-grid-header-bg)); }
+
+/* Theme-aware text */
+.text-theme-header { color: rgb(var(--color-header-text)); }
+.text-theme-footer { color: rgb(var(--color-footer-text)); }
+.text-theme-accent { color: rgb(var(--color-accent)); }
+.text-theme-primary { color: rgb(var(--color-primary)); }
+.text-theme-primary-text { color: rgb(var(--color-primary-text)); }
+
+/* Theme-aware borders */
+.border-theme-grid { border-color: rgb(var(--color-grid-border)); }
+.border-theme-primary-200 { border-color: rgb(var(--color-primary-200)); }
+
+/* Theme-aware focus ring */
+.ring-theme-primary { --tw-ring-color: rgb(var(--color-input-focus-ring)); }
+.focus-ring-theme:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(var(--color-body-bg)), 0 0 0 4px rgb(var(--color-input-focus-ring));
+}
+
+/* Selected sidebar item */
+.sidebar-selected {
+  background-color: rgb(var(--color-primary-light));
+  color: rgb(var(--color-primary-text));
+  border-color: rgb(var(--color-primary-200));
+}
+
+/* Result panel */
+.result-header-bg { background-color: rgb(var(--color-primary-light)); }
+.result-border { border-color: rgb(var(--color-primary-200)); }
+.result-text { color: rgb(var(--color-primary-text)); }
+.result-row-hover:hover { background-color: rgb(var(--color-primary-light) / 0.5); }
+
+/* Transition for theme change */
+.theme-transition {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }

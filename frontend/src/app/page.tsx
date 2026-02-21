@@ -30,14 +30,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="min-h-screen flex items-center justify-center bg-theme-header theme-transition">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white tracking-tight">
-            <span className="text-green-400">Lex</span>ee
+            <span className="text-theme-accent theme-transition">Lex</span>ee
           </h1>
-          <p className="mt-2 text-gray-400">Calculation Engine</p>
+          <p className="mt-2 text-white/40">Calculation Engine</p>
         </div>
 
         {/* Login card */}
@@ -48,7 +48,7 @@ export default function LoginPage() {
           <div>
             <h2 className="text-xl font-semibold text-gray-900">Connexion</h2>
             <p className="mt-1 text-sm text-gray-500">
-              Entrez votre clé API pour accéder au moteur de calcul.
+              Entrez votre cle API pour acceder au moteur de calcul.
             </p>
           </div>
 
@@ -57,7 +57,7 @@ export default function LoginPage() {
               htmlFor="apiKey"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Clé API
+              Cle API
             </label>
             <input
               id="apiKey"
@@ -67,7 +67,7 @@ export default function LoginPage() {
               placeholder="lx_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
               required
               className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm
-                         focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent
+                         focus-ring-theme
                          placeholder:text-gray-400"
             />
           </div>
@@ -81,14 +81,14 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading || !apiKey.trim()}
-            className="w-full py-3 px-4 bg-green-600 hover:bg-green-700 disabled:bg-gray-300
-                       text-white font-medium rounded-lg transition-colors text-sm"
+            className="w-full py-3 px-4 btn-primary disabled:bg-gray-300 disabled:text-gray-500
+                       font-medium rounded-lg text-sm text-white"
           >
             {loading ? "Connexion..." : "Se connecter"}
           </button>
 
           <p className="text-xs text-center text-gray-400">
-            Vous n&apos;avez pas de clé ? Contactez votre administrateur.
+            Vous n&apos;avez pas de cle ? Contactez votre administrateur.
           </p>
         </form>
       </div>
