@@ -1401,6 +1401,930 @@ def formule_recherche_v(v: dict) -> dict:
     }
 
 
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║              ENGINE v4 — 50 FORMULES ENTERPRISE PACK                       ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+# ─────────────────────────────────────────────────────────────────────────────
+# AUDIT & AMORTISSEMENTS FINANCIERS
+# ─────────────────────────────────────────────────────────────────────────────
+
+# 63. INTPER (IPMT) — Intérêts d'une période
+def formule_intper(v: dict) -> dict:
+    taux = float(v["taux_periodique"]) / 100
+    periode = int(v["periode"])
+    nb_periodes = int(v["nb_periodes"])
+    va = float(v["valeur_actuelle"])
+    vf = float(v.get("valeur_future", 0))
+    type_ = int(v.get("debut_periode", 0))
+
+    if periode < 1 or periode > nb_periodes:
+        raise ValueError(f"Période {periode} hors limites (1 à {nb_periodes}).")
+
+    if taux == 0:
+        return {"interets": 0.0, "periode": periode}
+
+    # PMT
+    rn = (1 + taux) ** nb_periodes
+    pmt = -(va * rn + vf) / ((1 + taux * type_) * (rn - 1) / taux)
+
+    # FV at period-1
+    if type_ == 0:
+        fv_prev = va * (1 + taux) ** (periode - 1) + pmt * ((1 + taux) ** (periode - 1) - 1) / taux
+    else:
+        fv_prev = va * (1 + taux) ** (periode - 1) + pmt * (1 + taux) * ((1 + taux) ** (periode - 1) - 1) / taux
+
+    ipmt = fv_prev * taux
+    if type_ == 1:
+        ipmt = ipmt / (1 + taux)
+
+    return {"interets": round(ipmt, 2), "periode": periode}
+
+
+# 64. PRINCPER (PPMT) — Principal d'une période
+def formule_princper(v: dict) -> dict:
+    taux = float(v["taux_periodique"]) / 100
+    periode = int(v["periode"])
+    nb_periodes = int(v["nb_periodes"])
+    va = float(v["valeur_actuelle"])
+    vf = float(v.get("valeur_future", 0))
+    type_ = int(v.get("debut_periode", 0))
+
+    if periode < 1 or periode > nb_periodes:
+        raise ValueError(f"Période {periode} hors limites (1 à {nb_periodes}).")
+
+    if taux == 0:
+        pmt = -(va + vf) / nb_periodes
+        return {"principal": round(pmt, 2), "periode": periode}
+
+    rn = (1 + taux) ** nb_periodes
+    pmt = -(va * rn + vf) / ((1 + taux * type_) * (rn - 1) / taux)
+
+    ipmt_result = formule_intper(v)
+    ppmt = pmt - ipmt_result["interets"]
+
+    return {"principal": round(ppmt, 2), "periode": periode}
+
+
+# 65. CUMUL.INTER (CUMIPMT)
+def formule_cumul_inter(v: dict) -> dict:
+    taux = float(v["taux_periodique"]) / 100
+    nb_periodes = int(v["nb_periodes"])
+    va = float(v["valeur_actuelle"])
+    debut = int(v["periode_debut"])
+    fin = int(v["periode_fin"])
+
+    if debut < 1 or fin > nb_periodes or debut > fin:
+        raise ValueError(f"Plage [{debut}, {fin}] invalide.")
+
+    total = 0.0
+    for p in range(debut, fin + 1):
+        r = formule_intper({
+            "taux_periodique": v["taux_periodique"],
+            "periode": p,
+            "nb_periodes": nb_periodes,
+            "valeur_actuelle": va,
+        })
+        total += r["interets"]
+
+    return {"cumul_interets": round(total, 2), "periodes": f"{debut}-{fin}"}
+
+
+# 66. CUMUL.PRINC (CUMPRINC)
+def formule_cumul_princ(v: dict) -> dict:
+    taux = float(v["taux_periodique"]) / 100
+    nb_periodes = int(v["nb_periodes"])
+    va = float(v["valeur_actuelle"])
+    debut = int(v["periode_debut"])
+    fin = int(v["periode_fin"])
+
+    if debut < 1 or fin > nb_periodes or debut > fin:
+        raise ValueError(f"Plage [{debut}, {fin}] invalide.")
+
+    total = 0.0
+    for p in range(debut, fin + 1):
+        r = formule_princper({
+            "taux_periodique": v["taux_periodique"],
+            "periode": p,
+            "nb_periodes": nb_periodes,
+            "valeur_actuelle": va,
+        })
+        total += r["principal"]
+
+    return {"cumul_principal": round(total, 2), "periodes": f"{debut}-{fin}"}
+
+
+# 67. AMORL (SLN — amortissement linéaire)
+def formule_amorl(v: dict) -> dict:
+    cout = float(v["cout"])
+    residuel = float(v.get("valeur_residuelle", 0))
+    duree = int(v["duree_vie"])
+
+    if duree <= 0:
+        raise ValueError("Durée de vie doit être > 0.")
+
+    sln = (cout - residuel) / duree
+    return {"amortissement_annuel": round(sln, 2), "duree": duree}
+
+
+# 68. AMORDEGR (DB — amortissement dégressif)
+def formule_amordegr(v: dict) -> dict:
+    cout = float(v["cout"])
+    residuel = float(v.get("valeur_residuelle", 0))
+    duree = int(v["duree_vie"])
+    periode = int(v["periode"])
+
+    if duree <= 0 or periode < 1 or periode > duree:
+        raise ValueError("Paramètres hors limites.")
+
+    taux = round(1 - (residuel / cout) ** (1 / duree), 3) if residuel > 0 else 1 / duree
+    valeur = cout
+    amort = 0.0
+    for p in range(1, periode + 1):
+        amort = round(valeur * taux, 2)
+        valeur -= amort
+
+    return {"amortissement": amort, "valeur_nette": round(valeur, 2), "taux": round(taux, 4)}
+
+
+# 69. SYD (amortissement dégressif à taux décroissant)
+def formule_syd(v: dict) -> dict:
+    cout = float(v["cout"])
+    residuel = float(v.get("valeur_residuelle", 0))
+    duree = int(v["duree_vie"])
+    periode = int(v["periode"])
+
+    if duree <= 0 or periode < 1 or periode > duree:
+        raise ValueError("Paramètres hors limites.")
+
+    somme = duree * (duree + 1) / 2
+    amort = (cout - residuel) * (duree - periode + 1) / somme
+
+    return {"amortissement": round(amort, 2), "periode": periode}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# INGÉNIERIE & MATRICES
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _to_matrix(data) -> list[list[float]]:
+    """Convertit des données en matrice 2D de float."""
+    if not data:
+        raise ValueError("Matrice vide.")
+    if not isinstance(data[0], list):
+        return [[float(x) for x in data]]
+    return [[float(x) for x in row] for row in data]
+
+
+# 70. TRANSPOSE
+def formule_transpose(v: dict) -> dict:
+    m = _to_matrix(v["matrice"])
+    rows, cols = len(m), len(m[0])
+    result = [[m[r][c] for r in range(rows)] for c in range(cols)]
+    return {"resultat": result, "dimensions": f"{cols}x{rows}"}
+
+
+# 71. PRODUITMAT (MMULT)
+def formule_produitmat(v: dict) -> dict:
+    a = _to_matrix(v["matrice_a"])
+    b = _to_matrix(v["matrice_b"])
+    ra, ca = len(a), len(a[0])
+    rb, cb = len(b), len(b[0])
+
+    if ca != rb:
+        raise ValueError(f"Dimensions incompatibles : {ra}x{ca} * {rb}x{cb}")
+
+    if ra * cb > 10000:
+        raise ValueError("Résultat trop grand (max 10 000 cellules).")
+
+    result = [[sum(a[i][k] * b[k][j] for k in range(ca)) for j in range(cb)] for i in range(ra)]
+    result = [[round(x, 8) for x in row] for row in result]
+    return {"resultat": result, "dimensions": f"{ra}x{cb}"}
+
+
+# 72. MATRICE.INVERSE (MINVERSE)
+def formule_matrice_inverse(v: dict) -> dict:
+    m = _to_matrix(v["matrice"])
+    n = len(m)
+    if any(len(row) != n for row in m):
+        raise ValueError("La matrice doit être carrée.")
+    if n > 50:
+        raise ValueError("Matrice trop grande (max 50x50).")
+
+    # Gauss-Jordan
+    aug = [row[:] + [1.0 if i == j else 0.0 for j in range(n)] for i, row in enumerate(m)]
+
+    for col in range(n):
+        max_row = max(range(col, n), key=lambda r: abs(aug[r][col]))
+        if abs(aug[max_row][col]) < 1e-12:
+            raise ValueError("Matrice singulière (non inversible).")
+        aug[col], aug[max_row] = aug[max_row], aug[col]
+        pivot = aug[col][col]
+        aug[col] = [x / pivot for x in aug[col]]
+        for row in range(n):
+            if row != col:
+                factor = aug[row][col]
+                aug[row] = [aug[row][j] - factor * aug[col][j] for j in range(2 * n)]
+
+    inverse = [[round(aug[i][n + j], 8) for j in range(n)] for i in range(n)]
+    return {"resultat": inverse, "dimensions": f"{n}x{n}"}
+
+
+# 73. DETERMINANT.MAT (MDETERM)
+def formule_determinant(v: dict) -> dict:
+    m = _to_matrix(v["matrice"])
+    n = len(m)
+    if any(len(row) != n for row in m):
+        raise ValueError("La matrice doit être carrée.")
+    if n > 50:
+        raise ValueError("Matrice trop grande (max 50x50).")
+
+    # LU-style with row swaps
+    mat = [row[:] for row in m]
+    det = 1.0
+    for col in range(n):
+        max_row = max(range(col, n), key=lambda r: abs(mat[r][col]))
+        if abs(mat[max_row][col]) < 1e-12:
+            return {"determinant": 0.0}
+        if max_row != col:
+            mat[col], mat[max_row] = mat[max_row], mat[col]
+            det *= -1
+        det *= mat[col][col]
+        for row in range(col + 1, n):
+            factor = mat[row][col] / mat[col][col]
+            for j in range(col + 1, n):
+                mat[row][j] -= factor * mat[col][j]
+
+    return {"determinant": round(det, 8)}
+
+
+# 74. FLATTEN (fusion de matrices)
+def formule_flatten(v: dict) -> dict:
+    data = v["donnees"]
+
+    def _flat(item):
+        if isinstance(item, list):
+            for sub in item:
+                yield from _flat(sub)
+        else:
+            yield item
+
+    result = list(_flat(data))
+    return {"resultat": result, "total": len(result)}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STATISTIQUES DE DÉCISION
+# ─────────────────────────────────────────────────────────────────────────────
+
+# 75. COEFFICIENT.CORRELATION (CORREL)
+def formule_correlation(v: dict) -> dict:
+    x = [float(a) for a in v["x"]]
+    y = [float(a) for a in v["y"]]
+    n = len(x)
+    if n != len(y) or n < 2:
+        raise ValueError("x et y doivent avoir la même taille (>= 2).")
+
+    mx, my = sum(x) / n, sum(y) / n
+    sxy = sum((xi - mx) * (yi - my) for xi, yi in zip(x, y))
+    sxx = sum((xi - mx) ** 2 for xi in x)
+    syy = sum((yi - my) ** 2 for yi in y)
+
+    if sxx == 0 or syy == 0:
+        raise ValueError("Variance nulle — corrélation indéfinie.")
+
+    r = sxy / math.sqrt(sxx * syy)
+    return {"correlation": round(r, 8), "r_carre": round(r ** 2, 8), "n": n}
+
+
+# 76. PENTE (SLOPE)
+def formule_pente(v: dict) -> dict:
+    x = [float(a) for a in v["x"]]
+    y = [float(a) for a in v["y"]]
+    n = len(x)
+    if n != len(y) or n < 2:
+        raise ValueError("x et y doivent avoir la même taille (>= 2).")
+
+    mx, my = sum(x) / n, sum(y) / n
+    sxy = sum((xi - mx) * (yi - my) for xi, yi in zip(x, y))
+    sxx = sum((xi - mx) ** 2 for xi in x)
+
+    if sxx == 0:
+        raise ValueError("Variance x nulle.")
+
+    return {"pente": round(sxy / sxx, 8)}
+
+
+# 77. ORDONNEE.ORIGINE (INTERCEPT)
+def formule_ordonnee_origine(v: dict) -> dict:
+    x = [float(a) for a in v["x"]]
+    y = [float(a) for a in v["y"]]
+    n = len(x)
+    if n != len(y) or n < 2:
+        raise ValueError("x et y doivent avoir la même taille (>= 2).")
+
+    mx, my = sum(x) / n, sum(y) / n
+    sxy = sum((xi - mx) * (yi - my) for xi, yi in zip(x, y))
+    sxx = sum((xi - mx) ** 2 for xi in x)
+
+    if sxx == 0:
+        raise ValueError("Variance x nulle.")
+
+    pente = sxy / sxx
+    intercept = my - pente * mx
+    return {"ordonnee_origine": round(intercept, 8)}
+
+
+# 78. ECART.TYPE.P (population)
+def formule_ecart_type_p(v: dict) -> dict:
+    vals = [float(x) for x in v["valeurs"]]
+    n = len(vals)
+    if n == 0:
+        raise ValueError("Liste vide.")
+    moy = sum(vals) / n
+    variance = sum((x - moy) ** 2 for x in vals) / n
+    return {"ecart_type": round(math.sqrt(variance), 8), "variance": round(variance, 8), "n": n}
+
+
+# 79. ECART.TYPE.S (échantillon)
+def formule_ecart_type_s(v: dict) -> dict:
+    vals = [float(x) for x in v["valeurs"]]
+    n = len(vals)
+    if n < 2:
+        raise ValueError("Au moins 2 valeurs requises.")
+    moy = sum(vals) / n
+    variance = sum((x - moy) ** 2 for x in vals) / (n - 1)
+    return {"ecart_type": round(math.sqrt(variance), 8), "variance": round(variance, 8), "n": n}
+
+
+# 80. QUARTILE
+def formule_quartile(v: dict) -> dict:
+    vals = sorted(float(x) for x in v["valeurs"])
+    n = len(vals)
+    if n == 0:
+        raise ValueError("Liste vide.")
+    q = int(v.get("quartile", 2))
+    if q < 0 or q > 4:
+        raise ValueError("Quartile doit être entre 0 et 4.")
+
+    k = q * (n - 1) / 4
+    f = int(k)
+    c = k - f
+    if f + 1 < n:
+        result = vals[f] + c * (vals[f + 1] - vals[f])
+    else:
+        result = vals[f]
+
+    labels = {0: "Min", 1: "Q1", 2: "Médiane", 3: "Q3", 4: "Max"}
+    return {"valeur": round(result, 8), "quartile": labels.get(q, f"Q{q}")}
+
+
+# 81. PERCENTILE
+def formule_percentile(v: dict) -> dict:
+    vals = sorted(float(x) for x in v["valeurs"])
+    n = len(vals)
+    if n == 0:
+        raise ValueError("Liste vide.")
+    k = float(v["k"])
+    if k < 0 or k > 1:
+        raise ValueError("k doit être entre 0 et 1.")
+
+    pos = k * (n - 1)
+    f = int(pos)
+    c = pos - f
+    if f + 1 < n:
+        result = vals[f] + c * (vals[f + 1] - vals[f])
+    else:
+        result = vals[f]
+
+    return {"valeur": round(result, 8), "percentile": round(k * 100, 1)}
+
+
+# 82. MOYENNE.REDUITE (TRIMMEAN)
+def formule_moyenne_reduite(v: dict) -> dict:
+    vals = sorted(float(x) for x in v["valeurs"])
+    n = len(vals)
+    if n == 0:
+        raise ValueError("Liste vide.")
+    pct = float(v.get("pourcentage", 10)) / 100
+    if pct < 0 or pct >= 1:
+        raise ValueError("Pourcentage doit être entre 0 et 100.")
+
+    trim_count = int(n * pct / 2)
+    trimmed = vals[trim_count:n - trim_count] if trim_count > 0 else vals
+    if not trimmed:
+        raise ValueError("Trop de valeurs éliminées.")
+
+    return {
+        "moyenne_reduite": round(sum(trimmed) / len(trimmed), 8),
+        "valeurs_gardees": len(trimmed),
+        "valeurs_eliminees": n - len(trimmed),
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# TRAITEMENT DE TEXTE INDUSTRIEL
+# ─────────────────────────────────────────────────────────────────────────────
+
+# 83. REPT
+def formule_rept(v: dict) -> dict:
+    texte = str(v["texte"])
+    nb = int(v["nombre"])
+    if nb < 0 or nb > 10000:
+        raise ValueError("Nombre de répétitions entre 0 et 10 000.")
+    return {"resultat": texte * nb}
+
+
+# 84. CHERCHE (SEARCH — insensible à la casse)
+def formule_cherche(v: dict) -> dict:
+    cherche = str(v["texte_cherche"]).lower()
+    dans = str(v["texte_source"]).lower()
+    debut = int(v.get("position_debut", 1)) - 1
+
+    pos = dans.find(cherche, debut)
+    if pos == -1:
+        raise ValueError(f"'{v['texte_cherche']}' introuvable.")
+
+    return {"position": pos + 1, "trouve": True}
+
+
+# 85. REMPLACER (REPLACE)
+def formule_remplacer(v: dict) -> dict:
+    texte = str(v["texte"])
+    debut = int(v["position_debut"]) - 1
+    nb_car = int(v["nb_caracteres"])
+    nouveau = str(v["nouveau_texte"])
+
+    resultat = texte[:debut] + nouveau + texte[debut + nb_car:]
+    return {"resultat": resultat}
+
+
+# 86. TEXTE.JOIN (TEXTJOIN)
+def formule_texte_join(v: dict) -> dict:
+    delimiteur = str(v.get("delimiteur", ","))
+    ignorer_vides = v.get("ignorer_vides", True)
+    textes = v["textes"]
+
+    if not isinstance(textes, list):
+        textes = [textes]
+
+    if ignorer_vides:
+        textes = [str(t) for t in textes if t is not None and str(t).strip() != ""]
+    else:
+        textes = [str(t) if t is not None else "" for t in textes]
+
+    return {"resultat": delimiteur.join(textes)}
+
+
+# 87. VALEUR (VALUE)
+def formule_valeur(v: dict) -> dict:
+    texte = str(v["texte"]).strip()
+    cleaned = texte.replace(" ", "").replace("\u00a0", "")
+    for sym in ("€", "$", "£", "¥", "%"):
+        cleaned = cleaned.replace(sym, "")
+
+    # Gestion séparateur décimal français
+    if "," in cleaned and "." not in cleaned:
+        cleaned = cleaned.replace(",", ".")
+
+    nombre = float(cleaned)
+    if "%" in texte:
+        nombre /= 100
+
+    return {"nombre": nombre}
+
+
+# 88. CTXT (FIXED)
+def formule_ctxt(v: dict) -> dict:
+    nombre = float(v["nombre"])
+    decimales = int(v.get("decimales", 2))
+    pas_separateur = v.get("pas_separateur", False)
+
+    formatted = f"{nombre:,.{decimales}f}" if not pas_separateur else f"{nombre:.{decimales}f}"
+    return {"resultat": formatted}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# FONCTIONS DE BASE DE DONNÉES (D-Functions)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _db_filter(donnees: list[dict], criteres: list[dict]) -> list[dict]:
+    """Filtre des enregistrements selon des critères DB."""
+    result = []
+    for row in donnees:
+        match = True
+        for c in criteres:
+            col = c["colonne"]
+            val = c["valeur"]
+            cell = row.get(col)
+            if cell is None:
+                match = False
+                break
+            if str(cell).lower() != str(val).lower():
+                match = False
+                break
+        if match:
+            result.append(row)
+    return result
+
+
+# 89. BDSOMME (DSUM)
+def formule_bdsomme(v: dict) -> dict:
+    donnees = v["donnees"]
+    champ = str(v["champ"])
+    criteres = v["criteres"]
+
+    filtre = _db_filter(donnees, criteres)
+    total = sum(float(row[champ]) for row in filtre if champ in row)
+    return {"somme": round(total, 8), "lignes": len(filtre)}
+
+
+# 90. BDNB (DCOUNT)
+def formule_bdnb(v: dict) -> dict:
+    donnees = v["donnees"]
+    champ = str(v["champ"])
+    criteres = v["criteres"]
+
+    filtre = _db_filter(donnees, criteres)
+    count = sum(1 for row in filtre if champ in row and row[champ] is not None)
+    return {"count": count}
+
+
+# 91. BDMAX
+def formule_bdmax(v: dict) -> dict:
+    donnees = v["donnees"]
+    champ = str(v["champ"])
+    criteres = v["criteres"]
+
+    filtre = _db_filter(donnees, criteres)
+    vals = [float(row[champ]) for row in filtre if champ in row]
+    if not vals:
+        raise ValueError("Aucune donnée correspondante.")
+    return {"max": max(vals), "lignes": len(vals)}
+
+
+# 92. BDMIN
+def formule_bdmin(v: dict) -> dict:
+    donnees = v["donnees"]
+    champ = str(v["champ"])
+    criteres = v["criteres"]
+
+    filtre = _db_filter(donnees, criteres)
+    vals = [float(row[champ]) for row in filtre if champ in row]
+    if not vals:
+        raise ValueError("Aucune donnée correspondante.")
+    return {"min": min(vals), "lignes": len(vals)}
+
+
+# 93. BDMOYENNE
+def formule_bdmoyenne(v: dict) -> dict:
+    donnees = v["donnees"]
+    champ = str(v["champ"])
+    criteres = v["criteres"]
+
+    filtre = _db_filter(donnees, criteres)
+    vals = [float(row[champ]) for row in filtre if champ in row]
+    if not vals:
+        raise ValueError("Aucune donnée correspondante.")
+    return {"moyenne": round(sum(vals) / len(vals), 8), "lignes": len(vals)}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MANIPULATION AVANCÉE
+# ─────────────────────────────────────────────────────────────────────────────
+
+# 94. LAMBDA_RECURSIVE
+def formule_lambda_recursive(v: dict) -> dict:
+    """Lambda récursive limitée : applique une expression de manière récursive N fois."""
+    expression = str(v["expression"])
+    valeur_init = float(v["valeur_initiale"])
+    iterations = int(v.get("iterations", 10))
+
+    if iterations < 1 or iterations > 1000:
+        raise ValueError("Itérations entre 1 et 1 000.")
+
+    # Sécurité : whitelist de tokens
+    import math as _math
+    safe_names = {"x", "abs", "round", "min", "max", "sqrt", "pow", "log", "log10", "pi", "e"}
+    tokens = re.findall(r'[a-zA-Z_]\w*', expression)
+    for token in tokens:
+        if token not in safe_names:
+            raise ValueError(f"Nom non autorisé : '{token}'")
+
+    safe_globals = {"__builtins__": {}, "abs": abs, "round": round, "min": min, "max": max,
+                    "sqrt": _math.sqrt, "pow": pow, "log": _math.log, "log10": _math.log10,
+                    "pi": _math.pi, "e": _math.e}
+
+    x = valeur_init
+    resultats = [x]
+    for _ in range(iterations):
+        x = eval(expression, safe_globals, {"x": x})  # noqa: S307
+        if isinstance(x, float):
+            x = round(x, 10)
+        resultats.append(x)
+
+    return {"resultat_final": resultats[-1], "iterations": iterations, "historique": resultats[-5:]}
+
+
+# 95. LET_ADVANCED (optimisation de variables locales multiples)
+def formule_let_advanced(v: dict) -> dict:
+    variables = v["variables"]  # {"a": 10, "b": 20, ...}
+    etapes = v["etapes"]  # [{"nom": "c", "expression": "a + b"}, ...]
+    expression_finale = str(v["expression_finale"])
+
+    import math as _math
+    safe_globals = {"__builtins__": {}, "abs": abs, "round": round, "min": min, "max": max,
+                    "sum": sum, "pow": pow, "sqrt": _math.sqrt, "log": _math.log,
+                    "pi": _math.pi, "e": _math.e}
+
+    context = {k: float(val) for k, val in variables.items()}
+
+    for etape in etapes:
+        nom = str(etape["nom"])
+        expr = str(etape["expression"])
+        tokens = re.findall(r'[a-zA-Z_]\w*', expr)
+        allowed = set(context.keys()) | {"abs", "round", "min", "max", "sum", "pow", "sqrt", "log", "pi", "e"}
+        for t in tokens:
+            if t not in allowed:
+                raise ValueError(f"Nom non autorisé dans étape : '{t}'")
+        context[nom] = eval(expr, safe_globals, context)  # noqa: S307
+
+    tokens = re.findall(r'[a-zA-Z_]\w*', expression_finale)
+    allowed = set(context.keys()) | {"abs", "round", "min", "max", "sum", "pow", "sqrt", "log", "pi", "e"}
+    for t in tokens:
+        if t not in allowed:
+            raise ValueError(f"Nom non autorisé dans expression finale : '{t}'")
+
+    resultat = eval(expression_finale, safe_globals, context)  # noqa: S307
+    return {
+        "resultat": round(resultat, 8) if isinstance(resultat, float) else resultat,
+        "variables_calculees": {k: round(v, 8) if isinstance(v, float) else v for k, v in context.items()},
+    }
+
+
+# 96. CHOOSE (CHOISIR)
+def formule_choose(v: dict) -> dict:
+    index = int(v["index"])
+    valeurs = v["valeurs"]
+    if index < 1 or index > len(valeurs):
+        raise ValueError(f"Index {index} hors limites (1 à {len(valeurs)}).")
+    return {"resultat": valeurs[index - 1], "index": index}
+
+
+# 97. BYROW
+def formule_byrow(v: dict) -> dict:
+    matrice = v["matrice"]
+    operation = str(v["operation"]).lower()
+
+    ops = {
+        "somme": lambda row: sum(float(x) for x in row),
+        "moyenne": lambda row: sum(float(x) for x in row) / len(row),
+        "max": lambda row: max(float(x) for x in row),
+        "min": lambda row: min(float(x) for x in row),
+        "count": lambda row: len(row),
+        "produit": lambda row: math.prod(float(x) for x in row),
+    }
+    if operation not in ops:
+        raise ValueError(f"Opération inconnue : {operation}. Disponibles : {list(ops.keys())}")
+
+    result = [round(ops[operation](row), 8) for row in matrice]
+    return {"resultat": result, "lignes": len(result)}
+
+
+# 98. BYCOL
+def formule_bycol(v: dict) -> dict:
+    matrice = v["matrice"]
+    operation = str(v["operation"]).lower()
+
+    if not matrice:
+        raise ValueError("Matrice vide.")
+
+    nb_cols = len(matrice[0])
+
+    ops = {
+        "somme": lambda col: sum(col),
+        "moyenne": lambda col: sum(col) / len(col),
+        "max": lambda col: max(col),
+        "min": lambda col: min(col),
+        "count": lambda col: len(col),
+    }
+    if operation not in ops:
+        raise ValueError(f"Opération inconnue : {operation}. Disponibles : {list(ops.keys())}")
+
+    result = []
+    for c in range(nb_cols):
+        col_vals = [float(matrice[r][c]) for r in range(len(matrice))]
+        result.append(round(ops[operation](col_vals), 8))
+
+    return {"resultat": result, "colonnes": nb_cols}
+
+
+# 99. MAKEARRAY
+def formule_makearray(v: dict) -> dict:
+    lignes = int(v["lignes"])
+    colonnes = int(v["colonnes"])
+    expression = str(v.get("expression", "row * colonnes + col + 1"))
+
+    if lignes * colonnes > 100000:
+        raise ValueError("Tableau trop grand (max 100 000 cellules).")
+
+    import math as _math
+    safe_names = {"row", "col", "lignes", "colonnes", "abs", "round", "min", "max",
+                  "sqrt", "pow", "log", "pi", "e"}
+    tokens = re.findall(r'[a-zA-Z_]\w*', expression)
+    for t in tokens:
+        if t not in safe_names:
+            raise ValueError(f"Nom non autorisé : '{t}'")
+
+    safe_globals = {"__builtins__": {}, "abs": abs, "round": round, "min": min, "max": max,
+                    "sqrt": _math.sqrt, "pow": pow, "log": _math.log,
+                    "pi": _math.pi, "e": _math.e}
+
+    result = []
+    for r in range(lignes):
+        row = []
+        for c in range(colonnes):
+            val = eval(expression, safe_globals, {"row": r, "col": c, "lignes": lignes, "colonnes": colonnes})  # noqa: S307
+            row.append(round(val, 8) if isinstance(val, float) else val)
+        result.append(row)
+
+    return {"resultat": result, "dimensions": f"{lignes}x{colonnes}"}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# UTILITAIRES DATA
+# ─────────────────────────────────────────────────────────────────────────────
+
+# 100. ESTERREUR
+def formule_esterreur(v: dict) -> dict:
+    valeurs = v["valeurs"]
+    resultats = []
+    for val in valeurs:
+        try:
+            float(val)
+            resultats.append(False)
+        except (ValueError, TypeError):
+            is_err = val is None or str(val).strip().upper() in (
+                "#N/A", "#REF!", "#VALUE!", "#DIV/0!", "#NAME?", "#NULL!", "#NUM!", "ERR", "ERROR", "ERREUR"
+            )
+            resultats.append(is_err)
+    return {"resultats": resultats, "nb_erreurs": sum(resultats)}
+
+
+# 101. ESTNA
+def formule_estna(v: dict) -> dict:
+    valeurs = v["valeurs"]
+    resultats = []
+    for val in valeurs:
+        is_na = val is None or str(val).strip().upper() in ("#N/A", "NA", "N/A")
+        resultats.append(is_na)
+    return {"resultats": resultats, "nb_na": sum(resultats)}
+
+
+# 102. TYPE
+def formule_type_val(v: dict) -> dict:
+    valeur = v["valeur"]
+    if valeur is None:
+        return {"type": 1, "type_nom": "Nombre", "note": "null traité comme 0"}
+    if isinstance(valeur, bool):
+        return {"type": 4, "type_nom": "Booléen"}
+    try:
+        float(valeur)
+        return {"type": 1, "type_nom": "Nombre"}
+    except (ValueError, TypeError):
+        pass
+    if isinstance(valeur, str):
+        if valeur.strip().upper() in ("#N/A", "#REF!", "#VALUE!", "#DIV/0!", "#NAME?"):
+            return {"type": 16, "type_nom": "Erreur"}
+        return {"type": 2, "type_nom": "Texte"}
+    if isinstance(valeur, list):
+        return {"type": 64, "type_nom": "Tableau"}
+    return {"type": 2, "type_nom": "Texte"}
+
+
+# 103. COORDONNEES (ADDRESS)
+def formule_coordonnees(v: dict) -> dict:
+    ligne = int(v["ligne"])
+    colonne = int(v["colonne"])
+    absolu = int(v.get("type_reference", 1))
+
+    if colonne < 1 or colonne > 16384:
+        raise ValueError("Colonne entre 1 et 16384.")
+    if ligne < 1 or ligne > 1048576:
+        raise ValueError("Ligne entre 1 et 1048576.")
+
+    # Convertir colonne en lettres
+    col_str = ""
+    c = colonne
+    while c > 0:
+        c, remainder = divmod(c - 1, 26)
+        col_str = chr(65 + remainder) + col_str
+
+    if absolu == 1:
+        return {"adresse": f"${col_str}${ligne}"}
+    elif absolu == 2:
+        return {"adresse": f"{col_str}${ligne}"}
+    elif absolu == 3:
+        return {"adresse": f"${col_str}{ligne}"}
+    else:
+        return {"adresse": f"{col_str}{ligne}"}
+
+
+# 104. INDIRECT.EXT (simulé pour mapping)
+def formule_indirect_ext(v: dict) -> dict:
+    reference = str(v["reference"])
+    donnees = v["donnees"]  # dict ou liste
+
+    parts = reference.replace("[", ".").replace("]", "").split(".")
+    current = donnees
+    for part in parts:
+        if isinstance(current, dict):
+            if part in current:
+                current = current[part]
+            else:
+                raise ValueError(f"Clé '{part}' introuvable.")
+        elif isinstance(current, list):
+            try:
+                idx = int(part)
+                current = current[idx]
+            except (ValueError, IndexError):
+                raise ValueError(f"Index '{part}' invalide.")
+        else:
+            raise ValueError(f"Navigation impossible à '{part}'.")
+
+    return {"resultat": current}
+
+
+# 105–112: Formules supplémentaires pour compléter les 50
+
+# 105. NBCAR (LEN)
+def formule_nbcar(v: dict) -> dict:
+    texte = str(v["texte"])
+    return {"longueur": len(texte)}
+
+
+# 106. MAJUSCULE (UPPER)
+def formule_majuscule(v: dict) -> dict:
+    texte = str(v["texte"])
+    return {"resultat": texte.upper()}
+
+
+# 107. MINUSCULE (LOWER)
+def formule_minuscule(v: dict) -> dict:
+    texte = str(v["texte"])
+    return {"resultat": texte.lower()}
+
+
+# 108. CNUM (N)
+def formule_cnum(v: dict) -> dict:
+    valeur = v["valeur"]
+    if isinstance(valeur, bool):
+        return {"nombre": 1 if valeur else 0}
+    try:
+        return {"nombre": float(valeur)}
+    except (ValueError, TypeError):
+        return {"nombre": 0}
+
+
+# 109. ABS
+def formule_abs_val(v: dict) -> dict:
+    nombre = float(v["nombre"])
+    return {"resultat": abs(nombre)}
+
+
+# 110. MOD
+def formule_mod(v: dict) -> dict:
+    nombre = float(v["nombre"])
+    diviseur = float(v["diviseur"])
+    if diviseur == 0:
+        raise ValueError("Division par zéro.")
+    return {"resultat": round(nombre % diviseur, 8)}
+
+
+# 111. PUISSANCE (POWER)
+def formule_puissance(v: dict) -> dict:
+    base = float(v["base"])
+    exposant = float(v["exposant"])
+    return {"resultat": round(base ** exposant, 8)}
+
+
+# 112. PLAFOND / PLANCHER (CEILING / FLOOR avec incrément)
+def formule_plafond_plancher(v: dict) -> dict:
+    nombre = float(v["nombre"])
+    increment = float(v.get("increment", 1))
+
+    if increment == 0:
+        raise ValueError("Incrément ne peut pas être 0.")
+
+    plafond = math.ceil(nombre / increment) * increment
+    plancher = math.floor(nombre / increment) * increment
+
+    return {
+        "plafond": round(plafond, 8),
+        "plancher": round(plancher, 8),
+    }
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # REGISTRE DES FORMULES (clé → fonction)
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1479,6 +2403,63 @@ FORMULAS: dict[str, callable] = {
     "assemb_h": formule_assemb_h,
     "valeurnomb": formule_valeurnomb,
     "recherche_v": formule_recherche_v,
+    # v4 — Audit & Amortissements
+    "intper": formule_intper,
+    "princper": formule_princper,
+    "cumul_inter": formule_cumul_inter,
+    "cumul_princ": formule_cumul_princ,
+    "amorl": formule_amorl,
+    "amordegr": formule_amordegr,
+    "syd": formule_syd,
+    # v4 — Ingénierie & Matrices
+    "transpose": formule_transpose,
+    "produitmat": formule_produitmat,
+    "matrice_inverse": formule_matrice_inverse,
+    "determinant": formule_determinant,
+    "flatten": formule_flatten,
+    # v4 — Statistiques de Décision
+    "correlation": formule_correlation,
+    "pente": formule_pente,
+    "ordonnee_origine": formule_ordonnee_origine,
+    "ecart_type_p": formule_ecart_type_p,
+    "ecart_type_s": formule_ecart_type_s,
+    "quartile": formule_quartile,
+    "percentile": formule_percentile,
+    "moyenne_reduite": formule_moyenne_reduite,
+    # v4 — Texte Industriel
+    "rept": formule_rept,
+    "cherche": formule_cherche,
+    "remplacer_texte": formule_remplacer,
+    "texte_join": formule_texte_join,
+    "valeur_texte": formule_valeur,
+    "ctxt": formule_ctxt,
+    # v4 — D-Functions
+    "bdsomme": formule_bdsomme,
+    "bdnb": formule_bdnb,
+    "bdmax": formule_bdmax,
+    "bdmin": formule_bdmin,
+    "bdmoyenne": formule_bdmoyenne,
+    # v4 — Manipulation Avancée
+    "lambda_recursive": formule_lambda_recursive,
+    "let_advanced": formule_let_advanced,
+    "choose": formule_choose,
+    "byrow": formule_byrow,
+    "bycol": formule_bycol,
+    "makearray": formule_makearray,
+    # v4 — Utilitaires Data
+    "esterreur": formule_esterreur,
+    "estna": formule_estna,
+    "type_val": formule_type_val,
+    "coordonnees": formule_coordonnees,
+    "indirect_ext": formule_indirect_ext,
+    "nbcar": formule_nbcar,
+    "majuscule": formule_majuscule,
+    "minuscule": formule_minuscule,
+    "cnum": formule_cnum,
+    "abs_val": formule_abs_val,
+    "mod_val": formule_mod,
+    "puissance": formule_puissance,
+    "plafond_plancher": formule_plafond_plancher,
 }
 
 
@@ -2288,6 +3269,438 @@ FORMULA_META: dict[str, dict] = {
              "required": True, "placeholder": "10, 20, 50, 80, 100"},
             {"name": "vecteur_retour", "label": "Vecteur de retour", "type": "json",
              "required": True, "placeholder": '["F","E","D","C","B"]'},
+        ],
+    },
+
+    # ── v4 — Audit & Amortissements ───────────────────────────────────────
+    "intper": {
+        "name": "INTPER (IPMT)", "description": "Intérêts payés pour une période spécifique d'un emprunt",
+        "category": "Audit Financier",
+        "variables": [
+            {"name": "taux_periodique", "label": "Taux par période (%)", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "periode", "label": "Période", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "nb_periodes", "label": "Nombre de périodes", "type": "number", "required": True, "placeholder": "240"},
+            {"name": "valeur_actuelle", "label": "Montant emprunté (€)", "type": "number", "required": True, "placeholder": "200000"},
+            {"name": "valeur_future", "label": "Valeur future (€)", "type": "number", "required": False, "placeholder": "0"},
+            {"name": "debut_periode", "label": "Début de période (0/1)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "princper": {
+        "name": "PRINCPER (PPMT)", "description": "Part du principal remboursé pour une période spécifique",
+        "category": "Audit Financier",
+        "variables": [
+            {"name": "taux_periodique", "label": "Taux par période (%)", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "periode", "label": "Période", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "nb_periodes", "label": "Nombre de périodes", "type": "number", "required": True, "placeholder": "240"},
+            {"name": "valeur_actuelle", "label": "Montant emprunté (€)", "type": "number", "required": True, "placeholder": "200000"},
+            {"name": "valeur_future", "label": "Valeur future (€)", "type": "number", "required": False, "placeholder": "0"},
+            {"name": "debut_periode", "label": "Début de période (0/1)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "cumul_inter": {
+        "name": "CUMUL.INTER (CUMIPMT)", "description": "Cumul des intérêts payés entre deux périodes",
+        "category": "Audit Financier",
+        "variables": [
+            {"name": "taux_periodique", "label": "Taux par période (%)", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "nb_periodes", "label": "Nombre de périodes", "type": "number", "required": True, "placeholder": "240"},
+            {"name": "valeur_actuelle", "label": "Montant emprunté (€)", "type": "number", "required": True, "placeholder": "200000"},
+            {"name": "periode_debut", "label": "Période début", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "periode_fin", "label": "Période fin", "type": "number", "required": True, "placeholder": "12"},
+        ],
+    },
+    "cumul_princ": {
+        "name": "CUMUL.PRINC (CUMPRINC)", "description": "Cumul du principal remboursé entre deux périodes",
+        "category": "Audit Financier",
+        "variables": [
+            {"name": "taux_periodique", "label": "Taux par période (%)", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "nb_periodes", "label": "Nombre de périodes", "type": "number", "required": True, "placeholder": "240"},
+            {"name": "valeur_actuelle", "label": "Montant emprunté (€)", "type": "number", "required": True, "placeholder": "200000"},
+            {"name": "periode_debut", "label": "Période début", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "periode_fin", "label": "Période fin", "type": "number", "required": True, "placeholder": "12"},
+        ],
+    },
+    "amorl": {
+        "name": "AMORL (SLN)", "description": "Amortissement linéaire annuel d'un actif",
+        "category": "Audit Financier",
+        "variables": [
+            {"name": "cout", "label": "Coût d'acquisition (€)", "type": "number", "required": True, "placeholder": "100000"},
+            {"name": "valeur_residuelle", "label": "Valeur résiduelle (€)", "type": "number", "required": False, "placeholder": "10000"},
+            {"name": "duree_vie", "label": "Durée de vie (années)", "type": "number", "required": True, "placeholder": "10"},
+        ],
+    },
+    "amordegr": {
+        "name": "AMORDEGR (DB)", "description": "Amortissement dégressif d'un actif pour une période donnée",
+        "category": "Audit Financier",
+        "variables": [
+            {"name": "cout", "label": "Coût d'acquisition (€)", "type": "number", "required": True, "placeholder": "100000"},
+            {"name": "valeur_residuelle", "label": "Valeur résiduelle (€)", "type": "number", "required": False, "placeholder": "10000"},
+            {"name": "duree_vie", "label": "Durée de vie (années)", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "periode", "label": "Période", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "syd": {
+        "name": "SYD", "description": "Amortissement dégressif à somme des années (Sum-of-Years' Digits)",
+        "category": "Audit Financier",
+        "variables": [
+            {"name": "cout", "label": "Coût d'acquisition (€)", "type": "number", "required": True, "placeholder": "100000"},
+            {"name": "valeur_residuelle", "label": "Valeur résiduelle (€)", "type": "number", "required": False, "placeholder": "10000"},
+            {"name": "duree_vie", "label": "Durée de vie (années)", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "periode", "label": "Période", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+
+    # ── v4 — Ingénierie & Matrices ────────────────────────────────────────
+    "transpose": {
+        "name": "TRANSPOSE", "description": "Transposer une matrice (lignes ↔ colonnes)",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "matrice", "label": "Matrice (JSON 2D)", "type": "json", "required": True, "placeholder": "[[1,2,3],[4,5,6]]"},
+        ],
+    },
+    "produitmat": {
+        "name": "PRODUITMAT (MMULT)", "description": "Multiplier deux matrices (produit matriciel)",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "matrice_a", "label": "Matrice A (JSON 2D)", "type": "json", "required": True, "placeholder": "[[1,2],[3,4]]"},
+            {"name": "matrice_b", "label": "Matrice B (JSON 2D)", "type": "json", "required": True, "placeholder": "[[5,6],[7,8]]"},
+        ],
+    },
+    "matrice_inverse": {
+        "name": "MATRICE.INVERSE (MINVERSE)", "description": "Calculer l'inverse d'une matrice carrée (Gauss-Jordan)",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "matrice", "label": "Matrice carrée (JSON 2D)", "type": "json", "required": True, "placeholder": "[[4,7],[2,6]]"},
+        ],
+    },
+    "determinant": {
+        "name": "DETERMINANT.MAT (MDETERM)", "description": "Calculer le déterminant d'une matrice carrée",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "matrice", "label": "Matrice carrée (JSON 2D)", "type": "json", "required": True, "placeholder": "[[1,2],[3,4]]"},
+        ],
+    },
+    "flatten": {
+        "name": "FLATTEN", "description": "Aplatir une structure imbriquée en un vecteur plat",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "donnees", "label": "Données imbriquées (JSON)", "type": "json", "required": True, "placeholder": "[[1,[2,3]],[4,5]]"},
+        ],
+    },
+
+    # ── v4 — Statistiques de Décision ─────────────────────────────────────
+    "correlation": {
+        "name": "COEFFICIENT.CORRELATION (CORREL)", "description": "Coefficient de corrélation de Pearson entre deux séries",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "Valeurs X", "type": "number[]", "required": True, "placeholder": "1, 2, 3, 4, 5"},
+            {"name": "y", "label": "Valeurs Y", "type": "number[]", "required": True, "placeholder": "2, 4, 5, 4, 5"},
+        ],
+    },
+    "pente": {
+        "name": "PENTE (SLOPE)", "description": "Pente de la droite de régression linéaire",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "Valeurs X", "type": "number[]", "required": True, "placeholder": "1, 2, 3, 4, 5"},
+            {"name": "y", "label": "Valeurs Y", "type": "number[]", "required": True, "placeholder": "2, 4, 5, 4, 5"},
+        ],
+    },
+    "ordonnee_origine": {
+        "name": "ORDONNEE.ORIGINE (INTERCEPT)", "description": "Ordonnée à l'origine de la droite de régression",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "Valeurs X", "type": "number[]", "required": True, "placeholder": "1, 2, 3, 4, 5"},
+            {"name": "y", "label": "Valeurs Y", "type": "number[]", "required": True, "placeholder": "2, 4, 5, 4, 5"},
+        ],
+    },
+    "ecart_type_p": {
+        "name": "ECART.TYPE.P", "description": "Écart-type de la population entière",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "number[]", "required": True, "placeholder": "10, 20, 30, 40, 50"},
+        ],
+    },
+    "ecart_type_s": {
+        "name": "ECART.TYPE.S", "description": "Écart-type d'un échantillon (avec correction de Bessel)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "number[]", "required": True, "placeholder": "10, 20, 30, 40, 50"},
+        ],
+    },
+    "quartile": {
+        "name": "QUARTILE", "description": "Calculer un quartile (Q0=Min, Q1, Q2=Médiane, Q3, Q4=Max)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "number[]", "required": True, "placeholder": "10, 20, 30, 40, 50, 60, 70, 80, 90, 100"},
+            {"name": "quartile", "label": "Quartile (0-4)", "type": "number", "required": False, "placeholder": "2"},
+        ],
+    },
+    "percentile": {
+        "name": "PERCENTILE", "description": "Calculer le k-ième percentile d'une série (k entre 0 et 1)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "number[]", "required": True, "placeholder": "10, 20, 30, 40, 50, 60, 70, 80, 90, 100"},
+            {"name": "k", "label": "Percentile (0 à 1)", "type": "number", "required": True, "placeholder": "0.75"},
+        ],
+    },
+    "moyenne_reduite": {
+        "name": "MOYENNE.REDUITE (TRIMMEAN)", "description": "Moyenne en excluant un pourcentage de valeurs extrêmes",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "number[]", "required": True, "placeholder": "1, 2, 3, 4, 5, 100"},
+            {"name": "pourcentage", "label": "% à exclure", "type": "number", "required": False, "placeholder": "20"},
+        ],
+    },
+
+    # ── v4 — Texte Industriel ─────────────────────────────────────────────
+    "rept": {
+        "name": "REPT", "description": "Répéter un texte N fois",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "string", "required": True, "placeholder": "AB"},
+            {"name": "nombre", "label": "Nombre de répétitions", "type": "number", "required": True, "placeholder": "5"},
+        ],
+    },
+    "cherche": {
+        "name": "CHERCHE (SEARCH)", "description": "Trouver la position d'un texte dans un autre (insensible à la casse)",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte_cherche", "label": "Texte à chercher", "type": "string", "required": True, "placeholder": "monde"},
+            {"name": "texte_source", "label": "Texte source", "type": "string", "required": True, "placeholder": "Bonjour le Monde"},
+            {"name": "position_debut", "label": "Position de départ", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "remplacer_texte": {
+        "name": "REMPLACER (REPLACE)", "description": "Remplacer N caractères à partir d'une position dans un texte",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte source", "type": "string", "required": True, "placeholder": "Hello World"},
+            {"name": "position_debut", "label": "Position de départ", "type": "number", "required": True, "placeholder": "7"},
+            {"name": "nb_caracteres", "label": "Nb caractères à remplacer", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "nouveau_texte", "label": "Nouveau texte", "type": "string", "required": True, "placeholder": "Monde"},
+        ],
+    },
+    "texte_join": {
+        "name": "TEXTE.JOIN (TEXTJOIN)", "description": "Joindre des textes avec un délimiteur, en ignorant optionnellement les vides",
+        "category": "Texte",
+        "variables": [
+            {"name": "textes", "label": "Textes (JSON array)", "type": "json", "required": True, "placeholder": '["A","","B","","C"]'},
+            {"name": "delimiteur", "label": "Délimiteur", "type": "string", "required": False, "placeholder": ", "},
+            {"name": "ignorer_vides", "label": "Ignorer vides (true/false)", "type": "string", "required": False, "placeholder": "true"},
+        ],
+    },
+    "valeur_texte": {
+        "name": "VALEUR (VALUE)", "description": "Convertir un texte en nombre (gère €, $, %, espaces, virgule française)",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte à convertir", "type": "string", "required": True, "placeholder": "1 234,56 €"},
+        ],
+    },
+    "ctxt": {
+        "name": "CTXT (FIXED)", "description": "Formater un nombre avec un nombre fixe de décimales",
+        "category": "Texte",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "1234567.891"},
+            {"name": "decimales", "label": "Décimales", "type": "number", "required": False, "placeholder": "2"},
+            {"name": "pas_separateur", "label": "Sans séparateur milliers (true/false)", "type": "string", "required": False, "placeholder": "false"},
+        ],
+    },
+
+    # ── v4 — D-Functions ──────────────────────────────────────────────────
+    "bdsomme": {
+        "name": "BDSOMME (DSUM)", "description": "Somme d'un champ dans une base de données filtrée par critères",
+        "category": "Gestion de Données",
+        "variables": [
+            {"name": "donnees", "label": "Base de données (JSON)", "type": "json", "required": True, "placeholder": '[{"dept":"Ventes","ca":100}]'},
+            {"name": "champ", "label": "Champ à sommer", "type": "string", "required": True, "placeholder": "ca"},
+            {"name": "criteres", "label": "Critères (JSON)", "type": "json", "required": True, "placeholder": '[{"colonne":"dept","valeur":"Ventes"}]'},
+        ],
+    },
+    "bdnb": {
+        "name": "BDNB (DCOUNT)", "description": "Compter les enregistrements non vides d'un champ filtré",
+        "category": "Gestion de Données",
+        "variables": [
+            {"name": "donnees", "label": "Base de données (JSON)", "type": "json", "required": True, "placeholder": '[{"dept":"Ventes","ca":100}]'},
+            {"name": "champ", "label": "Champ à compter", "type": "string", "required": True, "placeholder": "ca"},
+            {"name": "criteres", "label": "Critères (JSON)", "type": "json", "required": True, "placeholder": '[{"colonne":"dept","valeur":"Ventes"}]'},
+        ],
+    },
+    "bdmax": {
+        "name": "BDMAX", "description": "Valeur maximale d'un champ dans une base de données filtrée",
+        "category": "Gestion de Données",
+        "variables": [
+            {"name": "donnees", "label": "Base de données (JSON)", "type": "json", "required": True, "placeholder": '[{"dept":"Ventes","ca":100}]'},
+            {"name": "champ", "label": "Champ", "type": "string", "required": True, "placeholder": "ca"},
+            {"name": "criteres", "label": "Critères (JSON)", "type": "json", "required": True, "placeholder": '[{"colonne":"dept","valeur":"Ventes"}]'},
+        ],
+    },
+    "bdmin": {
+        "name": "BDMIN", "description": "Valeur minimale d'un champ dans une base de données filtrée",
+        "category": "Gestion de Données",
+        "variables": [
+            {"name": "donnees", "label": "Base de données (JSON)", "type": "json", "required": True, "placeholder": '[{"dept":"Ventes","ca":100}]'},
+            {"name": "champ", "label": "Champ", "type": "string", "required": True, "placeholder": "ca"},
+            {"name": "criteres", "label": "Critères (JSON)", "type": "json", "required": True, "placeholder": '[{"colonne":"dept","valeur":"Ventes"}]'},
+        ],
+    },
+    "bdmoyenne": {
+        "name": "BDMOYENNE", "description": "Moyenne d'un champ dans une base de données filtrée",
+        "category": "Gestion de Données",
+        "variables": [
+            {"name": "donnees", "label": "Base de données (JSON)", "type": "json", "required": True, "placeholder": '[{"dept":"Ventes","ca":100}]'},
+            {"name": "champ", "label": "Champ", "type": "string", "required": True, "placeholder": "ca"},
+            {"name": "criteres", "label": "Critères (JSON)", "type": "json", "required": True, "placeholder": '[{"colonne":"dept","valeur":"Ventes"}]'},
+        ],
+    },
+
+    # ── v4 — Manipulation Avancée ─────────────────────────────────────────
+    "lambda_recursive": {
+        "name": "LAMBDA Récursive", "description": "Appliquer une expression récursivement N fois sur une valeur",
+        "category": "Architecture",
+        "variables": [
+            {"name": "expression", "label": "Expression (utiliser x)", "type": "string", "required": True, "placeholder": "x * 1.05"},
+            {"name": "valeur_initiale", "label": "Valeur initiale", "type": "number", "required": True, "placeholder": "1000"},
+            {"name": "iterations", "label": "Nombre d'itérations", "type": "number", "required": False, "placeholder": "10"},
+        ],
+    },
+    "let_advanced": {
+        "name": "LET Avancé", "description": "Définir des variables par étapes et évaluer une expression finale",
+        "category": "Architecture",
+        "variables": [
+            {"name": "variables", "label": "Variables initiales (JSON)", "type": "json", "required": True, "placeholder": '{"prix":100,"quantite":50}'},
+            {"name": "etapes", "label": "Étapes de calcul (JSON)", "type": "json", "required": True, "placeholder": '[{"nom":"total","expression":"prix * quantite"}]'},
+            {"name": "expression_finale", "label": "Expression finale", "type": "string", "required": True, "placeholder": "total * 1.2"},
+        ],
+    },
+    "choose": {
+        "name": "CHOISIR (CHOOSE)", "description": "Sélectionner une valeur par son index dans une liste",
+        "category": "Logique",
+        "variables": [
+            {"name": "index", "label": "Index (1-based)", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "valeurs", "label": "Liste de valeurs (JSON)", "type": "json", "required": True, "placeholder": '["Lundi","Mardi","Mercredi","Jeudi","Vendredi"]'},
+        ],
+    },
+    "byrow": {
+        "name": "BYROW", "description": "Appliquer une opération à chaque ligne d'une matrice",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "matrice", "label": "Matrice (JSON 2D)", "type": "json", "required": True, "placeholder": "[[1,2,3],[4,5,6]]"},
+            {"name": "operation", "label": "Opération (somme, moyenne, max, min, produit)", "type": "string", "required": True, "placeholder": "somme"},
+        ],
+    },
+    "bycol": {
+        "name": "BYCOL", "description": "Appliquer une opération à chaque colonne d'une matrice",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "matrice", "label": "Matrice (JSON 2D)", "type": "json", "required": True, "placeholder": "[[1,2,3],[4,5,6]]"},
+            {"name": "operation", "label": "Opération (somme, moyenne, max, min)", "type": "string", "required": True, "placeholder": "somme"},
+        ],
+    },
+    "makearray": {
+        "name": "MAKEARRAY", "description": "Générer une matrice avec une expression utilisant row et col",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "lignes", "label": "Nombre de lignes", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "colonnes", "label": "Nombre de colonnes", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "expression", "label": "Expression (row, col)", "type": "string", "required": False, "placeholder": "row * colonnes + col + 1"},
+        ],
+    },
+
+    # ── v4 — Utilitaires Data ─────────────────────────────────────────────
+    "esterreur": {
+        "name": "ESTERREUR", "description": "Vérifier quelles valeurs sont des erreurs (#N/A, #REF!, etc.)",
+        "category": "Logique",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs à tester (JSON)", "type": "json", "required": True, "placeholder": '[42, "#N/A", "texte", "#DIV/0!"]'},
+        ],
+    },
+    "estna": {
+        "name": "ESTNA", "description": "Vérifier quelles valeurs sont #N/A",
+        "category": "Logique",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs à tester (JSON)", "type": "json", "required": True, "placeholder": '[42, "#N/A", "texte", null]'},
+        ],
+    },
+    "type_val": {
+        "name": "TYPE", "description": "Identifier le type d'une valeur (1=Nombre, 2=Texte, 4=Booléen, 16=Erreur, 64=Tableau)",
+        "category": "Logique",
+        "variables": [
+            {"name": "valeur", "label": "Valeur à tester", "type": "json", "required": True, "placeholder": "42"},
+        ],
+    },
+    "coordonnees": {
+        "name": "COORDONNEES (ADDRESS)", "description": "Construire une référence de cellule Excel ($A$1, B$2, etc.)",
+        "category": "Gestion de Données",
+        "variables": [
+            {"name": "ligne", "label": "Numéro de ligne", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "colonne", "label": "Numéro de colonne", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "type_reference", "label": "Type (1=absolu, 4=relatif)", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "indirect_ext": {
+        "name": "INDIRECT.EXT", "description": "Naviguer dans une structure JSON par chemin (ex: 'clients.0.nom')",
+        "category": "Gestion de Données",
+        "variables": [
+            {"name": "reference", "label": "Chemin de référence", "type": "string", "required": True, "placeholder": "clients.0.nom"},
+            {"name": "donnees", "label": "Données (JSON)", "type": "json", "required": True, "placeholder": '{"clients":[{"nom":"Alice"}]}'},
+        ],
+    },
+    "nbcar": {
+        "name": "NBCAR (LEN)", "description": "Compter le nombre de caractères d'un texte",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "string", "required": True, "placeholder": "Bonjour"},
+        ],
+    },
+    "majuscule": {
+        "name": "MAJUSCULE (UPPER)", "description": "Convertir un texte en majuscules",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "string", "required": True, "placeholder": "bonjour"},
+        ],
+    },
+    "minuscule": {
+        "name": "MINUSCULE (LOWER)", "description": "Convertir un texte en minuscules",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "string", "required": True, "placeholder": "BONJOUR"},
+        ],
+    },
+    "cnum": {
+        "name": "CNUM (N)", "description": "Convertir une valeur en nombre (texte→0, bool→0/1)",
+        "category": "Logique",
+        "variables": [
+            {"name": "valeur", "label": "Valeur", "type": "json", "required": True, "placeholder": "42"},
+        ],
+    },
+    "abs_val": {
+        "name": "ABS", "description": "Valeur absolue d'un nombre",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "-42"},
+        ],
+    },
+    "mod_val": {
+        "name": "MOD", "description": "Reste de la division euclidienne (modulo)",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "17"},
+            {"name": "diviseur", "label": "Diviseur", "type": "number", "required": True, "placeholder": "5"},
+        ],
+    },
+    "puissance": {
+        "name": "PUISSANCE (POWER)", "description": "Élever un nombre à une puissance",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "base", "label": "Base", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "exposant", "label": "Exposant", "type": "number", "required": True, "placeholder": "10"},
+        ],
+    },
+    "plafond_plancher": {
+        "name": "PLAFOND / PLANCHER", "description": "Arrondir au plafond et au plancher avec incrément personnalisé",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "7.3"},
+            {"name": "increment", "label": "Incrément", "type": "number", "required": False, "placeholder": "0.5"},
         ],
     },
 }
