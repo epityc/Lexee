@@ -1,5 +1,5 @@
 services:
-  backend:
+  lexee:
     build: .
     ports:
       - "8000:8000"
@@ -7,16 +7,6 @@ services:
       - db_data:/app
     environment:
       - DATABASE_URL=sqlite:///./lexee.db
-
-  frontend:
-    build:
-      context: ./frontend
-      args:
-        NEXT_PUBLIC_API_URL: http://localhost:8000
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
 
 volumes:
   db_data:
