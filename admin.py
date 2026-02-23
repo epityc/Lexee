@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Script d'administration CLI pour gérer les clients Lexee."""
+"""Script d'administration CLI pour gérer les clients Nexus Grid."""
 
 import sys
 

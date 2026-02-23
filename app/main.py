@@ -91,7 +91,7 @@ def calculate(
 # Application FastAPI
 # ─────────────────────────────────────────────────────────────────────────────
 app = FastAPI(
-    title="Lexee — Calculation Engine",
+    title="Nexus Grid — Calculation Engine",
     description=(
         "Moteur de calcul opaque : envoyez vos variables, "
         "recevez vos résultats. Les formules restent protégées."

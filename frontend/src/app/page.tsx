@@ -18,8 +18,8 @@ export default function LoginPage() {
     try {
       const client = await login(apiKey.trim());
 
-      localStorage.setItem("lexee_api_key", apiKey.trim());
-      localStorage.setItem("lexee_client", JSON.stringify(client));
+      localStorage.setItem("nexusgrid_api_key", apiKey.trim());
+      localStorage.setItem("nexusgrid_client", JSON.stringify(client));
 
       router.push("/dashboard");
     } catch (err) {
@@ -35,7 +35,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white tracking-tight">
-            <span className="text-theme-accent theme-transition">Lex</span>ee
+            <span className="text-theme-accent theme-transition">Nexus</span> Grid
           </h1>
           <p className="mt-2 text-white/40">Calculation Engine</p>
         </div>
@@ -64,7 +64,7 @@ export default function LoginPage() {
               type="password"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
-              placeholder="lx_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+              placeholder="ng_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
               required
               className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm
                          focus-ring-theme

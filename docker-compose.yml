@@ -1,12 +1,12 @@
 services:
-  lexee:
+  nexusgrid:
     build: .
     ports:
       - "8000:8000"
     volumes:
       - db_data:/app
     environment:
-      - DATABASE_URL=sqlite:///./lexee.db
+      - DATABASE_URL=sqlite:///./nexusgrid.db
 
 volumes:
   db_data:

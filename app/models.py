@@ -18,7 +18,7 @@ class Client(Base):
 
     @staticmethod
     def generate_api_key() -> str:
-        return f"lx_{uuid.uuid4().hex}"
+        return f"ng_{uuid.uuid4().hex}"
 
     def __repr__(self) -> str:
         return f"<Client id={self.id} name={self.name!r} status={self.status} credits={self.credits}>"
