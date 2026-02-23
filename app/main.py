@@ -125,7 +125,9 @@ STATIC_DIR = Path(__file__).resolve().parent / "static"
 
 if STATIC_DIR.is_dir():
     # Servir les fichiers statiques Next.js (_next/*, images, etc.)
-    app.mount("/_next", StaticFiles(directory=STATIC_DIR / "_next"), name="next-static")
+    _next_dir = STATIC_DIR / "_next"
+    if _next_dir.is_dir():
+        app.mount("/_next", StaticFiles(directory=_next_dir), name="next-static")
 
     # Catch-all : pour toute route non-API, servir le fichier HTML correspondant
     # ou index.html comme fallback SPA
