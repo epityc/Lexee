@@ -7,4 +7,6 @@ venv/
 dist/
 *.egg-info/
 .next/
+frontend/out/
+app/static/
 .pytest_cache/
