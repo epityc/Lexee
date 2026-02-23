@@ -20,7 +20,7 @@ export const THEMES: ThemeInfo[] = [
   { id: "earth",    name: "Earth Elegant",       colors: ["#fefce8", "#d97706", "#1c1917"] },
 ];
 
-const STORAGE_KEY = "lexee_theme";
+const STORAGE_KEY = "nexusgrid_theme";
 
 interface ThemeContextValue {
   theme: ThemeId;
