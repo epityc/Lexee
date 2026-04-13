@@ -18,7 +18,7 @@ export default function DashboardPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const key = localStorage.getItem("lexee_api_key");
+    const key = localStorage.getItem("nexusgrid_api_key");
     if (!key) {
       router.push("/");
       return;
@@ -38,7 +38,7 @@ export default function DashboardPage() {
           err instanceof Error &&
           (err.message.includes("invalide") || err.message.includes("401"))
         ) {
-          localStorage.removeItem("lexee_api_key");
+          localStorage.removeItem("nexusgrid_api_key");
           router.push("/");
         }
       })
@@ -46,8 +46,8 @@ export default function DashboardPage() {
   }, [router]);
 
   function handleLogout() {
-    localStorage.removeItem("lexee_api_key");
-    localStorage.removeItem("lexee_client");
+    localStorage.removeItem("nexusgrid_api_key");
+    localStorage.removeItem("nexusgrid_client");
     router.push("/");
   }
 
@@ -85,8 +85,8 @@ export default function DashboardPage() {
       <header className="h-14 bg-theme-header text-theme-header flex items-center justify-between px-6 shrink-0 theme-transition">
         <div className="flex items-center gap-4">
           <h1 className="text-lg font-bold tracking-tight">
-            <span className="text-theme-accent theme-transition">Lex</span>
-            <span className="text-theme-header">ee</span>
+            <span className="text-theme-accent theme-transition">Nexus</span>
+            <span className="text-theme-header"> Grid</span>
           </h1>
           <div className="h-5 w-px bg-white/20" />
           <span className="text-xs text-white/50 hidden sm:inline">

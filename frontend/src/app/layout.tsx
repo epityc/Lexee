@@ -3,7 +3,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Lexee — Calculation Engine",
+  title: "Nexus Grid — Calculation Engine",
   description: "Moteur de calcul SaaS avec formules protégées",
 };
 
