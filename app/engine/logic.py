@@ -14,6 +14,8 @@ import random
 import re
 from datetime import date, datetime, timedelta
 
+from app.engine import _v5
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # 1. SOMME & MOYENNE (SUM & AVERAGE)
@@ -2460,6 +2462,67 @@ FORMULAS: dict[str, callable] = {
     "mod_val": formule_mod,
     "puissance": formule_puissance,
     "plafond_plancher": formule_plafond_plancher,
+    # ─────────────────────────────────────────────────────────────────────────
+    # v5 — 50 formules expertes supplémentaires
+    # ─────────────────────────────────────────────────────────────────────────
+    # Intelligence Moderne
+    "groupby": _v5.formule_groupby,
+    "pivotby": _v5.formule_pivotby,
+    "regex_extract": _v5.formule_regex_extract,
+    "regex_match": _v5.formule_regex_match,
+    "regex_replace": _v5.formule_regex_replace,
+    # Statistiques avancées
+    "tendance": _v5.formule_tendance,
+    "croissance": _v5.formule_croissance,
+    "covariance_p": _v5.formule_covariance_p,
+    "prevision_ets": _v5.formule_prevision_ets,
+    "percentile_exc": _v5.formule_percentile_exc,
+    # Ingénierie & Conversion
+    "convertir": _v5.formule_convertir,
+    "bin2hex": _v5.formule_bin2hex,
+    "hex2dec": _v5.formule_hex2dec,
+    "dec2bin": _v5.formule_dec2bin,
+    "dec2hex": _v5.formule_dec2hex,
+    "delta": _v5.formule_delta,
+    "bit_et": _v5.formule_bit_et,
+    "bit_ou": _v5.formule_bit_ou,
+    "bit_xou": _v5.formule_bit_xou,
+    "erf_val": _v5.formule_erf_val,
+    # Finance Professionnelle
+    "taux_effectif": _v5.formule_taux_effectif,
+    "taux_nominal": _v5.formule_taux_nominal,
+    "tri_modifie": _v5.formule_tri_modifie,
+    "van_dates": _v5.formule_van_dates,
+    "tri_dates": _v5.formule_tri_dates,
+    "amort_ddb": _v5.formule_amort_ddb,
+    "prix_obligation": _v5.formule_prix_obligation,
+    # Bases de Données
+    "bdlire": _v5.formule_bdlire,
+    "bdproduit": _v5.formule_bdproduit,
+    "bdecartype": _v5.formule_bdecartype,
+    # Mathématiques Spécialisées
+    "arrondi_multiple": _v5.formule_arrondi_multiple,
+    "pgcd": _v5.formule_pgcd,
+    "ppcm": _v5.formule_ppcm,
+    "quotient": _v5.formule_quotient,
+    "tableau_alea": _v5.formule_tableau_alea,
+    "combinaison": _v5.formule_combinaison,
+    "factorielle": _v5.formule_factorielle,
+    "sommeprod": _v5.formule_sommeprod,
+    "romain": _v5.formule_romain,
+    "signe": _v5.formule_signe,
+    # Logique de précision
+    "si_na": _v5.formule_si_na,
+    "esterr": _v5.formule_esterr,
+    "nb_val": _v5.formule_nb_val,
+    "nb_vide": _v5.formule_nb_vide,
+    # Statistiques supplémentaires
+    "mode_val": _v5.formule_mode_val,
+    "grande_valeur": _v5.formule_grande_valeur,
+    "petite_valeur": _v5.formule_petite_valeur,
+    "moyenne_geo": _v5.formule_moyenne_geo,
+    "moyenne_harm": _v5.formule_moyenne_harm,
+    "ecart_moyen": _v5.formule_ecart_moyen,
 }
 
 
@@ -3701,6 +3764,425 @@ FORMULA_META: dict[str, dict] = {
         "variables": [
             {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "7.3"},
             {"name": "increment", "label": "Incrément", "type": "number", "required": False, "placeholder": "0.5"},
+        ],
+    },
+    # ═══════════════════════════════════════════════════════════════════════════
+    # v5 — 50 formules expertes
+    # ═══════════════════════════════════════════════════════════════════════════
+    # ── Intelligence Moderne ──────────────────────────────────────────────────
+    "groupby": {
+        "name": "GROUPBY", "description": "Regrouper des lignes par clé avec agrégation (count/sum/avg/min/max)",
+        "category": "Intelligence Moderne",
+        "variables": [
+            {"name": "donnees", "label": "Données", "type": "array", "required": True, "placeholder": "[{...}, ...]"},
+            {"name": "cle", "label": "Clé de regroupement", "type": "text", "required": True, "placeholder": "region"},
+            {"name": "champ", "label": "Champ à agréger", "type": "text", "required": False, "placeholder": "montant"},
+            {"name": "agregation", "label": "Agrégation", "type": "text", "required": False, "placeholder": "sum"},
+        ],
+    },
+    "pivotby": {
+        "name": "PIVOTBY", "description": "Tableau croisé dynamique : lignes × colonnes → somme d'un champ",
+        "category": "Intelligence Moderne",
+        "variables": [
+            {"name": "donnees", "label": "Données", "type": "array", "required": True, "placeholder": "[{...}, ...]"},
+            {"name": "ligne_cle", "label": "Champ en ligne", "type": "text", "required": True, "placeholder": "produit"},
+            {"name": "colonne_cle", "label": "Champ en colonne", "type": "text", "required": True, "placeholder": "region"},
+            {"name": "champ", "label": "Champ mesuré", "type": "text", "required": True, "placeholder": "montant"},
+        ],
+    },
+    "regex_extract": {
+        "name": "REGEX.EXTRAIRE", "description": "Extraire toutes les correspondances d'un motif regex",
+        "category": "Intelligence Moderne",
+        "variables": [
+            {"name": "texte", "label": "Texte source", "type": "text", "required": True, "placeholder": "Email: john@foo.com"},
+            {"name": "motif", "label": "Motif regex", "type": "text", "required": True, "placeholder": r"\w+@\w+\.\w+"},
+        ],
+    },
+    "regex_match": {
+        "name": "REGEX.TEST", "description": "Tester si un motif regex correspond au texte",
+        "category": "Intelligence Moderne",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Hello world"},
+            {"name": "motif", "label": "Motif regex", "type": "text", "required": True, "placeholder": r"^[A-Z]"},
+        ],
+    },
+    "regex_replace": {
+        "name": "REGEX.REMPLACER", "description": "Remplacer via motif regex",
+        "category": "Intelligence Moderne",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Paris 2024"},
+            {"name": "motif", "label": "Motif regex", "type": "text", "required": True, "placeholder": r"\d+"},
+            {"name": "remplacement", "label": "Remplacement", "type": "text", "required": False, "placeholder": "****"},
+        ],
+    },
+    # ── Statistiques avancées ────────────────────────────────────────────────
+    "tendance": {
+        "name": "TENDANCE (TREND)", "description": "Projection par régression linéaire",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "y_connus", "label": "Y connus", "type": "array", "required": True, "placeholder": "[10, 20, 30]"},
+            {"name": "x_connus", "label": "X connus", "type": "array", "required": False, "placeholder": "[1, 2, 3]"},
+            {"name": "x_nouveaux", "label": "X nouveaux", "type": "array", "required": True, "placeholder": "[4, 5]"},
+        ],
+    },
+    "croissance": {
+        "name": "CROISSANCE (GROWTH)", "description": "Régression exponentielle y = b·m^x",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "y_connus", "label": "Y connus (>0)", "type": "array", "required": True, "placeholder": "[100, 200, 400]"},
+            {"name": "x_connus", "label": "X connus", "type": "array", "required": False, "placeholder": "[1, 2, 3]"},
+            {"name": "x_nouveaux", "label": "X nouveaux", "type": "array", "required": True, "placeholder": "[4, 5]"},
+        ],
+    },
+    "covariance_p": {
+        "name": "COVARIANCE.P", "description": "Covariance sur population",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "Série X", "type": "array", "required": True, "placeholder": "[1, 2, 3]"},
+            {"name": "y", "label": "Série Y", "type": "array", "required": True, "placeholder": "[2, 4, 6]"},
+        ],
+    },
+    "prevision_ets": {
+        "name": "PREVISION.ETS", "description": "Prévision par lissage exponentiel",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Historique", "type": "array", "required": True, "placeholder": "[100, 105, 110]"},
+            {"name": "periodes", "label": "Périodes à prévoir", "type": "number", "required": False, "placeholder": "3"},
+            {"name": "alpha", "label": "Alpha (0-1)", "type": "number", "required": False, "placeholder": "0.3"},
+        ],
+    },
+    "percentile_exc": {
+        "name": "PERCENTILE.EXC", "description": "Percentile exclusif (k dans ]0;1[)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[10, 20, 30, 40]"},
+            {"name": "k", "label": "k (fraction)", "type": "number", "required": True, "placeholder": "0.5"},
+        ],
+    },
+    # ── Ingénierie & Conversion ──────────────────────────────────────────────
+    "convertir": {
+        "name": "CONVERT", "description": "Convertir une valeur entre unités (longueur, masse, temps, volume, énergie, puissance, angle, température)",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "100"},
+            {"name": "depuis", "label": "Unité source", "type": "text", "required": True, "placeholder": "km"},
+            {"name": "vers", "label": "Unité cible", "type": "text", "required": True, "placeholder": "mi"},
+        ],
+    },
+    "bin2hex": {
+        "name": "BIN2HEX", "description": "Convertir binaire → hexadécimal",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre binaire", "type": "text", "required": True, "placeholder": "1010"},
+        ],
+    },
+    "hex2dec": {
+        "name": "HEX2DEC", "description": "Convertir hexadécimal → décimal",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre hexa", "type": "text", "required": True, "placeholder": "FF"},
+        ],
+    },
+    "dec2bin": {
+        "name": "DEC2BIN", "description": "Convertir décimal → binaire",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre décimal", "type": "number", "required": True, "placeholder": "10"},
+        ],
+    },
+    "dec2hex": {
+        "name": "DEC2HEX", "description": "Convertir décimal → hexadécimal",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre décimal", "type": "number", "required": True, "placeholder": "255"},
+        ],
+    },
+    "delta": {
+        "name": "DELTA", "description": "1 si a == b, sinon 0",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "a", "label": "Valeur a", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "b", "label": "Valeur b", "type": "number", "required": False, "placeholder": "5"},
+        ],
+    },
+    "bit_et": {
+        "name": "BITET (BITAND)", "description": "ET bit à bit de deux entiers positifs",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "a", "label": "Entier a", "type": "number", "required": True, "placeholder": "12"},
+            {"name": "b", "label": "Entier b", "type": "number", "required": True, "placeholder": "10"},
+        ],
+    },
+    "bit_ou": {
+        "name": "BITOU (BITOR)", "description": "OU bit à bit de deux entiers positifs",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "a", "label": "Entier a", "type": "number", "required": True, "placeholder": "12"},
+            {"name": "b", "label": "Entier b", "type": "number", "required": True, "placeholder": "10"},
+        ],
+    },
+    "bit_xou": {
+        "name": "BITXOU (BITXOR)", "description": "OU exclusif bit à bit",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "a", "label": "Entier a", "type": "number", "required": True, "placeholder": "12"},
+            {"name": "b", "label": "Entier b", "type": "number", "required": True, "placeholder": "10"},
+        ],
+    },
+    "erf_val": {
+        "name": "ERF", "description": "Fonction d'erreur de Gauss (avec borne supérieure optionnelle)",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "x", "label": "Borne inférieure", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "borne_sup", "label": "Borne supérieure", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    # ── Finance Professionnelle ──────────────────────────────────────────────
+    "taux_effectif": {
+        "name": "TAUX.EFFECTIF", "description": "Taux effectif annuel à partir du nominal",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_nominal", "label": "Taux nominal", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "periodes", "label": "Périodes par an", "type": "number", "required": True, "placeholder": "12"},
+        ],
+    },
+    "taux_nominal": {
+        "name": "TAUX.NOMINAL", "description": "Taux nominal à partir de l'effectif",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_effectif", "label": "Taux effectif", "type": "number", "required": True, "placeholder": "0.05116"},
+            {"name": "periodes", "label": "Périodes par an", "type": "number", "required": True, "placeholder": "12"},
+        ],
+    },
+    "tri_modifie": {
+        "name": "TRI.MODIFIE (MIRR)", "description": "TRI avec taux de financement et réinvestissement distincts",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "flux", "label": "Flux (signés)", "type": "array", "required": True, "placeholder": "[-1000, 300, 400, 500]"},
+            {"name": "taux_financement", "label": "Taux financement", "type": "number", "required": True, "placeholder": "0.08"},
+            {"name": "taux_reinvestissement", "label": "Taux réinvestissement", "type": "number", "required": True, "placeholder": "0.1"},
+        ],
+    },
+    "van_dates": {
+        "name": "VAN.DATES (XNPV)", "description": "Valeur actuelle nette avec dates irrégulières",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux", "label": "Taux d'actualisation", "type": "number", "required": True, "placeholder": "0.09"},
+            {"name": "flux", "label": "Flux", "type": "array", "required": True, "placeholder": "[-10000, 2000, 4000, 6000]"},
+            {"name": "dates", "label": "Dates (YYYY-MM-DD)", "type": "array", "required": True, "placeholder": "[\"2024-01-01\", ...]"},
+        ],
+    },
+    "tri_dates": {
+        "name": "TRI.DATES (XIRR)", "description": "TRI avec dates irrégulières (Newton)",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "flux", "label": "Flux", "type": "array", "required": True, "placeholder": "[-10000, 5000, 7000]"},
+            {"name": "dates", "label": "Dates (YYYY-MM-DD)", "type": "array", "required": True, "placeholder": "[\"2024-01-01\", ...]"},
+            {"name": "estimation", "label": "Estimation initiale", "type": "number", "required": False, "placeholder": "0.1"},
+        ],
+    },
+    "amort_ddb": {
+        "name": "AMORT.DDB", "description": "Amortissement dégressif double",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "cout", "label": "Coût", "type": "number", "required": True, "placeholder": "100000"},
+            {"name": "valeur_residuelle", "label": "Valeur résiduelle", "type": "number", "required": True, "placeholder": "10000"},
+            {"name": "duree", "label": "Durée (années)", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "periode", "label": "Période à calculer", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "facteur", "label": "Facteur", "type": "number", "required": False, "placeholder": "2"},
+        ],
+    },
+    "prix_obligation": {
+        "name": "PRIX.OBLIGATION", "description": "Prix d'une obligation à partir du rendement (version simplifiée)",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "valeur_nominale", "label": "Valeur nominale", "type": "number", "required": False, "placeholder": "100"},
+            {"name": "taux_coupon", "label": "Taux coupon annuel", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "rendement", "label": "Rendement annuel", "type": "number", "required": True, "placeholder": "0.06"},
+            {"name": "periodes", "label": "Années restantes", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "frequence", "label": "Fréquence de coupon", "type": "number", "required": False, "placeholder": "2"},
+        ],
+    },
+    # ── Bases de Données ─────────────────────────────────────────────────────
+    "bdlire": {
+        "name": "BDLIRE (DGET)", "description": "Lire la valeur d'un champ pour l'unique ligne correspondant aux critères",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base", "type": "array", "required": True, "placeholder": "[{...}, ...]"},
+            {"name": "champ", "label": "Champ à lire", "type": "text", "required": True, "placeholder": "prix"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{\"ref\": \"A123\"}"},
+        ],
+    },
+    "bdproduit": {
+        "name": "BDPRODUIT (DPRODUCT)", "description": "Produit des valeurs d'un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base", "type": "array", "required": True, "placeholder": "[{...}, ...]"},
+            {"name": "champ", "label": "Champ numérique", "type": "text", "required": True, "placeholder": "facteur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{\"region\": \"EU\"}"},
+        ],
+    },
+    "bdecartype": {
+        "name": "BDECARTYPE (DSTDEV)", "description": "Écart-type échantillon sur champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base", "type": "array", "required": True, "placeholder": "[{...}, ...]"},
+            {"name": "champ", "label": "Champ numérique", "type": "text", "required": True, "placeholder": "chiffre_affaires"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{\"annee\": 2024}"},
+        ],
+    },
+    # ── Mathématiques Spécialisées ───────────────────────────────────────────
+    "arrondi_multiple": {
+        "name": "ARRONDI.AU.MULTIPLE (MROUND)", "description": "Arrondir au multiple le plus proche",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "10.3"},
+            {"name": "multiple", "label": "Multiple", "type": "number", "required": True, "placeholder": "0.25"},
+        ],
+    },
+    "pgcd": {
+        "name": "PGCD (GCD)", "description": "Plus grand commun diviseur",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "nombres", "label": "Nombres", "type": "array", "required": True, "placeholder": "[12, 18, 24]"},
+        ],
+    },
+    "ppcm": {
+        "name": "PPCM (LCM)", "description": "Plus petit commun multiple",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "nombres", "label": "Nombres", "type": "array", "required": True, "placeholder": "[4, 6, 8]"},
+        ],
+    },
+    "quotient": {
+        "name": "QUOTIENT", "description": "Partie entière d'une division",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "numerateur", "label": "Numérateur", "type": "number", "required": True, "placeholder": "17"},
+            {"name": "denominateur", "label": "Dénominateur", "type": "number", "required": True, "placeholder": "5"},
+        ],
+    },
+    "tableau_alea": {
+        "name": "TABLEAU.ALEA (RANDARRAY)", "description": "Matrice aléatoire (uniforme)",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "lignes", "label": "Lignes", "type": "number", "required": False, "placeholder": "3"},
+            {"name": "colonnes", "label": "Colonnes", "type": "number", "required": False, "placeholder": "3"},
+            {"name": "min", "label": "Minimum", "type": "number", "required": False, "placeholder": "0"},
+            {"name": "max", "label": "Maximum", "type": "number", "required": False, "placeholder": "100"},
+            {"name": "entier", "label": "Entiers uniquement", "type": "boolean", "required": False, "placeholder": "false"},
+            {"name": "graine", "label": "Graine déterministe", "type": "number", "required": False, "placeholder": "42"},
+        ],
+    },
+    "combinaison": {
+        "name": "COMBIN", "description": "Nombre de combinaisons C(n, k)",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "n", "label": "n", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "k", "label": "k", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "factorielle": {
+        "name": "FACT (factorielle)", "description": "n! (factorielle)",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "n", "label": "n", "type": "number", "required": True, "placeholder": "6"},
+        ],
+    },
+    "sommeprod": {
+        "name": "SOMMEPROD (SUMPRODUCT)", "description": "Somme des produits terme à terme",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "tableaux", "label": "Tableaux alignés", "type": "array", "required": True, "placeholder": "[[1,2,3], [4,5,6]]"},
+        ],
+    },
+    "romain": {
+        "name": "ROMAIN (ROMAN)", "description": "Entier en chiffres romains (1-3999)",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "1999"},
+        ],
+    },
+    "signe": {
+        "name": "SIGNE (SIGN)", "description": "Signe d'un nombre : -1, 0 ou 1",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "-42"},
+        ],
+    },
+    # ── Logique de précision ─────────────────────────────────────────────────
+    "si_na": {
+        "name": "SI.NA (IFNA)", "description": "Valeur de repli si la cellule vaut N/A",
+        "category": "Logique de précision",
+        "variables": [
+            {"name": "valeur", "label": "Valeur à tester", "type": "text", "required": True, "placeholder": "#N/A"},
+            {"name": "fallback", "label": "Valeur de repli", "type": "text", "required": False, "placeholder": "Non trouvé"},
+        ],
+    },
+    "esterr": {
+        "name": "ESTERR (ISERR)", "description": "Vrai si erreur (hors #N/A)",
+        "category": "Logique de précision",
+        "variables": [
+            {"name": "valeur", "label": "Valeur à tester", "type": "text", "required": True, "placeholder": "#DIV/0!"},
+        ],
+    },
+    "nb_val": {
+        "name": "NBVAL (COUNTA)", "description": "Nombre de cellules non vides",
+        "category": "Logique de précision",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[1, \"\", \"a\", null]"},
+        ],
+    },
+    "nb_vide": {
+        "name": "NB.VIDE (COUNTBLANK)", "description": "Nombre de cellules vides",
+        "category": "Logique de précision",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[1, \"\", \"a\", null]"},
+        ],
+    },
+    # ── Statistiques supplémentaires ─────────────────────────────────────────
+    "mode_val": {
+        "name": "MODE", "description": "Valeur la plus fréquente",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[1, 2, 2, 3, 4]"},
+        ],
+    },
+    "grande_valeur": {
+        "name": "GRANDE.VALEUR (LARGE)", "description": "k-ième plus grande valeur",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[10, 7, 3, 9]"},
+            {"name": "k", "label": "k", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    "petite_valeur": {
+        "name": "PETITE.VALEUR (SMALL)", "description": "k-ième plus petite valeur",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[10, 7, 3, 9]"},
+            {"name": "k", "label": "k", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    "moyenne_geo": {
+        "name": "MOYENNE.GEOMETRIQUE (GEOMEAN)", "description": "Moyenne géométrique (valeurs > 0)",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (>0)", "type": "array", "required": True, "placeholder": "[1.05, 1.08, 1.03]"},
+        ],
+    },
+    "moyenne_harm": {
+        "name": "MOYENNE.HARMONIQUE (HARMEAN)", "description": "Moyenne harmonique (valeurs > 0)",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (>0)", "type": "array", "required": True, "placeholder": "[2, 4, 4]"},
+        ],
+    },
+    "ecart_moyen": {
+        "name": "ECART.MOYEN (AVEDEV)", "description": "Écart moyen absolu à la moyenne",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[4, 5, 6, 7, 8]"},
         ],
     },
 }
