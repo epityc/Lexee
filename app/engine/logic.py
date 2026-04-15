@@ -16,6 +16,7 @@ from datetime import date, datetime, timedelta
 
 from app.engine import _v5
 from app.engine import _v6
+from app.engine import _v7
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -2553,6 +2554,44 @@ FORMULAS: dict[str, callable] = {
     "bessel_i": _v6.formule_bessel_i,
     "bessel_y": _v6.formule_bessel_y,
     "bessel_k": _v6.formule_bessel_k,
+    # ─────────────────────────────────────────────────────────────────────────
+    # v7 — Ingénierie (suite) & Nombres Complexes (Groupe 2)
+    # ─────────────────────────────────────────────────────────────────────────
+    # Erreur & step
+    "erf_precis": _v7.formule_erf_precis,
+    "erfc": _v7.formule_erfc,
+    "erfc_precis": _v7.formule_erfc_precis,
+    "gestep": _v7.formule_gestep,
+    # Conversions hexa
+    "hex2bin": _v7.formule_hex2bin,
+    "hex2oct": _v7.formule_hex2oct,
+    # Propriétés complexes
+    "im_abs": _v7.formule_im_abs,
+    "im_part_imag": _v7.formule_im_part_imag,
+    "im_part_reelle": _v7.formule_im_part_reelle,
+    "im_argument": _v7.formule_im_argument,
+    "im_conjugue": _v7.formule_im_conjugue,
+    # Arithmétique complexe
+    "im_div": _v7.formule_im_div,
+    "im_sub": _v7.formule_im_sub,
+    "im_sum": _v7.formule_im_sum,
+    "im_product": _v7.formule_im_product,
+    "im_power": _v7.formule_im_power,
+    # Exp/log/sqrt complexes
+    "im_exp": _v7.formule_im_exp,
+    "im_ln": _v7.formule_im_ln,
+    "im_log10": _v7.formule_im_log10,
+    "im_log2": _v7.formule_im_log2,
+    "im_sqrt": _v7.formule_im_sqrt,
+    # Trigo & hyperbolique complexes
+    "im_cos": _v7.formule_im_cos,
+    "im_sin": _v7.formule_im_sin,
+    "im_sinh": _v7.formule_im_sinh,
+    "im_cot": _v7.formule_im_cot,
+    "im_csc": _v7.formule_im_csc,
+    "im_csch": _v7.formule_im_csch,
+    "im_sec": _v7.formule_im_sec,
+    "im_sech": _v7.formule_im_sech,
 }
 
 
@@ -4380,6 +4419,222 @@ FORMULA_META: dict[str, dict] = {
         "variables": [
             {"name": "x", "label": "x (>0)", "type": "number", "required": True, "placeholder": "2"},
             {"name": "n", "label": "Ordre n (entier >= 0)", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    # ═══════════════════════════════════════════════════════════════════════════
+    # v7 — Ingénierie (suite) & Nombres Complexes (Groupe 2)
+    # ═══════════════════════════════════════════════════════════════════════════
+    # ── Fonctions d'erreur & step ────────────────────────────────────────────
+    "erf_precis": {
+        "name": "ERF.PRECISE", "description": "Fonction d'erreur (un seul argument)",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "erfc": {
+        "name": "ERFC", "description": "Fonction d'erreur complémentaire : 1 - erf(x)",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "erfc_precis": {
+        "name": "ERFC.PRECISE", "description": "Fonction d'erreur complémentaire (identique à ERFC)",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "gestep": {
+        "name": "GESTEP", "description": "1 si nombre >= seuil, 0 sinon",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "seuil", "label": "Seuil", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    # ── Conversions hexadécimales ────────────────────────────────────────────
+    "hex2bin": {
+        "name": "HEX2BIN", "description": "Hexadécimal → binaire",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre hexa", "type": "text", "required": True, "placeholder": "FF"},
+        ],
+    },
+    "hex2oct": {
+        "name": "HEX2OCT", "description": "Hexadécimal → octal",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre hexa", "type": "text", "required": True, "placeholder": "FF"},
+        ],
+    },
+    # ── Propriétés complexes ─────────────────────────────────────────────────
+    "im_abs": {
+        "name": "IMABS", "description": "Module d'un nombre complexe |z|",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "3+4i"},
+        ],
+    },
+    "im_part_imag": {
+        "name": "IMAGINARY (IMAGINAIRE)", "description": "Partie imaginaire d'un complexe",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "3+4i"},
+        ],
+    },
+    "im_part_reelle": {
+        "name": "IMREAL", "description": "Partie réelle d'un complexe",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "3+4i"},
+        ],
+    },
+    "im_argument": {
+        "name": "IMARGUMENT", "description": "Argument (angle en radians) d'un complexe",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_conjugue": {
+        "name": "IMCONJUGATE (IMCONJUGUÉ)", "description": "Conjugué complexe a - bi",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "3+4i"},
+        ],
+    },
+    # ── Arithmétique complexe ────────────────────────────────────────────────
+    "im_div": {
+        "name": "IMDIV", "description": "Division de deux complexes z1 / z2",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "z1", "label": "Numérateur", "type": "text", "required": True, "placeholder": "4+8i"},
+            {"name": "z2", "label": "Dénominateur", "type": "text", "required": True, "placeholder": "2+2i"},
+        ],
+    },
+    "im_sub": {
+        "name": "IMSUB", "description": "Soustraction z1 - z2",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "z1", "label": "z1", "type": "text", "required": True, "placeholder": "5+3i"},
+            {"name": "z2", "label": "z2", "type": "text", "required": True, "placeholder": "2+i"},
+        ],
+    },
+    "im_sum": {
+        "name": "IMSUM", "description": "Somme d'une liste de complexes",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexes", "label": "Complexes", "type": "array", "required": True, "placeholder": "[\"1+2i\", \"3+4i\"]"},
+        ],
+    },
+    "im_product": {
+        "name": "IMPRODUCT", "description": "Produit d'une liste de complexes",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexes", "label": "Complexes", "type": "array", "required": True, "placeholder": "[\"1+i\", \"1+i\"]"},
+        ],
+    },
+    "im_power": {
+        "name": "IMPOWER", "description": "z élevé à une puissance réelle",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "2+3i"},
+            {"name": "puissance", "label": "Puissance", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    # ── Exp / log / sqrt complexes ───────────────────────────────────────────
+    "im_exp": {
+        "name": "IMEXP", "description": "Exponentielle complexe e^z",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_ln": {
+        "name": "IMLN", "description": "Logarithme naturel complexe ln(z)",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_log10": {
+        "name": "IMLOG10", "description": "Logarithme décimal complexe",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_log2": {
+        "name": "IMLOG2", "description": "Logarithme base 2 complexe",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_sqrt": {
+        "name": "IMSQRT", "description": "Racine carrée complexe",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "3+4i"},
+        ],
+    },
+    # ── Trigo & hyperboliques complexes ──────────────────────────────────────
+    "im_cos": {
+        "name": "IMCOS", "description": "Cosinus complexe",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_sin": {
+        "name": "IMSIN", "description": "Sinus complexe",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_sinh": {
+        "name": "IMSINH", "description": "Sinus hyperbolique complexe",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_cot": {
+        "name": "IMCOT", "description": "Cotangente complexe cos(z)/sin(z)",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_csc": {
+        "name": "IMCSC", "description": "Cosécante complexe 1/sin(z)",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_csch": {
+        "name": "IMCSCH", "description": "Cosécante hyperbolique complexe 1/sinh(z)",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_sec": {
+        "name": "IMSEC", "description": "Sécante complexe 1/cos(z)",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_sech": {
+        "name": "IMSECH", "description": "Sécante hyperbolique complexe 1/cosh(z)",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
         ],
     },
 }
