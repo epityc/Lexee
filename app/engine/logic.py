@@ -15,6 +15,7 @@ import re
 from datetime import date, datetime, timedelta
 
 from app.engine import _v5
+from app.engine import _v6
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -2523,6 +2524,35 @@ FORMULAS: dict[str, callable] = {
     "moyenne_geo": _v5.formule_moyenne_geo,
     "moyenne_harm": _v5.formule_moyenne_harm,
     "ecart_moyen": _v5.formule_ecart_moyen,
+    # ─────────────────────────────────────────────────────────────────────────
+    # v6 — Ingénierie & Mathématiques Avancées (Groupe 1)
+    # ─────────────────────────────────────────────────────────────────────────
+    # Hyperboliques & réciproques
+    "acosh": _v6.formule_acosh,
+    "asinh": _v6.formule_asinh,
+    "atanh": _v6.formule_atanh,
+    "cosh": _v6.formule_cosh,
+    "cot": _v6.formule_cot,
+    "coth": _v6.formule_coth,
+    "csc": _v6.formule_csc,
+    "csch": _v6.formule_csch,
+    # Conversions de bases
+    "base": _v6.formule_base,
+    "decimal_base": _v6.formule_decimal_base,
+    "bin2dec": _v6.formule_bin2dec,
+    "bin2oct": _v6.formule_bin2oct,
+    "dec2oct": _v6.formule_dec2oct,
+    # Opérations bit à bit
+    "bit_lshift": _v6.formule_bit_lshift,
+    "bit_rshift": _v6.formule_bit_rshift,
+    # Combinatoire & complexes
+    "combinaison_rep": _v6.formule_combinaison_rep,
+    "complexe": _v6.formule_complexe,
+    # Fonctions de Bessel
+    "bessel_j": _v6.formule_bessel_j,
+    "bessel_i": _v6.formule_bessel_i,
+    "bessel_y": _v6.formule_bessel_y,
+    "bessel_k": _v6.formule_bessel_k,
 }
 
 
@@ -4183,6 +4213,173 @@ FORMULA_META: dict[str, dict] = {
         "category": "Statistiques",
         "variables": [
             {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[4, 5, 6, 7, 8]"},
+        ],
+    },
+    # ═══════════════════════════════════════════════════════════════════════════
+    # v6 — Ingénierie & Mathématiques Avancées (Groupe 1)
+    # ═══════════════════════════════════════════════════════════════════════════
+    # ── Hyperboliques & réciproques ──────────────────────────────────────────
+    "acosh": {
+        "name": "ACOSH", "description": "Argument cosinus hyperbolique (x >= 1)",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    "asinh": {
+        "name": "ASINH", "description": "Argument sinus hyperbolique",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "atanh": {
+        "name": "ATANH", "description": "Argument tangente hyperbolique (-1 < x < 1)",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "0.5"},
+        ],
+    },
+    "cosh": {
+        "name": "COSH", "description": "Cosinus hyperbolique",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "cot": {
+        "name": "COT", "description": "Cotangente (1/tan)",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x (radians)", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "coth": {
+        "name": "COTH", "description": "Cotangente hyperbolique (1/tanh)",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "csc": {
+        "name": "CSC", "description": "Cosécante (1/sin)",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x (radians)", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "csch": {
+        "name": "CSCH", "description": "Cosécante hyperbolique (1/sinh)",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    # ── Conversions de bases ─────────────────────────────────────────────────
+    "base": {
+        "name": "BASE", "description": "Convertir un entier décimal vers une base (2-36)",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre décimal", "type": "number", "required": True, "placeholder": "255"},
+            {"name": "base", "label": "Base cible (2-36)", "type": "number", "required": True, "placeholder": "16"},
+            {"name": "longueur_min", "label": "Longueur minimale", "type": "number", "required": False, "placeholder": "4"},
+        ],
+    },
+    "decimal_base": {
+        "name": "DECIMAL", "description": "Convertir une chaîne en décimal depuis une base (2-36)",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "texte", "label": "Chaîne", "type": "text", "required": True, "placeholder": "FF"},
+            {"name": "base", "label": "Base source (2-36)", "type": "number", "required": True, "placeholder": "16"},
+        ],
+    },
+    "bin2dec": {
+        "name": "BIN2DEC", "description": "Convertir binaire → décimal",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre binaire", "type": "text", "required": True, "placeholder": "1010"},
+        ],
+    },
+    "bin2oct": {
+        "name": "BIN2OCT", "description": "Convertir binaire → octal",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre binaire", "type": "text", "required": True, "placeholder": "1010"},
+        ],
+    },
+    "dec2oct": {
+        "name": "DEC2OCT", "description": "Convertir décimal → octal",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre décimal", "type": "number", "required": True, "placeholder": "8"},
+        ],
+    },
+    # ── Opérations bit à bit ─────────────────────────────────────────────────
+    "bit_lshift": {
+        "name": "BITLSHIFT", "description": "Décalage binaire à gauche",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Entier", "type": "number", "required": True, "placeholder": "4"},
+            {"name": "decalage", "label": "Décalage", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    "bit_rshift": {
+        "name": "BITRSHIFT", "description": "Décalage binaire à droite",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Entier", "type": "number", "required": True, "placeholder": "16"},
+            {"name": "decalage", "label": "Décalage", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    # ── Combinatoire & complexes ─────────────────────────────────────────────
+    "combinaison_rep": {
+        "name": "COMBINA", "description": "Combinaisons avec répétition : C(n+k-1, k)",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "n", "label": "n (objets)", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "k", "label": "k (tirages)", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "complexe": {
+        "name": "COMPLEX", "description": "Nombre complexe a+bi (ou a+bj)",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "reel", "label": "Partie réelle", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "imaginaire", "label": "Partie imaginaire", "type": "number", "required": True, "placeholder": "4"},
+            {"name": "suffixe", "label": "Suffixe (i ou j)", "type": "text", "required": False, "placeholder": "i"},
+        ],
+    },
+    # ── Fonctions de Bessel ──────────────────────────────────────────────────
+    "bessel_j": {
+        "name": "BESSELJ", "description": "Fonction de Bessel de première espèce J_n(x)",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "n", "label": "Ordre n (entier >= 0)", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "bessel_i": {
+        "name": "BESSELI", "description": "Fonction de Bessel modifiée I_n(x)",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "n", "label": "Ordre n (entier >= 0)", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "bessel_y": {
+        "name": "BESSELY", "description": "Fonction de Bessel de deuxième espèce Y_n(x), x > 0",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x (>0)", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "n", "label": "Ordre n (entier >= 0)", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "bessel_k": {
+        "name": "BESSELK", "description": "Fonction de Bessel modifiée K_n(x), x > 0",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x (>0)", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "n", "label": "Ordre n (entier >= 0)", "type": "number", "required": True, "placeholder": "1"},
         ],
     },
 }
