@@ -226,6 +226,6 @@ def test_bessel_k_x_invalide():
 # ─────────────────────────────────────────────────────────────────────────────
 def test_registre_complet_v6():
     from app.engine.logic import FORMULA_META
-    assert len(FORMULAS) == 242
-    assert len(FORMULA_META) == 242
+    assert len(FORMULAS) == 300
+    assert len(FORMULA_META) == 300
     assert set(FORMULAS.keys()) == set(FORMULA_META.keys())

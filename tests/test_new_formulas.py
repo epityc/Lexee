@@ -41,7 +41,7 @@ class TestRegistry:
         assert set(FORMULAS.keys()) == set(FORMULA_META.keys())
 
     def test_total_count(self):
-        assert len(FORMULAS) == 242
+        assert len(FORMULAS) == 300
 
     def test_each_meta_has_required_fields(self):
         for key, meta in FORMULA_META.items():

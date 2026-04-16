@@ -50,7 +50,7 @@ from app.engine.logic import (
 
 class TestRegistryV3:
     def test_total_count(self):
-        assert len(FORMULAS) == 242
+        assert len(FORMULAS) == 300
 
     def test_all_v3_keys_present(self):
         v3_keys = [
