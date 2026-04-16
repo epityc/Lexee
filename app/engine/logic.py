@@ -17,6 +17,7 @@ from datetime import date, datetime, timedelta
 from app.engine import _v5
 from app.engine import _v6
 from app.engine import _v7
+from app.engine import _v8
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -2592,6 +2593,37 @@ FORMULAS: dict[str, callable] = {
     "im_csch": _v7.formule_im_csch,
     "im_sec": _v7.formule_im_sec,
     "im_sech": _v7.formule_im_sech,
+    # ── v8 — Ingénierie (suite) & Finance Obligations/Titres (Groupe 3) ──
+    "sinh": _v8.formule_sinh,
+    "tanh": _v8.formule_tanh,
+    "sec": _v8.formule_sec,
+    "sech": _v8.formule_sech,
+    "imtan": _v8.formule_imtan,
+    "oct2bin": _v8.formule_oct2bin,
+    "oct2dec": _v8.formule_oct2dec,
+    "oct2hex": _v8.formule_oct2hex,
+    "accrint": _v8.formule_accrint,
+    "accrintm": _v8.formule_accrintm,
+    "amorlinc": _v8.formule_amorlinc,
+    "amordegrc": _v8.formule_amordegrc,
+    "coupdaybs": _v8.formule_coupdaybs,
+    "coupdays": _v8.formule_coupdays,
+    "coupdaysnc": _v8.formule_coupdaysnc,
+    "coupncd": _v8.formule_coupncd,
+    "coupnum": _v8.formule_coupnum,
+    "couppcd": _v8.formule_couppcd,
+    "disc": _v8.formule_disc,
+    "dollarde": _v8.formule_dollarde,
+    "dollarfr": _v8.formule_dollarfr,
+    "duration": _v8.formule_duration,
+    "effect": _v8.formule_effect,
+    "intrate": _v8.formule_intrate,
+    "mduration": _v8.formule_mduration,
+    "nominal": _v8.formule_nominal,
+    "oddfprice": _v8.formule_oddfprice,
+    "oddfyield": _v8.formule_oddfyield,
+    "oddlprice": _v8.formule_oddlprice,
+    "oddlyield": _v8.formule_oddlyield,
 }
 
 
@@ -4635,6 +4667,282 @@ FORMULA_META: dict[str, dict] = {
         "category": "Nombres Complexes",
         "variables": [
             {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    # ── v8 — Ingénierie (suite) & Finance Obligations/Titres (Groupe 3) ──
+    "sinh": {
+        "name": "SINH", "description": "Sinus hyperbolique de x",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "tanh": {
+        "name": "TANH", "description": "Tangente hyperbolique de x",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "sec": {
+        "name": "SEC", "description": "Sécante = 1/cos(x) en radians",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "x", "label": "x (radians)", "type": "number", "required": True, "placeholder": "0"},
+        ],
+    },
+    "sech": {
+        "name": "SECH", "description": "Sécante hyperbolique = 1/cosh(x)",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "0"},
+        ],
+    },
+    "imtan": {
+        "name": "IMTAN", "description": "Tangente d'un nombre complexe",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "nombre", "label": "z", "type": "text", "required": True, "placeholder": "1+2i"},
+        ],
+    },
+    "oct2bin": {
+        "name": "OCT2BIN", "description": "Convertit un octal en binaire",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Octal", "type": "text", "required": True, "placeholder": "10"},
+        ],
+    },
+    "oct2dec": {
+        "name": "OCT2DEC", "description": "Convertit un octal en décimal",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Octal", "type": "text", "required": True, "placeholder": "10"},
+        ],
+    },
+    "oct2hex": {
+        "name": "OCT2HEX", "description": "Convertit un octal en hexadécimal",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Octal", "type": "text", "required": True, "placeholder": "77"},
+        ],
+    },
+    "accrint": {
+        "name": "ACCRINT", "description": "Intérêts courus d'un titre à coupons périodiques",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "emission", "label": "Date d'émission", "type": "text", "required": True, "placeholder": "2024-01-01"},
+            {"name": "reglement", "label": "Date de règlement", "type": "text", "required": True, "placeholder": "2024-07-01"},
+            {"name": "taux", "label": "Taux coupon", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "valeur_nominale", "label": "Valeur nominale", "type": "number", "required": False, "placeholder": "1000"},
+            {"name": "base", "label": "Base (0-4)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "accrintm": {
+        "name": "ACCRINTM", "description": "Intérêts courus à échéance (paiement unique)",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "emission", "label": "Date d'émission", "type": "text", "required": True, "placeholder": "2024-01-01"},
+            {"name": "echeance", "label": "Date d'échéance", "type": "text", "required": True, "placeholder": "2024-12-31"},
+            {"name": "taux", "label": "Taux", "type": "number", "required": True, "placeholder": "0.06"},
+            {"name": "valeur_nominale", "label": "Valeur nominale", "type": "number", "required": False, "placeholder": "1000"},
+            {"name": "base", "label": "Base (0-4)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "amorlinc": {
+        "name": "AMORLINC", "description": "Amortissement linéaire prorata (convention française)",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "cout", "label": "Coût", "type": "number", "required": True, "placeholder": "10000"},
+            {"name": "taux", "label": "Taux", "type": "number", "required": True, "placeholder": "0.2"},
+            {"name": "periode", "label": "Période", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "valeur_residuelle", "label": "Valeur résiduelle", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "amordegrc": {
+        "name": "AMORDEGRC", "description": "Amortissement dégressif avec coefficient (convention française)",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "cout", "label": "Coût", "type": "number", "required": True, "placeholder": "10000"},
+            {"name": "taux", "label": "Taux", "type": "number", "required": True, "placeholder": "0.2"},
+            {"name": "periode", "label": "Période", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "valeur_residuelle", "label": "Valeur résiduelle", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "coupdaybs": {
+        "name": "COUPDAYBS", "description": "Jours entre le dernier coupon et le règlement",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Date de règlement", "type": "text", "required": True, "placeholder": "2024-03-15"},
+            {"name": "echeance", "label": "Date d'échéance", "type": "text", "required": True, "placeholder": "2027-01-15"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "base", "label": "Base (0-4)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "coupdays": {
+        "name": "COUPDAYS", "description": "Jours dans la période de coupon contenant le règlement",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Date de règlement", "type": "text", "required": True, "placeholder": "2024-03-15"},
+            {"name": "echeance", "label": "Date d'échéance", "type": "text", "required": True, "placeholder": "2027-01-15"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "base", "label": "Base (0-4)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "coupdaysnc": {
+        "name": "COUPDAYSNC", "description": "Jours entre le règlement et le prochain coupon",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Date de règlement", "type": "text", "required": True, "placeholder": "2024-03-15"},
+            {"name": "echeance", "label": "Date d'échéance", "type": "text", "required": True, "placeholder": "2027-01-15"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "base", "label": "Base (0-4)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "coupncd": {
+        "name": "COUPNCD", "description": "Date du prochain coupon après le règlement",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Date de règlement", "type": "text", "required": True, "placeholder": "2024-03-15"},
+            {"name": "echeance", "label": "Date d'échéance", "type": "text", "required": True, "placeholder": "2027-01-15"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    "coupnum": {
+        "name": "COUPNUM", "description": "Nombre de coupons payables entre règlement et échéance",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Date de règlement", "type": "text", "required": True, "placeholder": "2024-03-15"},
+            {"name": "echeance", "label": "Date d'échéance", "type": "text", "required": True, "placeholder": "2027-01-15"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    "couppcd": {
+        "name": "COUPPCD", "description": "Date du coupon précédent le règlement",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Date de règlement", "type": "text", "required": True, "placeholder": "2024-03-15"},
+            {"name": "echeance", "label": "Date d'échéance", "type": "text", "required": True, "placeholder": "2027-01-15"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    "disc": {
+        "name": "DISC", "description": "Taux d'escompte d'un titre",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Date de règlement", "type": "text", "required": True, "placeholder": "2024-01-01"},
+            {"name": "echeance", "label": "Date d'échéance", "type": "text", "required": True, "placeholder": "2025-01-01"},
+            {"name": "prix", "label": "Prix", "type": "number", "required": True, "placeholder": "95"},
+            {"name": "remboursement", "label": "Remboursement", "type": "number", "required": True, "placeholder": "100"},
+            {"name": "base", "label": "Base (0-4)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "dollarde": {
+        "name": "DOLLARDE", "description": "Convertit un prix fractionnaire en prix décimal",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "prix_fractionnaire", "label": "Prix fractionnaire", "type": "number", "required": True, "placeholder": "1.02"},
+            {"name": "fraction", "label": "Fraction", "type": "number", "required": True, "placeholder": "16"},
+        ],
+    },
+    "dollarfr": {
+        "name": "DOLLARFR", "description": "Convertit un prix décimal en prix fractionnaire",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "prix_decimal", "label": "Prix décimal", "type": "number", "required": True, "placeholder": "1.125"},
+            {"name": "fraction", "label": "Fraction", "type": "number", "required": True, "placeholder": "16"},
+        ],
+    },
+    "duration": {
+        "name": "DURATION", "description": "Duration de Macaulay d'une obligation",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_coupon", "label": "Taux coupon", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "rendement", "label": "Rendement", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "periodes", "label": "Périodes (années)", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": False, "placeholder": "2"},
+            {"name": "valeur_nominale", "label": "Valeur nominale", "type": "number", "required": False, "placeholder": "100"},
+        ],
+    },
+    "effect": {
+        "name": "EFFECT", "description": "Taux d'intérêt annuel effectif",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_nominal", "label": "Taux nominal", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "periodes", "label": "Périodes par an", "type": "number", "required": True, "placeholder": "12"},
+        ],
+    },
+    "intrate": {
+        "name": "INTRATE", "description": "Taux d'intérêt d'un titre entièrement investi",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Date de règlement", "type": "text", "required": True, "placeholder": "2024-01-01"},
+            {"name": "echeance", "label": "Date d'échéance", "type": "text", "required": True, "placeholder": "2025-01-01"},
+            {"name": "investissement", "label": "Investissement", "type": "number", "required": True, "placeholder": "1000"},
+            {"name": "remboursement", "label": "Remboursement", "type": "number", "required": True, "placeholder": "1050"},
+            {"name": "base", "label": "Base (0-4)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "mduration": {
+        "name": "MDURATION", "description": "Duration modifiée d'une obligation",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_coupon", "label": "Taux coupon", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "rendement", "label": "Rendement", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "periodes", "label": "Périodes (années)", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": False, "placeholder": "2"},
+            {"name": "valeur_nominale", "label": "Valeur nominale", "type": "number", "required": False, "placeholder": "100"},
+        ],
+    },
+    "nominal": {
+        "name": "NOMINAL", "description": "Taux d'intérêt annuel nominal",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_effectif", "label": "Taux effectif", "type": "number", "required": True, "placeholder": "0.05116"},
+            {"name": "periodes", "label": "Périodes par an", "type": "number", "required": True, "placeholder": "12"},
+        ],
+    },
+    "oddfprice": {
+        "name": "ODDFPRICE", "description": "Prix d'une obligation avec première période atypique",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_coupon", "label": "Taux coupon", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "rendement", "label": "Rendement", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "periodes", "label": "Périodes (années)", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": False, "placeholder": "2"},
+            {"name": "premier_coupon_jours", "label": "Jours 1er coupon", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "oddfyield": {
+        "name": "ODDFYIELD", "description": "Rendement d'une obligation avec première période atypique",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_coupon", "label": "Taux coupon", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "prix", "label": "Prix", "type": "number", "required": True, "placeholder": "100"},
+            {"name": "periodes", "label": "Périodes (années)", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": False, "placeholder": "2"},
+            {"name": "premier_coupon_jours", "label": "Jours 1er coupon", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "oddlprice": {
+        "name": "ODDLPRICE", "description": "Prix d'une obligation avec dernière période atypique",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_coupon", "label": "Taux coupon", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "rendement", "label": "Rendement", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "periodes", "label": "Périodes (années)", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": False, "placeholder": "2"},
+            {"name": "dernier_coupon_jours", "label": "Jours dernier coupon", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "oddlyield": {
+        "name": "ODDLYIELD", "description": "Rendement d'une obligation avec dernière période atypique",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_coupon", "label": "Taux coupon", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "prix", "label": "Prix", "type": "number", "required": True, "placeholder": "100"},
+            {"name": "periodes", "label": "Périodes (années)", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": False, "placeholder": "2"},
+            {"name": "dernier_coupon_jours", "label": "Jours dernier coupon", "type": "number", "required": False, "placeholder": "0"},
         ],
     },
 }
