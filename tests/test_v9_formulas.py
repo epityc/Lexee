@@ -252,6 +252,6 @@ def test_f_dist_rt():
 # ─────────────────────────────────────────────────────────────────────────────
 def test_registre_complet_v9():
     from app.engine.logic import FORMULA_META
-    assert len(FORMULAS) == 300
-    assert len(FORMULA_META) == 300
+    assert len(FORMULAS) == 330
+    assert len(FORMULA_META) == 330
     assert set(FORMULAS.keys()) == set(FORMULA_META.keys())

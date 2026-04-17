@@ -20,6 +20,7 @@ from app.engine import _v7
 from app.engine import _v8
 from app.engine import _v9
 from app.engine import _v10
+from app.engine import _v11
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -2686,6 +2687,37 @@ FORMULAS: dict[str, callable] = {
     "poisson_dist": _v10.formule_poisson_dist,
     "prob": _v10.formule_prob,
     "quartile_exc": _v10.formule_quartile_exc,
+    # ── v11 — Statistiques, D-Functions & Texte/Octets (Groupe 6) ──
+    "rsq": _v11.formule_rsq,
+    "skew": _v11.formule_skew,
+    "skew_p": _v11.formule_skew_p,
+    "standardize": _v11.formule_standardize,
+    "t_dist": _v11.formule_t_dist,
+    "t_dist_2t": _v11.formule_t_dist_2t,
+    "t_dist_rt": _v11.formule_t_dist_rt,
+    "t_inv": _v11.formule_t_inv,
+    "t_inv_2t": _v11.formule_t_inv_2t,
+    "t_test": _v11.formule_t_test,
+    "weibull_dist": _v11.formule_weibull_dist,
+    "z_test": _v11.formule_z_test,
+    "daverage": _v11.formule_daverage,
+    "dcount": _v11.formule_dcount,
+    "dcounta": _v11.formule_dcounta,
+    "dget": _v11.formule_dget,
+    "dmax": _v11.formule_dmax,
+    "dmin": _v11.formule_dmin,
+    "dproduct": _v11.formule_dproduct,
+    "dstdev": _v11.formule_dstdev,
+    "dstdevp": _v11.formule_dstdevp,
+    "dsum": _v11.formule_dsum,
+    "dvar": _v11.formule_dvar,
+    "dvarp": _v11.formule_dvarp,
+    "asc_val": _v11.formule_asc_val,
+    "bahttext": _v11.formule_bahttext,
+    "dbcs": _v11.formule_dbcs,
+    "findb": _v11.formule_findb,
+    "leftb": _v11.formule_leftb,
+    "lenb": _v11.formule_lenb,
 }
 
 
@@ -5516,6 +5548,261 @@ FORMULA_META: dict[str, dict] = {
         "variables": [
             {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[1,2,3,4,5]"},
             {"name": "quart", "label": "Quartile (1-3)", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    # ── v11 — Statistiques, D-Functions & Texte/Octets (Groupe 6) ──
+    "rsq": {
+        "name": "RSQ", "description": "Coefficient de détermination R²",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "array", "required": True, "placeholder": "[1,2,3]"},
+            {"name": "y", "label": "y", "type": "array", "required": True, "placeholder": "[2,4,6]"},
+        ],
+    },
+    "skew": {
+        "name": "SKEW", "description": "Asymétrie d'un échantillon",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[1,2,3,4,10]"},
+        ],
+    },
+    "skew_p": {
+        "name": "SKEW.P", "description": "Asymétrie d'une population",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[1,2,3,4,10]"},
+        ],
+    },
+    "standardize": {
+        "name": "STANDARDIZE", "description": "Valeur centrée réduite (z-score)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "75"},
+            {"name": "moyenne", "label": "Moyenne", "type": "number", "required": True, "placeholder": "70"},
+            {"name": "ecart_type", "label": "Écart-type", "type": "number", "required": True, "placeholder": "5"},
+        ],
+    },
+    "t_dist": {
+        "name": "T.DIST", "description": "Distribution t de Student (queue gauche)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1.96"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "30"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "t_dist_2t": {
+        "name": "T.DIST.2T", "description": "Distribution t bilatérale",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x (>= 0)", "type": "number", "required": True, "placeholder": "1.96"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "30"},
+        ],
+    },
+    "t_dist_rt": {
+        "name": "T.DIST.RT", "description": "Distribution t (queue droite)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1.96"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "30"},
+        ],
+    },
+    "t_inv": {
+        "name": "T.INV", "description": "Inverse de la distribution t (queue gauche)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.975"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "30"},
+        ],
+    },
+    "t_inv_2t": {
+        "name": "T.INV.2T", "description": "Inverse bilatéral de la distribution t",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "30"},
+        ],
+    },
+    "t_test": {
+        "name": "T.TEST", "description": "Test t de Student",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "Échantillon 1", "type": "array", "required": True, "placeholder": "[1,2,3]"},
+            {"name": "y", "label": "Échantillon 2", "type": "array", "required": True, "placeholder": "[2,3,4]"},
+            {"name": "queues", "label": "Queues (1 ou 2)", "type": "number", "required": False, "placeholder": "2"},
+            {"name": "type", "label": "Type (1=apparié, 2=égal, 3=inégal)", "type": "number", "required": False, "placeholder": "2"},
+        ],
+    },
+    "weibull_dist": {
+        "name": "WEIBULL.DIST", "description": "Distribution de Weibull",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "alpha", "label": "Alpha (forme)", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "beta", "label": "Bêta (échelle)", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "z_test": {
+        "name": "Z.TEST", "description": "P-value d'un test z unilatéral",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[1,2,3,4,5]"},
+            {"name": "mu", "label": "Moyenne hypothétique", "type": "number", "required": True, "placeholder": "2.5"},
+            {"name": "sigma", "label": "Écart-type (optionnel)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "daverage": {
+        "name": "DAVERAGE", "description": "Moyenne d'un champ filtré dans une base",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dcount": {
+        "name": "DCOUNT", "description": "Nombre de cellules numériques dans un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dcounta": {
+        "name": "DCOUNTA", "description": "Nombre de cellules non vides dans un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dget": {
+        "name": "DGET", "description": "Extrait une valeur unique d'un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dmax": {
+        "name": "DMAX", "description": "Valeur maximale d'un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dmin": {
+        "name": "DMIN", "description": "Valeur minimale d'un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dproduct": {
+        "name": "DPRODUCT", "description": "Produit des valeurs d'un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dstdev": {
+        "name": "DSTDEV", "description": "Écart-type échantillon d'un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dstdevp": {
+        "name": "DSTDEVP", "description": "Écart-type population d'un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dsum": {
+        "name": "DSUM", "description": "Somme des valeurs d'un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dvar": {
+        "name": "DVAR", "description": "Variance échantillon d'un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dvarp": {
+        "name": "DVARP", "description": "Variance population d'un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "asc_val": {
+        "name": "ASC", "description": "Convertit les caractères pleine largeur en demi-largeur",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Ａｌｉｃｅ"},
+        ],
+    },
+    "bahttext": {
+        "name": "BAHTTEXT", "description": "Nombre en texte baht thaïlandais",
+        "category": "Texte",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "12.5"},
+        ],
+    },
+    "dbcs": {
+        "name": "DBCS", "description": "Convertit les caractères demi-largeur en pleine largeur",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Hello"},
+        ],
+    },
+    "findb": {
+        "name": "FINDB", "description": "Position d'un texte en octets (UTF-8)",
+        "category": "Texte",
+        "variables": [
+            {"name": "cherche", "label": "Texte cherché", "type": "text", "required": True, "placeholder": "lo"},
+            {"name": "texte", "label": "Dans le texte", "type": "text", "required": True, "placeholder": "Hello"},
+            {"name": "debut", "label": "Position de départ", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "leftb": {
+        "name": "LEFTB", "description": "N premiers octets d'une chaîne (UTF-8)",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Héllo"},
+            {"name": "nb_octets", "label": "Nombre d'octets", "type": "number", "required": False, "placeholder": "3"},
+        ],
+    },
+    "lenb": {
+        "name": "LENB", "description": "Longueur d'une chaîne en octets (UTF-8)",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Héllo"},
         ],
     },
 }
