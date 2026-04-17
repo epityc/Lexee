@@ -21,6 +21,7 @@ from app.engine import _v8
 from app.engine import _v9
 from app.engine import _v10
 from app.engine import _v11
+from app.engine import _v12
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -2718,6 +2719,34 @@ FORMULAS: dict[str, callable] = {
     "findb": _v11.formule_findb,
     "leftb": _v11.formule_leftb,
     "lenb": _v11.formule_lenb,
+    # ── v12 : Texte Avancé & Recherche Moderne (Groupe 7) ──
+    "midb": _v12.formule_midb,
+    "phonetic": _v12.formule_phonetic,
+    "replaceb": _v12.formule_replaceb,
+    "rightb": _v12.formule_rightb,
+    "searchb": _v12.formule_searchb,
+    "t_val": _v12.formule_t_val,
+    "unichar": _v12.formule_unichar,
+    "unicode_val": _v12.formule_unicode_val,
+    "valuetotext": _v12.formule_valuetotext,
+    "arraytotext": _v12.formule_arraytotext,
+    "call_val": _v12.formule_call_val,
+    "register_id": _v12.formule_register_id,
+    "choosecols": _v12.formule_choosecols,
+    "chooserows": _v12.formule_chooserows,
+    "drop_val": _v12.formule_drop_val,
+    "expand": _v12.formule_expand,
+    "hstack": _v12.formule_hstack,
+    "take_val": _v12.formule_take_val,
+    "tocol": _v12.formule_tocol,
+    "torow": _v12.formule_torow,
+    "wrapcols": _v12.formule_wrapcols,
+    "wraprows": _v12.formule_wraprows,
+    "isomitted": _v12.formule_isomitted,
+    "lambda_val": _v12.formule_lambda_val,
+    "map_val": _v12.formule_map_val,
+    "reduce_val": _v12.formule_reduce_val,
+    "scan_val": _v12.formule_scan_val,
 }
 
 
@@ -5803,6 +5832,231 @@ FORMULA_META: dict[str, dict] = {
         "category": "Texte",
         "variables": [
             {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Héllo"},
+        ],
+    },
+    # ── v12 : Texte Avancé & Recherche Moderne (Groupe 7) ──
+    "midb": {
+        "name": "MIDB", "description": "Extrait des octets au milieu d'une chaîne (UTF-8)",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Héllo"},
+            {"name": "position", "label": "Position (octet)", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "nb_octets", "label": "Nombre d'octets", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "phonetic": {
+        "name": "PHONETIC", "description": "Extrait la lecture phonétique (furigana) d'un texte",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "東京"},
+        ],
+    },
+    "replaceb": {
+        "name": "REPLACEB", "description": "Remplace des octets dans une chaîne (UTF-8)",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte original", "type": "text", "required": True, "placeholder": "Hello"},
+            {"name": "position", "label": "Position (octet)", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "nb_octets", "label": "Nombre d'octets à remplacer", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "nouveau_texte", "label": "Nouveau texte", "type": "text", "required": True, "placeholder": "Hi"},
+        ],
+    },
+    "rightb": {
+        "name": "RIGHTB", "description": "Renvoie les n derniers octets d'une chaîne (UTF-8)",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Hello"},
+            {"name": "nb_octets", "label": "Nombre d'octets", "type": "number", "required": False, "placeholder": "3"},
+        ],
+    },
+    "searchb": {
+        "name": "SEARCHB", "description": "Recherche insensible à la casse en octets (UTF-8)",
+        "category": "Texte",
+        "variables": [
+            {"name": "cherche", "label": "Texte à chercher", "type": "text", "required": True, "placeholder": "lo"},
+            {"name": "texte", "label": "Texte source", "type": "text", "required": True, "placeholder": "Hello World"},
+            {"name": "debut", "label": "Position de début", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "t_val": {
+        "name": "T", "description": "Renvoie le texte si la valeur est du texte, sinon chaîne vide",
+        "category": "Texte",
+        "variables": [
+            {"name": "valeur", "label": "Valeur", "type": "text", "required": True, "placeholder": "Hello"},
+        ],
+    },
+    "unichar": {
+        "name": "UNICHAR", "description": "Renvoie le caractère Unicode d'un code point",
+        "category": "Texte",
+        "variables": [
+            {"name": "nombre", "label": "Code point Unicode", "type": "number", "required": True, "placeholder": "65"},
+        ],
+    },
+    "unicode_val": {
+        "name": "UNICODE", "description": "Renvoie le code point Unicode du premier caractère",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "A"},
+        ],
+    },
+    "valuetotext": {
+        "name": "VALUETOTEXT", "description": "Convertit une valeur en représentation textuelle",
+        "category": "Texte",
+        "variables": [
+            {"name": "valeur", "label": "Valeur", "type": "text", "required": True, "placeholder": "123.45"},
+            {"name": "format", "label": "Format (0=concis, 1=strict)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "arraytotext": {
+        "name": "ARRAYTOTEXT", "description": "Convertit un tableau en représentation textuelle",
+        "category": "Texte",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3]"},
+            {"name": "format", "label": "Format (0=concis, 1=strict)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "call_val": {
+        "name": "CALL", "description": "Appel de fonction externe (simulation)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "nom_fonction", "label": "Nom de la fonction", "type": "text", "required": True, "placeholder": "myFunc"},
+            {"name": "arguments", "label": "Arguments (JSON)", "type": "json", "required": False, "placeholder": "[]"},
+        ],
+    },
+    "register_id": {
+        "name": "REGISTER.ID", "description": "Identifiant de registre d'une fonction externe (simulation)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "module", "label": "Module DLL", "type": "text", "required": True, "placeholder": "user32"},
+            {"name": "procedure", "label": "Procédure", "type": "text", "required": True, "placeholder": "GetActiveWindow"},
+        ],
+    },
+    "choosecols": {
+        "name": "CHOOSECOLS", "description": "Sélectionne des colonnes spécifiques d'un tableau",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON 2D)", "type": "json", "required": True, "placeholder": "[[1,2,3],[4,5,6]]"},
+            {"name": "colonnes", "label": "Indices des colonnes (JSON)", "type": "json", "required": True, "placeholder": "[1, 3]"},
+        ],
+    },
+    "chooserows": {
+        "name": "CHOOSEROWS", "description": "Sélectionne des lignes spécifiques d'un tableau",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON 2D)", "type": "json", "required": True, "placeholder": "[[1,2,3],[4,5,6]]"},
+            {"name": "lignes", "label": "Indices des lignes (JSON)", "type": "json", "required": True, "placeholder": "[1, -1]"},
+        ],
+    },
+    "drop_val": {
+        "name": "DROP", "description": "Supprime des lignes/colonnes du début ou de la fin d'un tableau",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON 2D)", "type": "json", "required": True, "placeholder": "[[1,2,3],[4,5,6],[7,8,9]]"},
+            {"name": "lignes", "label": "Lignes à supprimer (+ début, − fin)", "type": "number", "required": False, "placeholder": "1"},
+            {"name": "colonnes", "label": "Colonnes à supprimer (+ début, − fin)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "expand": {
+        "name": "EXPAND", "description": "Étend un tableau aux dimensions spécifiées",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON 2D)", "type": "json", "required": True, "placeholder": "[[1,2],[3,4]]"},
+            {"name": "lignes", "label": "Nombre de lignes cible", "type": "number", "required": True, "placeholder": "4"},
+            {"name": "colonnes", "label": "Nombre de colonnes cible", "type": "number", "required": True, "placeholder": "4"},
+            {"name": "pad", "label": "Valeur de remplissage", "type": "text", "required": False, "placeholder": "0"},
+        ],
+    },
+    "hstack": {
+        "name": "HSTACK", "description": "Empile horizontalement plusieurs tableaux",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "tableaux", "label": "Tableaux à empiler (JSON)", "type": "json", "required": True, "placeholder": "[[[1],[2]],[[3],[4]]]"},
+        ],
+    },
+    "take_val": {
+        "name": "TAKE", "description": "Prend des lignes/colonnes du début ou de la fin d'un tableau",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON 2D)", "type": "json", "required": True, "placeholder": "[[1,2,3],[4,5,6],[7,8,9]]"},
+            {"name": "lignes", "label": "Lignes à prendre (+ début, − fin)", "type": "number", "required": False, "placeholder": "2"},
+            {"name": "colonnes", "label": "Colonnes à prendre (+ début, − fin)", "type": "number", "required": False, "placeholder": ""},
+        ],
+    },
+    "tocol": {
+        "name": "TOCOL", "description": "Convertit un tableau en une seule colonne",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON 2D)", "type": "json", "required": True, "placeholder": "[[1,2],[3,4]]"},
+            {"name": "ignore", "label": "Ignorer (0=rien, 1=vides, 2=erreurs, 3=les deux)", "type": "number", "required": False, "placeholder": "0"},
+            {"name": "scan_par_colonne", "label": "Scanner par colonne (0/1)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "torow": {
+        "name": "TOROW", "description": "Convertit un tableau en une seule ligne",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON 2D)", "type": "json", "required": True, "placeholder": "[[1,2],[3,4]]"},
+            {"name": "ignore", "label": "Ignorer (0=rien, 1=vides, 2=erreurs, 3=les deux)", "type": "number", "required": False, "placeholder": "0"},
+            {"name": "scan_par_colonne", "label": "Scanner par colonne (0/1)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "wrapcols": {
+        "name": "WRAPCOLS", "description": "Enveloppe un vecteur en colonnes de taille fixe",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "vecteur", "label": "Vecteur (JSON)", "type": "json", "required": True, "placeholder": "[1,2,3,4,5,6]"},
+            {"name": "taille", "label": "Éléments par colonne", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "pad", "label": "Valeur de remplissage", "type": "text", "required": False, "placeholder": ""},
+        ],
+    },
+    "wraprows": {
+        "name": "WRAPROWS", "description": "Enveloppe un vecteur en lignes de taille fixe",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "vecteur", "label": "Vecteur (JSON)", "type": "json", "required": True, "placeholder": "[1,2,3,4,5,6]"},
+            {"name": "taille", "label": "Éléments par ligne", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "pad", "label": "Valeur de remplissage", "type": "text", "required": False, "placeholder": ""},
+        ],
+    },
+    "isomitted": {
+        "name": "ISOMITTED", "description": "Vérifie si un paramètre LAMBDA est omis",
+        "category": "Lambda",
+        "variables": [
+            {"name": "valeur", "label": "Valeur à tester", "type": "text", "required": False, "placeholder": ""},
+        ],
+    },
+    "lambda_val": {
+        "name": "LAMBDA", "description": "Crée et évalue une fonction lambda personnalisée",
+        "category": "Lambda",
+        "variables": [
+            {"name": "parametres", "label": "Paramètres (JSON objet)", "type": "json", "required": False, "placeholder": "{\"x\": 5, \"y\": 3}"},
+            {"name": "expression", "label": "Expression", "type": "text", "required": True, "placeholder": "x + y"},
+        ],
+    },
+    "map_val": {
+        "name": "MAP", "description": "Applique une expression à chaque élément d'un tableau",
+        "category": "Lambda",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4]"},
+            {"name": "expression", "label": "Expression (variable x)", "type": "text", "required": True, "placeholder": "x * 2"},
+        ],
+    },
+    "reduce_val": {
+        "name": "REDUCE", "description": "Réduit un tableau avec un accumulateur",
+        "category": "Lambda",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4]"},
+            {"name": "initial", "label": "Valeur initiale", "type": "number", "required": False, "placeholder": "0"},
+            {"name": "expression", "label": "Expression (acc, x)", "type": "text", "required": True, "placeholder": "acc + x"},
+        ],
+    },
+    "scan_val": {
+        "name": "SCAN", "description": "Comme REDUCE mais renvoie les résultats intermédiaires",
+        "category": "Lambda",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4]"},
+            {"name": "initial", "label": "Valeur initiale", "type": "number", "required": False, "placeholder": "0"},
+            {"name": "expression", "label": "Expression (acc, x)", "type": "text", "required": True, "placeholder": "acc + x"},
         ],
     },
 }

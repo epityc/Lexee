@@ -267,6 +267,6 @@ def test_findb_not_found():
 # ─────────────────────────────────────────────────────────────────────────────
 def test_registre_complet_v11():
     from app.engine.logic import FORMULA_META
-    assert len(FORMULAS) == 330
-    assert len(FORMULA_META) == 330
+    assert len(FORMULAS) == 357
+    assert len(FORMULA_META) == 357
     assert set(FORMULAS.keys()) == set(FORMULA_META.keys())
