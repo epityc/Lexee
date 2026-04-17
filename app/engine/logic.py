@@ -22,6 +22,7 @@ from app.engine import _v9
 from app.engine import _v10
 from app.engine import _v11
 from app.engine import _v12
+from app.engine import _v13
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -2747,6 +2748,35 @@ FORMULAS: dict[str, callable] = {
     "map_val": _v12.formule_map_val,
     "reduce_val": _v12.formule_reduce_val,
     "scan_val": _v12.formule_scan_val,
+    # ── v13 : Web, Cube, Information & Maths (Groupe 8) ──
+    "encodeurl": _v13.formule_encodeurl,
+    "filterxml": _v13.formule_filterxml,
+    "webservice": _v13.formule_webservice,
+    "cubekpimember": _v13.formule_cubekpimember,
+    "cubemember": _v13.formule_cubemember,
+    "cubememberproperty": _v13.formule_cubememberproperty,
+    "cuberankedmember": _v13.formule_cuberankedmember,
+    "cubeset": _v13.formule_cubeset,
+    "cubesetcount": _v13.formule_cubesetcount,
+    "cubevalue": _v13.formule_cubevalue,
+    "error_type": _v13.formule_error_type,
+    "info_val": _v13.formule_info_val,
+    "isformula": _v13.formule_isformula,
+    "isnontext": _v13.formule_isnontext,
+    "n_val": _v13.formule_n_val,
+    "sheet": _v13.formule_sheet,
+    "sheets": _v13.formule_sheets,
+    "aggregate": _v13.formule_aggregate,
+    "arabic": _v13.formule_arabic,
+    "ceiling_precise": _v13.formule_ceiling_precise,
+    "factdouble": _v13.formule_factdouble,
+    "floor_precise": _v13.formule_floor_precise,
+    "iso_ceiling": _v13.formule_iso_ceiling,
+    "munit": _v13.formule_munit,
+    "multinomial": _v13.formule_multinomial,
+    "roman": _v13.formule_roman,
+    "seriessum": _v13.formule_seriessum,
+    "sqrtpi": _v13.formule_sqrtpi,
 }
 
 
@@ -6057,6 +6087,217 @@ FORMULA_META: dict[str, dict] = {
             {"name": "tableau", "label": "Tableau (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4]"},
             {"name": "initial", "label": "Valeur initiale", "type": "number", "required": False, "placeholder": "0"},
             {"name": "expression", "label": "Expression (acc, x)", "type": "text", "required": True, "placeholder": "acc + x"},
+        ],
+    },
+    # ── v13 : Web, Cube, Information & Maths (Groupe 8) ──
+    "encodeurl": {
+        "name": "ENCODEURL", "description": "Encode une chaîne pour utilisation dans une URL",
+        "category": "Web",
+        "variables": [
+            {"name": "texte", "label": "Texte à encoder", "type": "text", "required": True, "placeholder": "Hello World"},
+        ],
+    },
+    "filterxml": {
+        "name": "FILTERXML", "description": "Extrait des données d'un contenu XML via XPath",
+        "category": "Web",
+        "variables": [
+            {"name": "xml", "label": "Contenu XML", "type": "text", "required": True, "placeholder": "<root><item>A</item></root>"},
+            {"name": "xpath", "label": "Expression XPath", "type": "text", "required": True, "placeholder": ".//item"},
+        ],
+    },
+    "webservice": {
+        "name": "WEBSERVICE", "description": "Appel de service web (simulation)",
+        "category": "Web",
+        "variables": [
+            {"name": "url", "label": "URL du service", "type": "text", "required": True, "placeholder": "https://api.example.com/data"},
+        ],
+    },
+    "cubekpimember": {
+        "name": "CUBEKPIMEMBER", "description": "KPI d'un cube OLAP (simulation)",
+        "category": "Cube",
+        "variables": [
+            {"name": "connexion", "label": "Connexion", "type": "text", "required": True, "placeholder": "MyCube"},
+            {"name": "expression", "label": "Expression KPI", "type": "text", "required": True, "placeholder": "[Measures].[Revenue]"},
+        ],
+    },
+    "cubemember": {
+        "name": "CUBEMEMBER", "description": "Membre d'un cube OLAP (simulation)",
+        "category": "Cube",
+        "variables": [
+            {"name": "connexion", "label": "Connexion", "type": "text", "required": True, "placeholder": "MyCube"},
+            {"name": "expression", "label": "Expression membre", "type": "text", "required": True, "placeholder": "[Product].[Category].[Bikes]"},
+        ],
+    },
+    "cubememberproperty": {
+        "name": "CUBEMEMBERPROPERTY", "description": "Propriété d'un membre du cube (simulation)",
+        "category": "Cube",
+        "variables": [
+            {"name": "connexion", "label": "Connexion", "type": "text", "required": True, "placeholder": "MyCube"},
+            {"name": "expression", "label": "Expression membre", "type": "text", "required": True, "placeholder": "[Product].[Category].[Bikes]"},
+            {"name": "propriete", "label": "Propriété", "type": "text", "required": True, "placeholder": "Name"},
+        ],
+    },
+    "cuberankedmember": {
+        "name": "CUBERANKEDMEMBER", "description": "Membre classé dans un ensemble du cube (simulation)",
+        "category": "Cube",
+        "variables": [
+            {"name": "connexion", "label": "Connexion", "type": "text", "required": True, "placeholder": "MyCube"},
+            {"name": "expression", "label": "Expression ensemble", "type": "text", "required": True, "placeholder": "[Product].[Category].Members"},
+            {"name": "rang", "label": "Rang", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "cubeset": {
+        "name": "CUBESET", "description": "Ensemble de membres du cube (simulation)",
+        "category": "Cube",
+        "variables": [
+            {"name": "connexion", "label": "Connexion", "type": "text", "required": True, "placeholder": "MyCube"},
+            {"name": "expression", "label": "Expression ensemble", "type": "text", "required": True, "placeholder": "[Product].[Category].Members"},
+        ],
+    },
+    "cubesetcount": {
+        "name": "CUBESETCOUNT", "description": "Nombre d'éléments dans un ensemble du cube (simulation)",
+        "category": "Cube",
+        "variables": [
+            {"name": "ensemble", "label": "Ensemble", "type": "text", "required": True, "placeholder": "MonEnsemble"},
+        ],
+    },
+    "cubevalue": {
+        "name": "CUBEVALUE", "description": "Valeur agrégée du cube (simulation)",
+        "category": "Cube",
+        "variables": [
+            {"name": "connexion", "label": "Connexion", "type": "text", "required": True, "placeholder": "MyCube"},
+            {"name": "expression", "label": "Expression", "type": "text", "required": True, "placeholder": "[Measures].[Revenue]"},
+        ],
+    },
+    "error_type": {
+        "name": "ERROR.TYPE", "description": "Numéro correspondant à un type d'erreur Excel",
+        "category": "Information",
+        "variables": [
+            {"name": "valeur", "label": "Valeur d'erreur", "type": "text", "required": True, "placeholder": "#DIV/0!"},
+        ],
+    },
+    "info_val": {
+        "name": "INFO", "description": "Informations sur l'environnement d'exécution",
+        "category": "Information",
+        "variables": [
+            {"name": "type_info", "label": "Type d'info (directory, osversion, release, system)", "type": "text", "required": True, "placeholder": "system"},
+        ],
+    },
+    "isformula": {
+        "name": "ISFORMULA", "description": "Vérifie si une valeur est une formule (commence par =)",
+        "category": "Information",
+        "variables": [
+            {"name": "valeur", "label": "Valeur à tester", "type": "text", "required": True, "placeholder": "=A1+B1"},
+        ],
+    },
+    "isnontext": {
+        "name": "ISNONTEXT", "description": "Renvoie VRAI si la valeur n'est pas du texte",
+        "category": "Information",
+        "variables": [
+            {"name": "valeur", "label": "Valeur à tester", "type": "text", "required": True, "placeholder": "123"},
+        ],
+    },
+    "n_val": {
+        "name": "N", "description": "Convertit une valeur en nombre",
+        "category": "Information",
+        "variables": [
+            {"name": "valeur", "label": "Valeur", "type": "text", "required": True, "placeholder": "42"},
+        ],
+    },
+    "sheet": {
+        "name": "SHEET", "description": "Numéro de la feuille active",
+        "category": "Information",
+        "variables": [],
+    },
+    "sheets": {
+        "name": "SHEETS", "description": "Nombre de feuilles dans le classeur",
+        "category": "Information",
+        "variables": [
+            {"name": "nombre", "label": "Nombre de feuilles", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "aggregate": {
+        "name": "AGGREGATE", "description": "Applique une fonction d'agrégation (1-12) sur des valeurs",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "num_fonction", "label": "N° de fonction (1=MOY, 4=MAX, 5=MIN, 9=SOMME…)", "type": "number", "required": True, "placeholder": "9"},
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4, 5]"},
+        ],
+    },
+    "arabic": {
+        "name": "ARABIC", "description": "Convertit un nombre romain en nombre arabe",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "texte", "label": "Nombre romain", "type": "text", "required": True, "placeholder": "MCMXCIV"},
+        ],
+    },
+    "ceiling_precise": {
+        "name": "CEILING.PRECISE", "description": "Arrondit au multiple supérieur le plus proche",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "4.3"},
+            {"name": "precision", "label": "Précision", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "factdouble": {
+        "name": "FACTDOUBLE", "description": "Double factorielle n!!",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "nombre", "label": "Nombre entier", "type": "number", "required": True, "placeholder": "7"},
+        ],
+    },
+    "floor_precise": {
+        "name": "FLOOR.PRECISE", "description": "Arrondit au multiple inférieur le plus proche",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "4.7"},
+            {"name": "precision", "label": "Précision", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "iso_ceiling": {
+        "name": "ISO.CEILING", "description": "Arrondit au multiple entier supérieur (norme ISO)",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "4.3"},
+            {"name": "precision", "label": "Précision", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "munit": {
+        "name": "MUNIT", "description": "Matrice identité de dimension n×n",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "dimension", "label": "Dimension", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "multinomial": {
+        "name": "MULTINOMIAL", "description": "Coefficient multinomial (n1+n2+…)! / (n1!×n2!×…)",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[2, 3, 4]"},
+        ],
+    },
+    "roman": {
+        "name": "ROMAN", "description": "Convertit un nombre arabe en nombre romain",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "nombre", "label": "Nombre (0-3999)", "type": "number", "required": True, "placeholder": "1994"},
+        ],
+    },
+    "seriessum": {
+        "name": "SERIESSUM", "description": "Somme d'une série de puissances Σ aᵢ·x^(n+i·m)",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "x", "label": "Variable x", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "n", "label": "Puissance initiale n", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "m", "label": "Incrément m", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "coefficients", "label": "Coefficients (JSON)", "type": "json", "required": True, "placeholder": "[1, 1, 1]"},
+        ],
+    },
+    "sqrtpi": {
+        "name": "SQRTPI", "description": "Racine carrée de (nombre × π)",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "2"},
         ],
     },
 }

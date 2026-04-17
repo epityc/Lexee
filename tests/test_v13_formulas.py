@@ -1,4 +1,4 @@
-"""Tests v10 — Statistiques Avancées (Groupe 5, 29 formules)."""
+"""Tests v13 — Web, Cube, Information & Maths complémentaires (Groupe 8, 28 formules)."""
 
 import math
 
@@ -8,281 +8,312 @@ from app.engine.logic import FORMULAS
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# F.INV / F.TEST
+# ENCODEURL
 # ─────────────────────────────────────────────────────────────────────────────
-def test_f_inv():
-    r = FORMULAS["f_inv"]({"probabilite": 0.95, "d1": 5, "d2": 10})
-    assert abs(r["resultat"] - 3.3258) < 0.05
+def test_encodeurl_spaces():
+    r = FORMULAS["encodeurl"]({"texte": "Hello World"})
+    assert r["resultat"] == "Hello%20World"
 
 
-def test_f_inv_rt():
-    r = FORMULAS["f_inv_rt"]({"probabilite": 0.05, "d1": 5, "d2": 10})
-    assert abs(r["resultat"] - 3.3258) < 0.05
-
-
-def test_f_test():
-    r = FORMULAS["f_test"]({"x": [1, 2, 3, 4, 5], "y": [2, 4, 6, 8, 10]})
-    assert r["f_stat"] > 0
-    assert 0 <= r["p_value"] <= 1
+def test_encodeurl_special():
+    r = FORMULAS["encodeurl"]({"texte": "a=1&b=2"})
+    assert r["resultat"] == "a%3D1%26b%3D2"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# FISHER / FISHERINV
+# FILTERXML
 # ─────────────────────────────────────────────────────────────────────────────
-def test_fisher():
-    r = FORMULAS["fisher"]({"x": 0.5})
-    assert abs(r["resultat"] - 0.5493) < 0.001
+def test_filterxml_single():
+    xml = "<root><item>Hello</item></root>"
+    r = FORMULAS["filterxml"]({"xml": xml, "xpath": ".//item"})
+    assert r["resultat"] == "Hello"
 
 
-def test_fisherinv():
-    r = FORMULAS["fisherinv"]({"y": 0.5493})
-    assert abs(r["resultat"] - 0.5) < 0.001
+def test_filterxml_multiple():
+    xml = "<root><item>A</item><item>B</item></root>"
+    r = FORMULAS["filterxml"]({"xml": xml, "xpath": ".//item"})
+    assert r["resultat"] == ["A", "B"]
 
 
-def test_fisher_roundtrip():
-    f = FORMULAS["fisher"]({"x": 0.75})["resultat"]
-    inv = FORMULAS["fisherinv"]({"y": f})
-    assert abs(inv["resultat"] - 0.75) < 0.001
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# GAMMA
-# ─────────────────────────────────────────────────────────────────────────────
-def test_gamma_val():
-    assert abs(FORMULAS["gamma_val"]({"x": 5})["resultat"] - 24) < 1e-6
-
-
-def test_gamma_val_half():
-    r = FORMULAS["gamma_val"]({"x": 0.5})
-    assert abs(r["resultat"] - math.sqrt(math.pi)) < 1e-6
-
-
-def test_gamma_dist_cdf():
-    r = FORMULAS["gamma_dist"]({"x": 2, "alpha": 2, "beta": 1})
-    assert 0.5 < r["resultat"] < 1
-
-
-def test_gamma_inv_roundtrip():
-    cdf = FORMULAS["gamma_dist"]({"x": 3, "alpha": 2, "beta": 1})["resultat"]
-    inv = FORMULAS["gamma_inv"]({"probabilite": cdf, "alpha": 2, "beta": 1})
-    assert abs(inv["resultat"] - 3) < 0.05
-
-
-def test_gammaln():
-    r = FORMULAS["gammaln"]({"x": 5})
-    assert abs(r["resultat"] - math.lgamma(5)) < 1e-6
-
-
-def test_gammaln_precis():
-    r = FORMULAS["gammaln_precis"]({"x": 5})
-    assert abs(r["resultat"] - math.lgamma(5)) < 1e-6
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# GAUSS
-# ─────────────────────────────────────────────────────────────────────────────
-def test_gauss_196():
-    r = FORMULAS["gauss"]({"x": 1.96})
-    assert abs(r["resultat"] - 0.475) < 0.001
-
-
-def test_gauss_zero():
-    assert FORMULAS["gauss"]({"x": 0})["resultat"] == 0.0
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# HARMEAN
-# ─────────────────────────────────────────────────────────────────────────────
-def test_harmean():
-    r = FORMULAS["harmean"]({"valeurs": [2, 4, 4]})
-    assert abs(r["resultat"] - 3) < 1e-6
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# HYPGEOM.DIST
-# ─────────────────────────────────────────────────────────────────────────────
-def test_hypgeom_dist_pmf():
-    r = FORMULAS["hypgeom_dist"]({
-        "succes_echantillon": 1, "taille_echantillon": 4,
-        "succes_population": 8, "taille_population": 20, "cumulatif": False,
-    })
-    assert 0 < r["resultat"] < 1
-
-
-def test_hypgeom_dist_cdf():
-    r = FORMULAS["hypgeom_dist"]({
-        "succes_echantillon": 2, "taille_echantillon": 4,
-        "succes_population": 8, "taille_population": 20,
-    })
-    assert 0 < r["resultat"] < 1
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# KURT
-# ─────────────────────────────────────────────────────────────────────────────
-def test_kurt_uniform():
-    r = FORMULAS["kurt"]({"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]})
-    assert abs(r["resultat"] - (-1.2)) < 0.01  # platykurtic
-
-
-def test_kurt_minimum_values():
+def test_filterxml_not_found():
     with pytest.raises(ValueError):
-        FORMULAS["kurt"]({"valeurs": [1, 2, 3]})
+        FORMULAS["filterxml"]({"xml": "<root/>", "xpath": ".//missing"})
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# LOGNORM
+# WEBSERVICE (stub)
 # ─────────────────────────────────────────────────────────────────────────────
-def test_lognorm_dist_cdf():
-    r = FORMULAS["lognorm_dist"]({"x": 1, "moyenne": 0, "ecart_type": 1})
-    assert abs(r["resultat"] - 0.5) < 0.01  # median of lognormal(0,1)
-
-
-def test_lognorm_inv_roundtrip():
-    cdf = FORMULAS["lognorm_dist"]({"x": 2, "moyenne": 0, "ecart_type": 1})["resultat"]
-    inv = FORMULAS["lognorm_inv"]({"probabilite": cdf, "moyenne": 0, "ecart_type": 1})
-    assert abs(inv["resultat"] - 2) < 0.01
+def test_webservice():
+    r = FORMULAS["webservice"]({"url": "https://example.com"})
+    assert "WEBSERVICE" in r["resultat"]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# NEGBINOM
+# CUBE (stubs)
 # ─────────────────────────────────────────────────────────────────────────────
-def test_negbinom_dist_pmf():
-    r = FORMULAS["negbinom_dist"]({"echecs": 2, "succes": 3, "probabilite": 0.5, "cumulatif": False})
-    # C(4,2) * 0.5^5 = 6 * 0.03125 = 0.1875
-    assert abs(r["resultat"] - 0.1875) < 0.001
+def test_cubekpimember():
+    r = FORMULAS["cubekpimember"]({"connexion": "C", "expression": "Revenue"})
+    assert "KPI" in r["resultat"]
 
 
-def test_negbinom_dist_cdf():
-    r = FORMULAS["negbinom_dist"]({"echecs": 5, "succes": 3, "probabilite": 0.5})
-    assert 0 < r["resultat"] < 1
+def test_cubemember():
+    r = FORMULAS["cubemember"]({"connexion": "C", "expression": "[Product]"})
+    assert "MEMBER" in r["resultat"]
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# NORM
-# ─────────────────────────────────────────────────────────────────────────────
-def test_norm_dist_cdf():
-    r = FORMULAS["norm_dist"]({"x": 0, "moyenne": 0, "ecart_type": 1})
-    assert abs(r["resultat"] - 0.5) < 1e-6
+def test_cubememberproperty():
+    r = FORMULAS["cubememberproperty"]({"connexion": "C", "expression": "[P]", "propriete": "Name"})
+    assert "PROP" in r["resultat"]
 
 
-def test_norm_inv():
-    r = FORMULAS["norm_inv"]({"probabilite": 0.975, "moyenne": 0, "ecart_type": 1})
-    assert abs(r["resultat"] - 1.96) < 0.01
+def test_cuberankedmember():
+    r = FORMULAS["cuberankedmember"]({"connexion": "C", "expression": "Set", "rang": 1})
+    assert "RANKED" in r["resultat"]
 
 
-def test_norm_s_dist():
-    r = FORMULAS["norm_s_dist"]({"z": 1.96})
-    assert abs(r["resultat"] - 0.975) < 0.001
+def test_cubeset():
+    r = FORMULAS["cubeset"]({"connexion": "C", "expression": "Members"})
+    assert "SET" in r["resultat"]
 
 
-def test_norm_s_inv():
-    r = FORMULAS["norm_s_inv"]({"probabilite": 0.975})
-    assert abs(r["resultat"] - 1.96) < 0.01
+def test_cubesetcount():
+    r = FORMULAS["cubesetcount"]({"ensemble": "test"})
+    assert r["resultat"] == 0
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# PEARSON
-# ─────────────────────────────────────────────────────────────────────────────
-def test_pearson_perfect():
-    r = FORMULAS["pearson"]({"x": [1, 2, 3, 4, 5], "y": [2, 4, 6, 8, 10]})
-    assert abs(r["resultat"] - 1) < 1e-6
-
-
-def test_pearson_negative():
-    r = FORMULAS["pearson"]({"x": [1, 2, 3], "y": [6, 4, 2]})
-    assert abs(r["resultat"] - (-1)) < 1e-6
+def test_cubevalue():
+    r = FORMULAS["cubevalue"]({"connexion": "C", "expression": "[Measures]"})
+    assert r["resultat"] == 0
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# PERCENTRANK
+# ERROR.TYPE
 # ─────────────────────────────────────────────────────────────────────────────
-def test_percentrank():
-    r = FORMULAS["percentrank"]({"valeurs": [1, 2, 3, 4, 5], "x": 3})
-    assert abs(r["resultat"] - 0.5) < 0.01
+def test_error_type_div0():
+    assert FORMULAS["error_type"]({"valeur": "#DIV/0!"})["resultat"] == 2
 
 
-def test_percentrank_exc():
-    r = FORMULAS["percentrank_exc"]({"valeurs": [1, 2, 3, 4, 5], "x": 3})
-    assert 0 < r["resultat"] < 1
+def test_error_type_na():
+    assert FORMULAS["error_type"]({"valeur": "#N/A"})["resultat"] == 7
 
 
-def test_percentrank_inc():
-    r = FORMULAS["percentrank_inc"]({"valeurs": [1, 2, 3, 4, 5], "x": 3})
-    assert abs(r["resultat"] - 0.5) < 0.01
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# PHI
-# ─────────────────────────────────────────────────────────────────────────────
-def test_phi_zero():
-    r = FORMULAS["phi"]({"x": 0})
-    assert abs(r["resultat"] - 0.3989) < 0.001  # 1/sqrt(2*pi)
-
-
-def test_phi_symmetric():
-    a = FORMULAS["phi"]({"x": 1})["resultat"]
-    b = FORMULAS["phi"]({"x": -1})["resultat"]
-    assert abs(a - b) < 1e-9
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# POISSON
-# ─────────────────────────────────────────────────────────────────────────────
-def test_poisson_dist_pmf():
-    # P(X=3 | λ=2.5) = e^{-2.5} * 2.5^3 / 3! ≈ 0.2138
-    r = FORMULAS["poisson_dist"]({"x": 3, "moyenne": 2.5, "cumulatif": False})
-    assert abs(r["resultat"] - 0.2138) < 0.001
-
-
-def test_poisson_dist_cdf():
-    r = FORMULAS["poisson_dist"]({"x": 3, "moyenne": 2.5})
-    assert 0.7 < r["resultat"] < 0.8
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# PROB
-# ─────────────────────────────────────────────────────────────────────────────
-def test_prob():
-    r = FORMULAS["prob"]({
-        "valeurs": [1, 2, 3, 4],
-        "probabilites": [0.1, 0.2, 0.3, 0.4],
-        "borne_inf": 2, "borne_sup": 3,
-    })
-    assert abs(r["resultat"] - 0.5) < 1e-6
-
-
-def test_prob_single():
-    r = FORMULAS["prob"]({
-        "valeurs": [10, 20, 30],
-        "probabilites": [0.3, 0.4, 0.3],
-        "borne_inf": 20,
-    })
-    assert abs(r["resultat"] - 0.4) < 1e-6
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# QUARTILE.EXC
-# ─────────────────────────────────────────────────────────────────────────────
-def test_quartile_exc_median():
-    r = FORMULAS["quartile_exc"]({"valeurs": [1, 2, 3, 4, 5], "quart": 2})
-    assert abs(r["resultat"] - 3) < 0.01
-
-
-def test_quartile_exc_q1():
-    r = FORMULAS["quartile_exc"]({"valeurs": [1, 2, 3, 4, 5, 6, 7], "quart": 1})
-    assert r["resultat"] == 2.0
-
-
-def test_quartile_exc_invalid():
+def test_error_type_invalid():
     with pytest.raises(ValueError):
-        FORMULAS["quartile_exc"]({"valeurs": [1, 2, 3], "quart": 4})
+        FORMULAS["error_type"]({"valeur": "not_error"})
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# INFO
+# ─────────────────────────────────────────────────────────────────────────────
+def test_info_system():
+    r = FORMULAS["info_val"]({"type_info": "system"})
+    assert isinstance(r["resultat"], str)
+
+
+def test_info_invalid():
+    with pytest.raises(ValueError):
+        FORMULAS["info_val"]({"type_info": "unknown"})
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ISFORMULA / ISNONTEXT
+# ─────────────────────────────────────────────────────────────────────────────
+def test_isformula_true():
+    assert FORMULAS["isformula"]({"valeur": "=A1+B1"})["resultat"] is True
+
+
+def test_isformula_false():
+    assert FORMULAS["isformula"]({"valeur": "Hello"})["resultat"] is False
+
+
+def test_isnontext_number():
+    assert FORMULAS["isnontext"]({"valeur": 42})["resultat"] is True
+
+
+def test_isnontext_string():
+    assert FORMULAS["isnontext"]({"valeur": "Hello"})["resultat"] is False
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# N
+# ─────────────────────────────────────────────────────────────────────────────
+def test_n_number():
+    assert FORMULAS["n_val"]({"valeur": 42.5})["resultat"] == 42.5
+
+
+def test_n_bool():
+    assert FORMULAS["n_val"]({"valeur": True})["resultat"] == 1
+
+
+def test_n_text():
+    assert FORMULAS["n_val"]({"valeur": "hello"})["resultat"] == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SHEET / SHEETS
+# ─────────────────────────────────────────────────────────────────────────────
+def test_sheet():
+    assert FORMULAS["sheet"]({})["resultat"] == 1
+
+
+def test_sheets():
+    assert FORMULAS["sheets"]({"nombre": 3})["resultat"] == 3
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# AGGREGATE
+# ─────────────────────────────────────────────────────────────────────────────
+def test_aggregate_average():
+    r = FORMULAS["aggregate"]({"num_fonction": 1, "valeurs": [1, 2, 3, 4, 5]})
+    assert r["resultat"] == 3.0
+
+
+def test_aggregate_sum():
+    r = FORMULAS["aggregate"]({"num_fonction": 9, "valeurs": [1, 2, 3, 4, 5]})
+    assert r["resultat"] == 15
+
+
+def test_aggregate_max():
+    r = FORMULAS["aggregate"]({"num_fonction": 4, "valeurs": [1, 2, 3, 4, 5]})
+    assert r["resultat"] == 5
+
+
+def test_aggregate_invalid():
+    with pytest.raises(ValueError):
+        FORMULAS["aggregate"]({"num_fonction": 99, "valeurs": [1, 2, 3]})
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ARABIC / ROMAN roundtrip
+# ─────────────────────────────────────────────────────────────────────────────
+def test_arabic():
+    assert FORMULAS["arabic"]({"texte": "MCMXCIV"})["resultat"] == 1994
+
+
+def test_arabic_simple():
+    assert FORMULAS["arabic"]({"texte": "XIV"})["resultat"] == 14
+
+
+def test_roman():
+    assert FORMULAS["roman"]({"nombre": 1994})["resultat"] == "MCMXCIV"
+
+
+def test_roman_simple():
+    assert FORMULAS["roman"]({"nombre": 14})["resultat"] == "XIV"
+
+
+def test_arabic_roman_roundtrip():
+    for n in [1, 42, 100, 999, 2024, 3999]:
+        rom = FORMULAS["roman"]({"nombre": n})["resultat"]
+        back = FORMULAS["arabic"]({"texte": rom})["resultat"]
+        assert back == n
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CEILING.PRECISE / FLOOR.PRECISE / ISO.CEILING
+# ─────────────────────────────────────────────────────────────────────────────
+def test_ceiling_precise():
+    assert FORMULAS["ceiling_precise"]({"nombre": 4.3})["resultat"] == 5.0
+
+
+def test_ceiling_precise_neg():
+    assert FORMULAS["ceiling_precise"]({"nombre": -4.3})["resultat"] == -4.0
+
+
+def test_floor_precise():
+    assert FORMULAS["floor_precise"]({"nombre": 4.7})["resultat"] == 4.0
+
+
+def test_floor_precise_neg():
+    assert FORMULAS["floor_precise"]({"nombre": -4.7})["resultat"] == -5.0
+
+
+def test_iso_ceiling():
+    assert FORMULAS["iso_ceiling"]({"nombre": 4.3})["resultat"] == 5.0
+
+
+def test_iso_ceiling_neg():
+    assert FORMULAS["iso_ceiling"]({"nombre": -4.3})["resultat"] == -4.0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# FACTDOUBLE
+# ─────────────────────────────────────────────────────────────────────────────
+def test_factdouble_7():
+    # 7!! = 7*5*3*1 = 105
+    assert FORMULAS["factdouble"]({"nombre": 7})["resultat"] == 105
+
+
+def test_factdouble_6():
+    # 6!! = 6*4*2 = 48
+    assert FORMULAS["factdouble"]({"nombre": 6})["resultat"] == 48
+
+
+def test_factdouble_0():
+    assert FORMULAS["factdouble"]({"nombre": 0})["resultat"] == 1
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MUNIT
+# ─────────────────────────────────────────────────────────────────────────────
+def test_munit_3():
+    r = FORMULAS["munit"]({"dimension": 3})
+    assert r["resultat"] == [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+
+
+def test_munit_1():
+    assert FORMULAS["munit"]({"dimension": 1})["resultat"] == [[1]]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MULTINOMIAL
+# ─────────────────────────────────────────────────────────────────────────────
+def test_multinomial():
+    # (2+3+4)! / (2!*3!*4!) = 362880 / (2*6*24) = 1260
+    assert FORMULAS["multinomial"]({"valeurs": [2, 3, 4]})["resultat"] == 1260
+
+
+def test_multinomial_binomial():
+    # C(5,2) = 5!/(2!*3!) = 10
+    assert FORMULAS["multinomial"]({"valeurs": [2, 3]})["resultat"] == 10
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SERIESSUM
+# ─────────────────────────────────────────────────────────────────────────────
+def test_seriessum():
+    # 1*x^0 + 1*x^1 + 1*x^2 = 1 + 2 + 4 = 7
+    r = FORMULAS["seriessum"]({"x": 2, "n": 0, "m": 1, "coefficients": [1, 1, 1]})
+    assert r["resultat"] == 7.0
+
+
+def test_seriessum_sin_approx():
+    # sin(x) ≈ x - x^3/6 + x^5/120 with x=0.5
+    x = 0.5
+    r = FORMULAS["seriessum"]({"x": x, "n": 1, "m": 2, "coefficients": [1, -1/6, 1/120]})
+    assert abs(r["resultat"] - math.sin(x)) < 1e-5
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SQRTPI
+# ─────────────────────────────────────────────────────────────────────────────
+def test_sqrtpi_1():
+    assert abs(FORMULAS["sqrtpi"]({"nombre": 1})["resultat"] - math.sqrt(math.pi)) < 1e-10
+
+
+def test_sqrtpi_2():
+    assert abs(FORMULAS["sqrtpi"]({"nombre": 2})["resultat"] - math.sqrt(2 * math.pi)) < 1e-10
+
+
+def test_sqrtpi_negative():
+    with pytest.raises(ValueError):
+        FORMULAS["sqrtpi"]({"nombre": -1})
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Smoke test registre
 # ─────────────────────────────────────────────────────────────────────────────
-def test_registre_complet_v10():
+def test_registre_complet_v13():
     from app.engine.logic import FORMULA_META
     assert len(FORMULAS) == 385
     assert len(FORMULA_META) == 385

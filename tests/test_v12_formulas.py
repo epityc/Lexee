@@ -357,6 +357,6 @@ def test_scan_cumproduct():
 # ─────────────────────────────────────────────────────────────────────────────
 def test_registre_complet_v12():
     from app.engine.logic import FORMULA_META
-    assert len(FORMULAS) == 357
-    assert len(FORMULA_META) == 357
+    assert len(FORMULAS) == 385
+    assert len(FORMULA_META) == 385
     assert set(FORMULAS.keys()) == set(FORMULA_META.keys())
