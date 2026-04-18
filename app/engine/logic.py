@@ -25,6 +25,7 @@ from app.engine import _v12
 from app.engine import _v13
 from app.engine import _v14
 from app.engine import _v15
+from app.engine import _v16
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -2825,6 +2826,26 @@ FORMULAS: dict[str, callable] = {
     "textbefore": _v15.formule_textbefore,
     "textafter": _v15.formule_textafter,
     "textsplit": _v15.formule_textsplit,
+    # ── v16 : Analyse de Données & Divers (Groupe 11) ──
+    "image": _v16.formule_image,
+    "anchorarray": _v16.formule_anchorarray,
+    "formulatext": _v16.formule_formulatext,
+    "getpivotdata": _v16.formule_getpivotdata,
+    "hyperlink": _v16.formule_hyperlink,
+    "rtd": _v16.formule_rtd,
+    "euroconvert": _v16.formule_euroconvert,
+    "stockhistory": _v16.formule_stockhistory,
+    "single": _v16.formule_single,
+    "let_val": _v16.formule_let_val,
+    "ispmt": _v16.formule_ispmt,
+    "cumipmt": _v16.formule_cumipmt,
+    "cumprinc": _v16.formule_cumprinc,
+    "pduration": _v16.formule_pduration,
+    "rri": _v16.formule_rri,
+    "isoweeknum": _v16.formule_isoweeknum,
+    "networkdays_intl": _v16.formule_networkdays_intl,
+    "workday_intl": _v16.formule_workday_intl,
+    "bitxor": _v16.formule_bitxor,
 }
 
 
@@ -6721,6 +6742,165 @@ FORMULA_META: dict[str, dict] = {
             {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "A,B,C"},
             {"name": "delimiteur_col", "label": "Délimiteur colonnes", "type": "text", "required": False, "placeholder": ","},
             {"name": "delimiteur_ligne", "label": "Délimiteur lignes", "type": "text", "required": False, "placeholder": ""},
+        ],
+    },
+    # ── v16 : Analyse de Données & Divers (Groupe 11) ──
+    "image": {
+        "name": "IMAGE", "description": "Insère une image depuis une URL (simulation)",
+        "category": "Web",
+        "variables": [
+            {"name": "url", "label": "URL de l'image", "type": "text", "required": True, "placeholder": "https://example.com/img.png"},
+            {"name": "alt_text", "label": "Texte alternatif", "type": "text", "required": False, "placeholder": "Description"},
+        ],
+    },
+    "anchorarray": {
+        "name": "ANCHORARRAY", "description": "Référence la plage d'un tableau dynamique (simulation)",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "reference", "label": "Référence cellule", "type": "text", "required": True, "placeholder": "A1"},
+        ],
+    },
+    "formulatext": {
+        "name": "FORMULATEXT", "description": "Renvoie la formule sous forme de texte",
+        "category": "Information",
+        "variables": [
+            {"name": "formule", "label": "Formule", "type": "text", "required": True, "placeholder": "=SUM(A1:A10)"},
+        ],
+    },
+    "getpivotdata": {
+        "name": "GETPIVOTDATA", "description": "Extrait des données d'un tableau croisé dynamique (simulation)",
+        "category": "Information",
+        "variables": [
+            {"name": "champ", "label": "Champ de données", "type": "text", "required": True, "placeholder": "Revenue"},
+        ],
+    },
+    "hyperlink": {
+        "name": "HYPERLINK", "description": "Crée un lien hypertexte",
+        "category": "Web",
+        "variables": [
+            {"name": "url", "label": "URL", "type": "text", "required": True, "placeholder": "https://example.com"},
+            {"name": "texte", "label": "Texte affiché", "type": "text", "required": False, "placeholder": "Cliquez ici"},
+        ],
+    },
+    "rtd": {
+        "name": "RTD", "description": "Données en temps réel depuis un serveur COM (simulation)",
+        "category": "Information",
+        "variables": [],
+    },
+    "euroconvert": {
+        "name": "EUROCONVERT", "description": "Convertit entre devises de la zone euro (taux fixes 1999)",
+        "category": "Finance",
+        "variables": [
+            {"name": "nombre", "label": "Montant", "type": "number", "required": True, "placeholder": "100"},
+            {"name": "source", "label": "Devise source (EUR, DEM, FRF…)", "type": "text", "required": True, "placeholder": "FRF"},
+            {"name": "cible", "label": "Devise cible", "type": "text", "required": True, "placeholder": "EUR"},
+        ],
+    },
+    "stockhistory": {
+        "name": "STOCKHISTORY", "description": "Historique boursier (simulation)",
+        "category": "Finance",
+        "variables": [
+            {"name": "symbole", "label": "Symbole boursier", "type": "text", "required": True, "placeholder": "AAPL"},
+        ],
+    },
+    "single": {
+        "name": "SINGLE", "description": "Renvoie une valeur unique d'un tableau (opérateur @)",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "valeur", "label": "Valeur ou tableau", "type": "json", "required": True, "placeholder": "[[1,2],[3,4]]"},
+        ],
+    },
+    "let_val": {
+        "name": "LET", "description": "Définit des variables nommées et évalue une expression",
+        "category": "Lambda",
+        "variables": [
+            {"name": "variables", "label": "Variables (JSON objet)", "type": "json", "required": False, "placeholder": "{\"x\": 10, \"y\": 20}"},
+            {"name": "expression", "label": "Expression", "type": "text", "required": True, "placeholder": "x + y"},
+        ],
+    },
+    "ispmt": {
+        "name": "ISPMT", "description": "Intérêts payés pendant une période (méthode linéaire)",
+        "category": "Finance",
+        "variables": [
+            {"name": "taux", "label": "Taux par période", "type": "number", "required": True, "placeholder": "0.01"},
+            {"name": "periode", "label": "Période", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "nb_periodes", "label": "Nombre total de périodes", "type": "number", "required": True, "placeholder": "36"},
+            {"name": "valeur_actuelle", "label": "Valeur actuelle", "type": "number", "required": True, "placeholder": "100000"},
+        ],
+    },
+    "cumipmt": {
+        "name": "CUMIPMT", "description": "Intérêts cumulés entre deux périodes",
+        "category": "Finance",
+        "variables": [
+            {"name": "taux", "label": "Taux par période", "type": "number", "required": True, "placeholder": "0.01"},
+            {"name": "nb_periodes", "label": "Nombre total de périodes", "type": "number", "required": True, "placeholder": "36"},
+            {"name": "valeur_actuelle", "label": "Valeur actuelle", "type": "number", "required": True, "placeholder": "100000"},
+            {"name": "periode_debut", "label": "Période de début", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "periode_fin", "label": "Période de fin", "type": "number", "required": True, "placeholder": "12"},
+        ],
+    },
+    "cumprinc": {
+        "name": "CUMPRINC", "description": "Principal cumulé entre deux périodes",
+        "category": "Finance",
+        "variables": [
+            {"name": "taux", "label": "Taux par période", "type": "number", "required": True, "placeholder": "0.01"},
+            {"name": "nb_periodes", "label": "Nombre total de périodes", "type": "number", "required": True, "placeholder": "36"},
+            {"name": "valeur_actuelle", "label": "Valeur actuelle", "type": "number", "required": True, "placeholder": "100000"},
+            {"name": "periode_debut", "label": "Période de début", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "periode_fin", "label": "Période de fin", "type": "number", "required": True, "placeholder": "12"},
+        ],
+    },
+    "pduration": {
+        "name": "PDURATION", "description": "Nombre de périodes pour atteindre une valeur cible",
+        "category": "Finance",
+        "variables": [
+            {"name": "taux", "label": "Taux par période", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "valeur_actuelle", "label": "Valeur actuelle", "type": "number", "required": True, "placeholder": "1000"},
+            {"name": "valeur_future", "label": "Valeur future", "type": "number", "required": True, "placeholder": "2000"},
+        ],
+    },
+    "rri": {
+        "name": "RRI", "description": "Taux de rendement équivalent d'un investissement",
+        "category": "Finance",
+        "variables": [
+            {"name": "nb_periodes", "label": "Nombre de périodes", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "valeur_actuelle", "label": "Valeur actuelle", "type": "number", "required": True, "placeholder": "1000"},
+            {"name": "valeur_future", "label": "Valeur future", "type": "number", "required": True, "placeholder": "2000"},
+        ],
+    },
+    "isoweeknum": {
+        "name": "ISOWEEKNUM", "description": "Numéro de semaine ISO 8601",
+        "category": "Date et Heure",
+        "variables": [
+            {"name": "date", "label": "Date", "type": "text", "required": True, "placeholder": "2024-01-15"},
+        ],
+    },
+    "networkdays_intl": {
+        "name": "NETWORKDAYS.INTL", "description": "Jours ouvrés entre deux dates (week-end configurable)",
+        "category": "Date et Heure",
+        "variables": [
+            {"name": "date_debut", "label": "Date de début", "type": "text", "required": True, "placeholder": "2024-01-01"},
+            {"name": "date_fin", "label": "Date de fin", "type": "text", "required": True, "placeholder": "2024-01-31"},
+            {"name": "weekend", "label": "Masque week-end (lun-dim, 1=repos)", "type": "text", "required": False, "placeholder": "0000011"},
+            {"name": "jours_feries", "label": "Jours fériés (JSON)", "type": "json", "required": False, "placeholder": "[]"},
+        ],
+    },
+    "workday_intl": {
+        "name": "WORKDAY.INTL", "description": "Date après N jours ouvrés (week-end configurable)",
+        "category": "Date et Heure",
+        "variables": [
+            {"name": "date_debut", "label": "Date de début", "type": "text", "required": True, "placeholder": "2024-01-01"},
+            {"name": "jours", "label": "Nombre de jours ouvrés", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "weekend", "label": "Masque week-end (lun-dim, 1=repos)", "type": "text", "required": False, "placeholder": "0000011"},
+            {"name": "jours_feries", "label": "Jours fériés (JSON)", "type": "json", "required": False, "placeholder": "[]"},
+        ],
+    },
+    "bitxor": {
+        "name": "BITXOR", "description": "XOR bit à bit de deux entiers",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre1", "label": "Nombre 1", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "nombre2", "label": "Nombre 2", "type": "number", "required": True, "placeholder": "3"},
         ],
     },
 }
