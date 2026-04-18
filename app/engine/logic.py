@@ -14,6 +14,19 @@ import random
 import re
 from datetime import date, datetime, timedelta
 
+from app.engine import _v5
+from app.engine import _v6
+from app.engine import _v7
+from app.engine import _v8
+from app.engine import _v9
+from app.engine import _v10
+from app.engine import _v11
+from app.engine import _v12
+from app.engine import _v13
+from app.engine import _v14
+from app.engine import _v15
+from app.engine import _v16
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # 1. SOMME & MOYENNE (SUM & AVERAGE)
@@ -2460,6 +2473,379 @@ FORMULAS: dict[str, callable] = {
     "mod_val": formule_mod,
     "puissance": formule_puissance,
     "plafond_plancher": formule_plafond_plancher,
+    # ─────────────────────────────────────────────────────────────────────────
+    # v5 — 50 formules expertes supplémentaires
+    # ─────────────────────────────────────────────────────────────────────────
+    # Intelligence Moderne
+    "groupby": _v5.formule_groupby,
+    "pivotby": _v5.formule_pivotby,
+    "regex_extract": _v5.formule_regex_extract,
+    "regex_match": _v5.formule_regex_match,
+    "regex_replace": _v5.formule_regex_replace,
+    # Statistiques avancées
+    "tendance": _v5.formule_tendance,
+    "croissance": _v5.formule_croissance,
+    "covariance_p": _v5.formule_covariance_p,
+    "prevision_ets": _v5.formule_prevision_ets,
+    "percentile_exc": _v5.formule_percentile_exc,
+    # Ingénierie & Conversion
+    "convertir": _v5.formule_convertir,
+    "bin2hex": _v5.formule_bin2hex,
+    "hex2dec": _v5.formule_hex2dec,
+    "dec2bin": _v5.formule_dec2bin,
+    "dec2hex": _v5.formule_dec2hex,
+    "delta": _v5.formule_delta,
+    "bit_et": _v5.formule_bit_et,
+    "bit_ou": _v5.formule_bit_ou,
+    "bit_xou": _v5.formule_bit_xou,
+    "erf_val": _v5.formule_erf_val,
+    # Finance Professionnelle
+    "taux_effectif": _v5.formule_taux_effectif,
+    "taux_nominal": _v5.formule_taux_nominal,
+    "tri_modifie": _v5.formule_tri_modifie,
+    "van_dates": _v5.formule_van_dates,
+    "tri_dates": _v5.formule_tri_dates,
+    "amort_ddb": _v5.formule_amort_ddb,
+    "prix_obligation": _v5.formule_prix_obligation,
+    # Bases de Données
+    "bdlire": _v5.formule_bdlire,
+    "bdproduit": _v5.formule_bdproduit,
+    "bdecartype": _v5.formule_bdecartype,
+    # Mathématiques Spécialisées
+    "arrondi_multiple": _v5.formule_arrondi_multiple,
+    "pgcd": _v5.formule_pgcd,
+    "ppcm": _v5.formule_ppcm,
+    "quotient": _v5.formule_quotient,
+    "tableau_alea": _v5.formule_tableau_alea,
+    "combinaison": _v5.formule_combinaison,
+    "factorielle": _v5.formule_factorielle,
+    "sommeprod": _v5.formule_sommeprod,
+    "romain": _v5.formule_romain,
+    "signe": _v5.formule_signe,
+    # Logique de précision
+    "si_na": _v5.formule_si_na,
+    "esterr": _v5.formule_esterr,
+    "nb_val": _v5.formule_nb_val,
+    "nb_vide": _v5.formule_nb_vide,
+    # Statistiques supplémentaires
+    "mode_val": _v5.formule_mode_val,
+    "grande_valeur": _v5.formule_grande_valeur,
+    "petite_valeur": _v5.formule_petite_valeur,
+    "moyenne_geo": _v5.formule_moyenne_geo,
+    "moyenne_harm": _v5.formule_moyenne_harm,
+    "ecart_moyen": _v5.formule_ecart_moyen,
+    # ─────────────────────────────────────────────────────────────────────────
+    # v6 — Ingénierie & Mathématiques Avancées (Groupe 1)
+    # ─────────────────────────────────────────────────────────────────────────
+    # Hyperboliques & réciproques
+    "acosh": _v6.formule_acosh,
+    "asinh": _v6.formule_asinh,
+    "atanh": _v6.formule_atanh,
+    "cosh": _v6.formule_cosh,
+    "cot": _v6.formule_cot,
+    "coth": _v6.formule_coth,
+    "csc": _v6.formule_csc,
+    "csch": _v6.formule_csch,
+    # Conversions de bases
+    "base": _v6.formule_base,
+    "decimal_base": _v6.formule_decimal_base,
+    "bin2dec": _v6.formule_bin2dec,
+    "bin2oct": _v6.formule_bin2oct,
+    "dec2oct": _v6.formule_dec2oct,
+    # Opérations bit à bit
+    "bit_lshift": _v6.formule_bit_lshift,
+    "bit_rshift": _v6.formule_bit_rshift,
+    # Combinatoire & complexes
+    "combinaison_rep": _v6.formule_combinaison_rep,
+    "complexe": _v6.formule_complexe,
+    # Fonctions de Bessel
+    "bessel_j": _v6.formule_bessel_j,
+    "bessel_i": _v6.formule_bessel_i,
+    "bessel_y": _v6.formule_bessel_y,
+    "bessel_k": _v6.formule_bessel_k,
+    # ─────────────────────────────────────────────────────────────────────────
+    # v7 — Ingénierie (suite) & Nombres Complexes (Groupe 2)
+    # ─────────────────────────────────────────────────────────────────────────
+    # Erreur & step
+    "erf_precis": _v7.formule_erf_precis,
+    "erfc": _v7.formule_erfc,
+    "erfc_precis": _v7.formule_erfc_precis,
+    "gestep": _v7.formule_gestep,
+    # Conversions hexa
+    "hex2bin": _v7.formule_hex2bin,
+    "hex2oct": _v7.formule_hex2oct,
+    # Propriétés complexes
+    "im_abs": _v7.formule_im_abs,
+    "im_part_imag": _v7.formule_im_part_imag,
+    "im_part_reelle": _v7.formule_im_part_reelle,
+    "im_argument": _v7.formule_im_argument,
+    "im_conjugue": _v7.formule_im_conjugue,
+    # Arithmétique complexe
+    "im_div": _v7.formule_im_div,
+    "im_sub": _v7.formule_im_sub,
+    "im_sum": _v7.formule_im_sum,
+    "im_product": _v7.formule_im_product,
+    "im_power": _v7.formule_im_power,
+    # Exp/log/sqrt complexes
+    "im_exp": _v7.formule_im_exp,
+    "im_ln": _v7.formule_im_ln,
+    "im_log10": _v7.formule_im_log10,
+    "im_log2": _v7.formule_im_log2,
+    "im_sqrt": _v7.formule_im_sqrt,
+    # Trigo & hyperbolique complexes
+    "im_cos": _v7.formule_im_cos,
+    "im_sin": _v7.formule_im_sin,
+    "im_sinh": _v7.formule_im_sinh,
+    "im_cot": _v7.formule_im_cot,
+    "im_csc": _v7.formule_im_csc,
+    "im_csch": _v7.formule_im_csch,
+    "im_sec": _v7.formule_im_sec,
+    "im_sech": _v7.formule_im_sech,
+    # ── v8 — Ingénierie (suite) & Finance Obligations/Titres (Groupe 3) ──
+    "sinh": _v8.formule_sinh,
+    "tanh": _v8.formule_tanh,
+    "sec": _v8.formule_sec,
+    "sech": _v8.formule_sech,
+    "imtan": _v8.formule_imtan,
+    "oct2bin": _v8.formule_oct2bin,
+    "oct2dec": _v8.formule_oct2dec,
+    "oct2hex": _v8.formule_oct2hex,
+    "accrint": _v8.formule_accrint,
+    "accrintm": _v8.formule_accrintm,
+    "amorlinc": _v8.formule_amorlinc,
+    "amordegrc": _v8.formule_amordegrc,
+    "coupdaybs": _v8.formule_coupdaybs,
+    "coupdays": _v8.formule_coupdays,
+    "coupdaysnc": _v8.formule_coupdaysnc,
+    "coupncd": _v8.formule_coupncd,
+    "coupnum": _v8.formule_coupnum,
+    "couppcd": _v8.formule_couppcd,
+    "disc": _v8.formule_disc,
+    "dollarde": _v8.formule_dollarde,
+    "dollarfr": _v8.formule_dollarfr,
+    "duration": _v8.formule_duration,
+    "effect": _v8.formule_effect,
+    "intrate": _v8.formule_intrate,
+    "mduration": _v8.formule_mduration,
+    "nominal": _v8.formule_nominal,
+    "oddfprice": _v8.formule_oddfprice,
+    "oddfyield": _v8.formule_oddfyield,
+    "oddlprice": _v8.formule_oddlprice,
+    "oddlyield": _v8.formule_oddlyield,
+    # ── v9 — Finance (Titres/Bons) & Distributions (Groupe 4) ──
+    "price": _v9.formule_price,
+    "pricedisc": _v9.formule_pricedisc,
+    "pricemat": _v9.formule_pricemat,
+    "received": _v9.formule_received,
+    "tbilleq": _v9.formule_tbilleq,
+    "tbillprice": _v9.formule_tbillprice,
+    "tbillyield": _v9.formule_tbillyield,
+    "vdb": _v9.formule_vdb,
+    "yield_val": _v9.formule_yield_val,
+    "yielddisc": _v9.formule_yielddisc,
+    "yieldmat": _v9.formule_yieldmat,
+    "avedev": _v9.formule_avedev,
+    "beta_dist": _v9.formule_beta_dist,
+    "beta_inv": _v9.formule_beta_inv,
+    "binom_dist": _v9.formule_binom_dist,
+    "binom_dist_range": _v9.formule_binom_dist_range,
+    "binom_inv": _v9.formule_binom_inv,
+    "chisq_dist": _v9.formule_chisq_dist,
+    "chisq_dist_rt": _v9.formule_chisq_dist_rt,
+    "chisq_inv": _v9.formule_chisq_inv,
+    "chisq_inv_rt": _v9.formule_chisq_inv_rt,
+    "chisq_test": _v9.formule_chisq_test,
+    "confidence_norm": _v9.formule_confidence_norm,
+    "confidence_t": _v9.formule_confidence_t,
+    "covariance_s": _v9.formule_covariance_s,
+    "devsq": _v9.formule_devsq,
+    "expon_dist": _v9.formule_expon_dist,
+    "f_dist": _v9.formule_f_dist,
+    "f_dist_rt": _v9.formule_f_dist_rt,
+    # ── v10 — Statistiques Avancées (Groupe 5) ──
+    "f_inv": _v10.formule_f_inv,
+    "f_inv_rt": _v10.formule_f_inv_rt,
+    "f_test": _v10.formule_f_test,
+    "fisher": _v10.formule_fisher,
+    "fisherinv": _v10.formule_fisherinv,
+    "gamma_val": _v10.formule_gamma_val,
+    "gamma_dist": _v10.formule_gamma_dist,
+    "gamma_inv": _v10.formule_gamma_inv,
+    "gammaln": _v10.formule_gammaln,
+    "gammaln_precis": _v10.formule_gammaln_precis,
+    "gauss": _v10.formule_gauss,
+    "harmean": _v10.formule_harmean,
+    "hypgeom_dist": _v10.formule_hypgeom_dist,
+    "kurt": _v10.formule_kurt,
+    "lognorm_dist": _v10.formule_lognorm_dist,
+    "lognorm_inv": _v10.formule_lognorm_inv,
+    "negbinom_dist": _v10.formule_negbinom_dist,
+    "norm_dist": _v10.formule_norm_dist,
+    "norm_inv": _v10.formule_norm_inv,
+    "norm_s_dist": _v10.formule_norm_s_dist,
+    "norm_s_inv": _v10.formule_norm_s_inv,
+    "pearson": _v10.formule_pearson,
+    "percentrank": _v10.formule_percentrank,
+    "percentrank_exc": _v10.formule_percentrank_exc,
+    "percentrank_inc": _v10.formule_percentrank_inc,
+    "phi": _v10.formule_phi,
+    "poisson_dist": _v10.formule_poisson_dist,
+    "prob": _v10.formule_prob,
+    "quartile_exc": _v10.formule_quartile_exc,
+    # ── v11 — Statistiques, D-Functions & Texte/Octets (Groupe 6) ──
+    "rsq": _v11.formule_rsq,
+    "skew": _v11.formule_skew,
+    "skew_p": _v11.formule_skew_p,
+    "standardize": _v11.formule_standardize,
+    "t_dist": _v11.formule_t_dist,
+    "t_dist_2t": _v11.formule_t_dist_2t,
+    "t_dist_rt": _v11.formule_t_dist_rt,
+    "t_inv": _v11.formule_t_inv,
+    "t_inv_2t": _v11.formule_t_inv_2t,
+    "t_test": _v11.formule_t_test,
+    "weibull_dist": _v11.formule_weibull_dist,
+    "z_test": _v11.formule_z_test,
+    "daverage": _v11.formule_daverage,
+    "dcount": _v11.formule_dcount,
+    "dcounta": _v11.formule_dcounta,
+    "dget": _v11.formule_dget,
+    "dmax": _v11.formule_dmax,
+    "dmin": _v11.formule_dmin,
+    "dproduct": _v11.formule_dproduct,
+    "dstdev": _v11.formule_dstdev,
+    "dstdevp": _v11.formule_dstdevp,
+    "dsum": _v11.formule_dsum,
+    "dvar": _v11.formule_dvar,
+    "dvarp": _v11.formule_dvarp,
+    "asc_val": _v11.formule_asc_val,
+    "bahttext": _v11.formule_bahttext,
+    "dbcs": _v11.formule_dbcs,
+    "findb": _v11.formule_findb,
+    "leftb": _v11.formule_leftb,
+    "lenb": _v11.formule_lenb,
+    # ── v12 : Texte Avancé & Recherche Moderne (Groupe 7) ──
+    "midb": _v12.formule_midb,
+    "phonetic": _v12.formule_phonetic,
+    "replaceb": _v12.formule_replaceb,
+    "rightb": _v12.formule_rightb,
+    "searchb": _v12.formule_searchb,
+    "t_val": _v12.formule_t_val,
+    "unichar": _v12.formule_unichar,
+    "unicode_val": _v12.formule_unicode_val,
+    "valuetotext": _v12.formule_valuetotext,
+    "arraytotext": _v12.formule_arraytotext,
+    "call_val": _v12.formule_call_val,
+    "register_id": _v12.formule_register_id,
+    "choosecols": _v12.formule_choosecols,
+    "chooserows": _v12.formule_chooserows,
+    "drop_val": _v12.formule_drop_val,
+    "expand": _v12.formule_expand,
+    "hstack": _v12.formule_hstack,
+    "take_val": _v12.formule_take_val,
+    "tocol": _v12.formule_tocol,
+    "torow": _v12.formule_torow,
+    "wrapcols": _v12.formule_wrapcols,
+    "wraprows": _v12.formule_wraprows,
+    "isomitted": _v12.formule_isomitted,
+    "lambda_val": _v12.formule_lambda_val,
+    "map_val": _v12.formule_map_val,
+    "reduce_val": _v12.formule_reduce_val,
+    "scan_val": _v12.formule_scan_val,
+    # ── v13 : Web, Cube, Information & Maths (Groupe 8) ──
+    "encodeurl": _v13.formule_encodeurl,
+    "filterxml": _v13.formule_filterxml,
+    "webservice": _v13.formule_webservice,
+    "cubekpimember": _v13.formule_cubekpimember,
+    "cubemember": _v13.formule_cubemember,
+    "cubememberproperty": _v13.formule_cubememberproperty,
+    "cuberankedmember": _v13.formule_cuberankedmember,
+    "cubeset": _v13.formule_cubeset,
+    "cubesetcount": _v13.formule_cubesetcount,
+    "cubevalue": _v13.formule_cubevalue,
+    "error_type": _v13.formule_error_type,
+    "info_val": _v13.formule_info_val,
+    "isformula": _v13.formule_isformula,
+    "isnontext": _v13.formule_isnontext,
+    "n_val": _v13.formule_n_val,
+    "sheet": _v13.formule_sheet,
+    "sheets": _v13.formule_sheets,
+    "aggregate": _v13.formule_aggregate,
+    "arabic": _v13.formule_arabic,
+    "ceiling_precise": _v13.formule_ceiling_precise,
+    "factdouble": _v13.formule_factdouble,
+    "floor_precise": _v13.formule_floor_precise,
+    "iso_ceiling": _v13.formule_iso_ceiling,
+    "munit": _v13.formule_munit,
+    "multinomial": _v13.formule_multinomial,
+    "roman": _v13.formule_roman,
+    "seriessum": _v13.formule_seriessum,
+    "sqrtpi": _v13.formule_sqrtpi,
+    # ── v14 : Compatibilité anciennes fonctions (Groupe 9) ──
+    "sumsq": _v14.formule_sumsq,
+    "sumx2my2": _v14.formule_sumx2my2,
+    "sumx2py2": _v14.formule_sumx2py2,
+    "sumxmy2": _v14.formule_sumxmy2,
+    "betadist": _v14.formule_betadist,
+    "betainv": _v14.formule_betainv,
+    "binomdist": _v14.formule_binomdist,
+    "chidist": _v14.formule_chidist,
+    "chiinv": _v14.formule_chiinv,
+    "chitest": _v14.formule_chitest,
+    "covar": _v14.formule_covar,
+    "critbinom": _v14.formule_critbinom,
+    "expondist": _v14.formule_expondist,
+    "fdist": _v14.formule_fdist,
+    "finv": _v14.formule_finv,
+    "ftest": _v14.formule_ftest,
+    "gammadist": _v14.formule_gammadist,
+    "gammainv": _v14.formule_gammainv,
+    "hypgeomdist": _v14.formule_hypgeomdist,
+    "lognormdist": _v14.formule_lognormdist,
+    "loginv": _v14.formule_loginv,
+    "negbinomdist": _v14.formule_negbinomdist,
+    "normdist": _v14.formule_normdist,
+    "norminv": _v14.formule_norminv,
+    "normsdist": _v14.formule_normsdist,
+    "normsinv": _v14.formule_normsinv,
+    "poisson": _v14.formule_poisson,
+    # ── v15 : Compatibilité & Nouveautés Regex/Texte (Groupe 10) ──
+    "rank": _v15.formule_rank,
+    "stdev": _v15.formule_stdev,
+    "stdevp": _v15.formule_stdevp,
+    "tdist": _v15.formule_tdist,
+    "tinv": _v15.formule_tinv,
+    "ttest": _v15.formule_ttest,
+    "var_val": _v15.formule_var_val,
+    "varp": _v15.formule_varp,
+    "weibull": _v15.formule_weibull,
+    "ztest": _v15.formule_ztest,
+    "regexextract": _v15.formule_regexextract,
+    "regexmatch": _v15.formule_regexmatch,
+    "regexreplace": _v15.formule_regexreplace,
+    "percentof": _v15.formule_percentof,
+    "textbefore": _v15.formule_textbefore,
+    "textafter": _v15.formule_textafter,
+    "textsplit": _v15.formule_textsplit,
+    # ── v16 : Analyse de Données & Divers (Groupe 11) ──
+    "image": _v16.formule_image,
+    "anchorarray": _v16.formule_anchorarray,
+    "formulatext": _v16.formule_formulatext,
+    "getpivotdata": _v16.formule_getpivotdata,
+    "hyperlink": _v16.formule_hyperlink,
+    "rtd": _v16.formule_rtd,
+    "euroconvert": _v16.formule_euroconvert,
+    "stockhistory": _v16.formule_stockhistory,
+    "single": _v16.formule_single,
+    "let_val": _v16.formule_let_val,
+    "ispmt": _v16.formule_ispmt,
+    "cumipmt": _v16.formule_cumipmt,
+    "cumprinc": _v16.formule_cumprinc,
+    "pduration": _v16.formule_pduration,
+    "rri": _v16.formule_rri,
+    "isoweeknum": _v16.formule_isoweeknum,
+    "networkdays_intl": _v16.formule_networkdays_intl,
+    "workday_intl": _v16.formule_workday_intl,
+    "bitxor": _v16.formule_bitxor,
 }
 
 
@@ -3701,6 +4087,2820 @@ FORMULA_META: dict[str, dict] = {
         "variables": [
             {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "7.3"},
             {"name": "increment", "label": "Incrément", "type": "number", "required": False, "placeholder": "0.5"},
+        ],
+    },
+    # ═══════════════════════════════════════════════════════════════════════════
+    # v5 — 50 formules expertes
+    # ═══════════════════════════════════════════════════════════════════════════
+    # ── Intelligence Moderne ──────────────────────────────────────────────────
+    "groupby": {
+        "name": "GROUPBY", "description": "Regrouper des lignes par clé avec agrégation (count/sum/avg/min/max)",
+        "category": "Intelligence Moderne",
+        "variables": [
+            {"name": "donnees", "label": "Données", "type": "array", "required": True, "placeholder": "[{...}, ...]"},
+            {"name": "cle", "label": "Clé de regroupement", "type": "text", "required": True, "placeholder": "region"},
+            {"name": "champ", "label": "Champ à agréger", "type": "text", "required": False, "placeholder": "montant"},
+            {"name": "agregation", "label": "Agrégation", "type": "text", "required": False, "placeholder": "sum"},
+        ],
+    },
+    "pivotby": {
+        "name": "PIVOTBY", "description": "Tableau croisé dynamique : lignes × colonnes → somme d'un champ",
+        "category": "Intelligence Moderne",
+        "variables": [
+            {"name": "donnees", "label": "Données", "type": "array", "required": True, "placeholder": "[{...}, ...]"},
+            {"name": "ligne_cle", "label": "Champ en ligne", "type": "text", "required": True, "placeholder": "produit"},
+            {"name": "colonne_cle", "label": "Champ en colonne", "type": "text", "required": True, "placeholder": "region"},
+            {"name": "champ", "label": "Champ mesuré", "type": "text", "required": True, "placeholder": "montant"},
+        ],
+    },
+    "regex_extract": {
+        "name": "REGEX.EXTRAIRE", "description": "Extraire toutes les correspondances d'un motif regex",
+        "category": "Intelligence Moderne",
+        "variables": [
+            {"name": "texte", "label": "Texte source", "type": "text", "required": True, "placeholder": "Email: john@foo.com"},
+            {"name": "motif", "label": "Motif regex", "type": "text", "required": True, "placeholder": r"\w+@\w+\.\w+"},
+        ],
+    },
+    "regex_match": {
+        "name": "REGEX.TEST", "description": "Tester si un motif regex correspond au texte",
+        "category": "Intelligence Moderne",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Hello world"},
+            {"name": "motif", "label": "Motif regex", "type": "text", "required": True, "placeholder": r"^[A-Z]"},
+        ],
+    },
+    "regex_replace": {
+        "name": "REGEX.REMPLACER", "description": "Remplacer via motif regex",
+        "category": "Intelligence Moderne",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Paris 2024"},
+            {"name": "motif", "label": "Motif regex", "type": "text", "required": True, "placeholder": r"\d+"},
+            {"name": "remplacement", "label": "Remplacement", "type": "text", "required": False, "placeholder": "****"},
+        ],
+    },
+    # ── Statistiques avancées ────────────────────────────────────────────────
+    "tendance": {
+        "name": "TENDANCE (TREND)", "description": "Projection par régression linéaire",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "y_connus", "label": "Y connus", "type": "array", "required": True, "placeholder": "[10, 20, 30]"},
+            {"name": "x_connus", "label": "X connus", "type": "array", "required": False, "placeholder": "[1, 2, 3]"},
+            {"name": "x_nouveaux", "label": "X nouveaux", "type": "array", "required": True, "placeholder": "[4, 5]"},
+        ],
+    },
+    "croissance": {
+        "name": "CROISSANCE (GROWTH)", "description": "Régression exponentielle y = b·m^x",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "y_connus", "label": "Y connus (>0)", "type": "array", "required": True, "placeholder": "[100, 200, 400]"},
+            {"name": "x_connus", "label": "X connus", "type": "array", "required": False, "placeholder": "[1, 2, 3]"},
+            {"name": "x_nouveaux", "label": "X nouveaux", "type": "array", "required": True, "placeholder": "[4, 5]"},
+        ],
+    },
+    "covariance_p": {
+        "name": "COVARIANCE.P", "description": "Covariance sur population",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "Série X", "type": "array", "required": True, "placeholder": "[1, 2, 3]"},
+            {"name": "y", "label": "Série Y", "type": "array", "required": True, "placeholder": "[2, 4, 6]"},
+        ],
+    },
+    "prevision_ets": {
+        "name": "PREVISION.ETS", "description": "Prévision par lissage exponentiel",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Historique", "type": "array", "required": True, "placeholder": "[100, 105, 110]"},
+            {"name": "periodes", "label": "Périodes à prévoir", "type": "number", "required": False, "placeholder": "3"},
+            {"name": "alpha", "label": "Alpha (0-1)", "type": "number", "required": False, "placeholder": "0.3"},
+        ],
+    },
+    "percentile_exc": {
+        "name": "PERCENTILE.EXC", "description": "Percentile exclusif (k dans ]0;1[)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[10, 20, 30, 40]"},
+            {"name": "k", "label": "k (fraction)", "type": "number", "required": True, "placeholder": "0.5"},
+        ],
+    },
+    # ── Ingénierie & Conversion ──────────────────────────────────────────────
+    "convertir": {
+        "name": "CONVERT", "description": "Convertir une valeur entre unités (longueur, masse, temps, volume, énergie, puissance, angle, température)",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "100"},
+            {"name": "depuis", "label": "Unité source", "type": "text", "required": True, "placeholder": "km"},
+            {"name": "vers", "label": "Unité cible", "type": "text", "required": True, "placeholder": "mi"},
+        ],
+    },
+    "bin2hex": {
+        "name": "BIN2HEX", "description": "Convertir binaire → hexadécimal",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre binaire", "type": "text", "required": True, "placeholder": "1010"},
+        ],
+    },
+    "hex2dec": {
+        "name": "HEX2DEC", "description": "Convertir hexadécimal → décimal",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre hexa", "type": "text", "required": True, "placeholder": "FF"},
+        ],
+    },
+    "dec2bin": {
+        "name": "DEC2BIN", "description": "Convertir décimal → binaire",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre décimal", "type": "number", "required": True, "placeholder": "10"},
+        ],
+    },
+    "dec2hex": {
+        "name": "DEC2HEX", "description": "Convertir décimal → hexadécimal",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre décimal", "type": "number", "required": True, "placeholder": "255"},
+        ],
+    },
+    "delta": {
+        "name": "DELTA", "description": "1 si a == b, sinon 0",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "a", "label": "Valeur a", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "b", "label": "Valeur b", "type": "number", "required": False, "placeholder": "5"},
+        ],
+    },
+    "bit_et": {
+        "name": "BITET (BITAND)", "description": "ET bit à bit de deux entiers positifs",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "a", "label": "Entier a", "type": "number", "required": True, "placeholder": "12"},
+            {"name": "b", "label": "Entier b", "type": "number", "required": True, "placeholder": "10"},
+        ],
+    },
+    "bit_ou": {
+        "name": "BITOU (BITOR)", "description": "OU bit à bit de deux entiers positifs",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "a", "label": "Entier a", "type": "number", "required": True, "placeholder": "12"},
+            {"name": "b", "label": "Entier b", "type": "number", "required": True, "placeholder": "10"},
+        ],
+    },
+    "bit_xou": {
+        "name": "BITXOU (BITXOR)", "description": "OU exclusif bit à bit",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "a", "label": "Entier a", "type": "number", "required": True, "placeholder": "12"},
+            {"name": "b", "label": "Entier b", "type": "number", "required": True, "placeholder": "10"},
+        ],
+    },
+    "erf_val": {
+        "name": "ERF", "description": "Fonction d'erreur de Gauss (avec borne supérieure optionnelle)",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "x", "label": "Borne inférieure", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "borne_sup", "label": "Borne supérieure", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    # ── Finance Professionnelle ──────────────────────────────────────────────
+    "taux_effectif": {
+        "name": "TAUX.EFFECTIF", "description": "Taux effectif annuel à partir du nominal",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_nominal", "label": "Taux nominal", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "periodes", "label": "Périodes par an", "type": "number", "required": True, "placeholder": "12"},
+        ],
+    },
+    "taux_nominal": {
+        "name": "TAUX.NOMINAL", "description": "Taux nominal à partir de l'effectif",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_effectif", "label": "Taux effectif", "type": "number", "required": True, "placeholder": "0.05116"},
+            {"name": "periodes", "label": "Périodes par an", "type": "number", "required": True, "placeholder": "12"},
+        ],
+    },
+    "tri_modifie": {
+        "name": "TRI.MODIFIE (MIRR)", "description": "TRI avec taux de financement et réinvestissement distincts",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "flux", "label": "Flux (signés)", "type": "array", "required": True, "placeholder": "[-1000, 300, 400, 500]"},
+            {"name": "taux_financement", "label": "Taux financement", "type": "number", "required": True, "placeholder": "0.08"},
+            {"name": "taux_reinvestissement", "label": "Taux réinvestissement", "type": "number", "required": True, "placeholder": "0.1"},
+        ],
+    },
+    "van_dates": {
+        "name": "VAN.DATES (XNPV)", "description": "Valeur actuelle nette avec dates irrégulières",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux", "label": "Taux d'actualisation", "type": "number", "required": True, "placeholder": "0.09"},
+            {"name": "flux", "label": "Flux", "type": "array", "required": True, "placeholder": "[-10000, 2000, 4000, 6000]"},
+            {"name": "dates", "label": "Dates (YYYY-MM-DD)", "type": "array", "required": True, "placeholder": "[\"2024-01-01\", ...]"},
+        ],
+    },
+    "tri_dates": {
+        "name": "TRI.DATES (XIRR)", "description": "TRI avec dates irrégulières (Newton)",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "flux", "label": "Flux", "type": "array", "required": True, "placeholder": "[-10000, 5000, 7000]"},
+            {"name": "dates", "label": "Dates (YYYY-MM-DD)", "type": "array", "required": True, "placeholder": "[\"2024-01-01\", ...]"},
+            {"name": "estimation", "label": "Estimation initiale", "type": "number", "required": False, "placeholder": "0.1"},
+        ],
+    },
+    "amort_ddb": {
+        "name": "AMORT.DDB", "description": "Amortissement dégressif double",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "cout", "label": "Coût", "type": "number", "required": True, "placeholder": "100000"},
+            {"name": "valeur_residuelle", "label": "Valeur résiduelle", "type": "number", "required": True, "placeholder": "10000"},
+            {"name": "duree", "label": "Durée (années)", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "periode", "label": "Période à calculer", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "facteur", "label": "Facteur", "type": "number", "required": False, "placeholder": "2"},
+        ],
+    },
+    "prix_obligation": {
+        "name": "PRIX.OBLIGATION", "description": "Prix d'une obligation à partir du rendement (version simplifiée)",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "valeur_nominale", "label": "Valeur nominale", "type": "number", "required": False, "placeholder": "100"},
+            {"name": "taux_coupon", "label": "Taux coupon annuel", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "rendement", "label": "Rendement annuel", "type": "number", "required": True, "placeholder": "0.06"},
+            {"name": "periodes", "label": "Années restantes", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "frequence", "label": "Fréquence de coupon", "type": "number", "required": False, "placeholder": "2"},
+        ],
+    },
+    # ── Bases de Données ─────────────────────────────────────────────────────
+    "bdlire": {
+        "name": "BDLIRE (DGET)", "description": "Lire la valeur d'un champ pour l'unique ligne correspondant aux critères",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base", "type": "array", "required": True, "placeholder": "[{...}, ...]"},
+            {"name": "champ", "label": "Champ à lire", "type": "text", "required": True, "placeholder": "prix"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{\"ref\": \"A123\"}"},
+        ],
+    },
+    "bdproduit": {
+        "name": "BDPRODUIT (DPRODUCT)", "description": "Produit des valeurs d'un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base", "type": "array", "required": True, "placeholder": "[{...}, ...]"},
+            {"name": "champ", "label": "Champ numérique", "type": "text", "required": True, "placeholder": "facteur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{\"region\": \"EU\"}"},
+        ],
+    },
+    "bdecartype": {
+        "name": "BDECARTYPE (DSTDEV)", "description": "Écart-type échantillon sur champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base", "type": "array", "required": True, "placeholder": "[{...}, ...]"},
+            {"name": "champ", "label": "Champ numérique", "type": "text", "required": True, "placeholder": "chiffre_affaires"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{\"annee\": 2024}"},
+        ],
+    },
+    # ── Mathématiques Spécialisées ───────────────────────────────────────────
+    "arrondi_multiple": {
+        "name": "ARRONDI.AU.MULTIPLE (MROUND)", "description": "Arrondir au multiple le plus proche",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "10.3"},
+            {"name": "multiple", "label": "Multiple", "type": "number", "required": True, "placeholder": "0.25"},
+        ],
+    },
+    "pgcd": {
+        "name": "PGCD (GCD)", "description": "Plus grand commun diviseur",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "nombres", "label": "Nombres", "type": "array", "required": True, "placeholder": "[12, 18, 24]"},
+        ],
+    },
+    "ppcm": {
+        "name": "PPCM (LCM)", "description": "Plus petit commun multiple",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "nombres", "label": "Nombres", "type": "array", "required": True, "placeholder": "[4, 6, 8]"},
+        ],
+    },
+    "quotient": {
+        "name": "QUOTIENT", "description": "Partie entière d'une division",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "numerateur", "label": "Numérateur", "type": "number", "required": True, "placeholder": "17"},
+            {"name": "denominateur", "label": "Dénominateur", "type": "number", "required": True, "placeholder": "5"},
+        ],
+    },
+    "tableau_alea": {
+        "name": "TABLEAU.ALEA (RANDARRAY)", "description": "Matrice aléatoire (uniforme)",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "lignes", "label": "Lignes", "type": "number", "required": False, "placeholder": "3"},
+            {"name": "colonnes", "label": "Colonnes", "type": "number", "required": False, "placeholder": "3"},
+            {"name": "min", "label": "Minimum", "type": "number", "required": False, "placeholder": "0"},
+            {"name": "max", "label": "Maximum", "type": "number", "required": False, "placeholder": "100"},
+            {"name": "entier", "label": "Entiers uniquement", "type": "boolean", "required": False, "placeholder": "false"},
+            {"name": "graine", "label": "Graine déterministe", "type": "number", "required": False, "placeholder": "42"},
+        ],
+    },
+    "combinaison": {
+        "name": "COMBIN", "description": "Nombre de combinaisons C(n, k)",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "n", "label": "n", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "k", "label": "k", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "factorielle": {
+        "name": "FACT (factorielle)", "description": "n! (factorielle)",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "n", "label": "n", "type": "number", "required": True, "placeholder": "6"},
+        ],
+    },
+    "sommeprod": {
+        "name": "SOMMEPROD (SUMPRODUCT)", "description": "Somme des produits terme à terme",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "tableaux", "label": "Tableaux alignés", "type": "array", "required": True, "placeholder": "[[1,2,3], [4,5,6]]"},
+        ],
+    },
+    "romain": {
+        "name": "ROMAIN (ROMAN)", "description": "Entier en chiffres romains (1-3999)",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "1999"},
+        ],
+    },
+    "signe": {
+        "name": "SIGNE (SIGN)", "description": "Signe d'un nombre : -1, 0 ou 1",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "-42"},
+        ],
+    },
+    # ── Logique de précision ─────────────────────────────────────────────────
+    "si_na": {
+        "name": "SI.NA (IFNA)", "description": "Valeur de repli si la cellule vaut N/A",
+        "category": "Logique de précision",
+        "variables": [
+            {"name": "valeur", "label": "Valeur à tester", "type": "text", "required": True, "placeholder": "#N/A"},
+            {"name": "fallback", "label": "Valeur de repli", "type": "text", "required": False, "placeholder": "Non trouvé"},
+        ],
+    },
+    "esterr": {
+        "name": "ESTERR (ISERR)", "description": "Vrai si erreur (hors #N/A)",
+        "category": "Logique de précision",
+        "variables": [
+            {"name": "valeur", "label": "Valeur à tester", "type": "text", "required": True, "placeholder": "#DIV/0!"},
+        ],
+    },
+    "nb_val": {
+        "name": "NBVAL (COUNTA)", "description": "Nombre de cellules non vides",
+        "category": "Logique de précision",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[1, \"\", \"a\", null]"},
+        ],
+    },
+    "nb_vide": {
+        "name": "NB.VIDE (COUNTBLANK)", "description": "Nombre de cellules vides",
+        "category": "Logique de précision",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[1, \"\", \"a\", null]"},
+        ],
+    },
+    # ── Statistiques supplémentaires ─────────────────────────────────────────
+    "mode_val": {
+        "name": "MODE", "description": "Valeur la plus fréquente",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[1, 2, 2, 3, 4]"},
+        ],
+    },
+    "grande_valeur": {
+        "name": "GRANDE.VALEUR (LARGE)", "description": "k-ième plus grande valeur",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[10, 7, 3, 9]"},
+            {"name": "k", "label": "k", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    "petite_valeur": {
+        "name": "PETITE.VALEUR (SMALL)", "description": "k-ième plus petite valeur",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[10, 7, 3, 9]"},
+            {"name": "k", "label": "k", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    "moyenne_geo": {
+        "name": "MOYENNE.GEOMETRIQUE (GEOMEAN)", "description": "Moyenne géométrique (valeurs > 0)",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (>0)", "type": "array", "required": True, "placeholder": "[1.05, 1.08, 1.03]"},
+        ],
+    },
+    "moyenne_harm": {
+        "name": "MOYENNE.HARMONIQUE (HARMEAN)", "description": "Moyenne harmonique (valeurs > 0)",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (>0)", "type": "array", "required": True, "placeholder": "[2, 4, 4]"},
+        ],
+    },
+    "ecart_moyen": {
+        "name": "ECART.MOYEN (AVEDEV)", "description": "Écart moyen absolu à la moyenne",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[4, 5, 6, 7, 8]"},
+        ],
+    },
+    # ═══════════════════════════════════════════════════════════════════════════
+    # v6 — Ingénierie & Mathématiques Avancées (Groupe 1)
+    # ═══════════════════════════════════════════════════════════════════════════
+    # ── Hyperboliques & réciproques ──────────────────────────────────────────
+    "acosh": {
+        "name": "ACOSH", "description": "Argument cosinus hyperbolique (x >= 1)",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    "asinh": {
+        "name": "ASINH", "description": "Argument sinus hyperbolique",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "atanh": {
+        "name": "ATANH", "description": "Argument tangente hyperbolique (-1 < x < 1)",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "0.5"},
+        ],
+    },
+    "cosh": {
+        "name": "COSH", "description": "Cosinus hyperbolique",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "cot": {
+        "name": "COT", "description": "Cotangente (1/tan)",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x (radians)", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "coth": {
+        "name": "COTH", "description": "Cotangente hyperbolique (1/tanh)",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "csc": {
+        "name": "CSC", "description": "Cosécante (1/sin)",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x (radians)", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "csch": {
+        "name": "CSCH", "description": "Cosécante hyperbolique (1/sinh)",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    # ── Conversions de bases ─────────────────────────────────────────────────
+    "base": {
+        "name": "BASE", "description": "Convertir un entier décimal vers une base (2-36)",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre décimal", "type": "number", "required": True, "placeholder": "255"},
+            {"name": "base", "label": "Base cible (2-36)", "type": "number", "required": True, "placeholder": "16"},
+            {"name": "longueur_min", "label": "Longueur minimale", "type": "number", "required": False, "placeholder": "4"},
+        ],
+    },
+    "decimal_base": {
+        "name": "DECIMAL", "description": "Convertir une chaîne en décimal depuis une base (2-36)",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "texte", "label": "Chaîne", "type": "text", "required": True, "placeholder": "FF"},
+            {"name": "base", "label": "Base source (2-36)", "type": "number", "required": True, "placeholder": "16"},
+        ],
+    },
+    "bin2dec": {
+        "name": "BIN2DEC", "description": "Convertir binaire → décimal",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre binaire", "type": "text", "required": True, "placeholder": "1010"},
+        ],
+    },
+    "bin2oct": {
+        "name": "BIN2OCT", "description": "Convertir binaire → octal",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre binaire", "type": "text", "required": True, "placeholder": "1010"},
+        ],
+    },
+    "dec2oct": {
+        "name": "DEC2OCT", "description": "Convertir décimal → octal",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre décimal", "type": "number", "required": True, "placeholder": "8"},
+        ],
+    },
+    # ── Opérations bit à bit ─────────────────────────────────────────────────
+    "bit_lshift": {
+        "name": "BITLSHIFT", "description": "Décalage binaire à gauche",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Entier", "type": "number", "required": True, "placeholder": "4"},
+            {"name": "decalage", "label": "Décalage", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    "bit_rshift": {
+        "name": "BITRSHIFT", "description": "Décalage binaire à droite",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Entier", "type": "number", "required": True, "placeholder": "16"},
+            {"name": "decalage", "label": "Décalage", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    # ── Combinatoire & complexes ─────────────────────────────────────────────
+    "combinaison_rep": {
+        "name": "COMBINA", "description": "Combinaisons avec répétition : C(n+k-1, k)",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "n", "label": "n (objets)", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "k", "label": "k (tirages)", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "complexe": {
+        "name": "COMPLEX", "description": "Nombre complexe a+bi (ou a+bj)",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "reel", "label": "Partie réelle", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "imaginaire", "label": "Partie imaginaire", "type": "number", "required": True, "placeholder": "4"},
+            {"name": "suffixe", "label": "Suffixe (i ou j)", "type": "text", "required": False, "placeholder": "i"},
+        ],
+    },
+    # ── Fonctions de Bessel ──────────────────────────────────────────────────
+    "bessel_j": {
+        "name": "BESSELJ", "description": "Fonction de Bessel de première espèce J_n(x)",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "n", "label": "Ordre n (entier >= 0)", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "bessel_i": {
+        "name": "BESSELI", "description": "Fonction de Bessel modifiée I_n(x)",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "n", "label": "Ordre n (entier >= 0)", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "bessel_y": {
+        "name": "BESSELY", "description": "Fonction de Bessel de deuxième espèce Y_n(x), x > 0",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x (>0)", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "n", "label": "Ordre n (entier >= 0)", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "bessel_k": {
+        "name": "BESSELK", "description": "Fonction de Bessel modifiée K_n(x), x > 0",
+        "category": "Mathématiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x (>0)", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "n", "label": "Ordre n (entier >= 0)", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    # ═══════════════════════════════════════════════════════════════════════════
+    # v7 — Ingénierie (suite) & Nombres Complexes (Groupe 2)
+    # ═══════════════════════════════════════════════════════════════════════════
+    # ── Fonctions d'erreur & step ────────────────────────────────────────────
+    "erf_precis": {
+        "name": "ERF.PRECISE", "description": "Fonction d'erreur (un seul argument)",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "erfc": {
+        "name": "ERFC", "description": "Fonction d'erreur complémentaire : 1 - erf(x)",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "erfc_precis": {
+        "name": "ERFC.PRECISE", "description": "Fonction d'erreur complémentaire (identique à ERFC)",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "gestep": {
+        "name": "GESTEP", "description": "1 si nombre >= seuil, 0 sinon",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "seuil", "label": "Seuil", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    # ── Conversions hexadécimales ────────────────────────────────────────────
+    "hex2bin": {
+        "name": "HEX2BIN", "description": "Hexadécimal → binaire",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre hexa", "type": "text", "required": True, "placeholder": "FF"},
+        ],
+    },
+    "hex2oct": {
+        "name": "HEX2OCT", "description": "Hexadécimal → octal",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Nombre hexa", "type": "text", "required": True, "placeholder": "FF"},
+        ],
+    },
+    # ── Propriétés complexes ─────────────────────────────────────────────────
+    "im_abs": {
+        "name": "IMABS", "description": "Module d'un nombre complexe |z|",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "3+4i"},
+        ],
+    },
+    "im_part_imag": {
+        "name": "IMAGINARY (IMAGINAIRE)", "description": "Partie imaginaire d'un complexe",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "3+4i"},
+        ],
+    },
+    "im_part_reelle": {
+        "name": "IMREAL", "description": "Partie réelle d'un complexe",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "3+4i"},
+        ],
+    },
+    "im_argument": {
+        "name": "IMARGUMENT", "description": "Argument (angle en radians) d'un complexe",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_conjugue": {
+        "name": "IMCONJUGATE (IMCONJUGUÉ)", "description": "Conjugué complexe a - bi",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "3+4i"},
+        ],
+    },
+    # ── Arithmétique complexe ────────────────────────────────────────────────
+    "im_div": {
+        "name": "IMDIV", "description": "Division de deux complexes z1 / z2",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "z1", "label": "Numérateur", "type": "text", "required": True, "placeholder": "4+8i"},
+            {"name": "z2", "label": "Dénominateur", "type": "text", "required": True, "placeholder": "2+2i"},
+        ],
+    },
+    "im_sub": {
+        "name": "IMSUB", "description": "Soustraction z1 - z2",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "z1", "label": "z1", "type": "text", "required": True, "placeholder": "5+3i"},
+            {"name": "z2", "label": "z2", "type": "text", "required": True, "placeholder": "2+i"},
+        ],
+    },
+    "im_sum": {
+        "name": "IMSUM", "description": "Somme d'une liste de complexes",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexes", "label": "Complexes", "type": "array", "required": True, "placeholder": "[\"1+2i\", \"3+4i\"]"},
+        ],
+    },
+    "im_product": {
+        "name": "IMPRODUCT", "description": "Produit d'une liste de complexes",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexes", "label": "Complexes", "type": "array", "required": True, "placeholder": "[\"1+i\", \"1+i\"]"},
+        ],
+    },
+    "im_power": {
+        "name": "IMPOWER", "description": "z élevé à une puissance réelle",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "2+3i"},
+            {"name": "puissance", "label": "Puissance", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    # ── Exp / log / sqrt complexes ───────────────────────────────────────────
+    "im_exp": {
+        "name": "IMEXP", "description": "Exponentielle complexe e^z",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_ln": {
+        "name": "IMLN", "description": "Logarithme naturel complexe ln(z)",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_log10": {
+        "name": "IMLOG10", "description": "Logarithme décimal complexe",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_log2": {
+        "name": "IMLOG2", "description": "Logarithme base 2 complexe",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_sqrt": {
+        "name": "IMSQRT", "description": "Racine carrée complexe",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "3+4i"},
+        ],
+    },
+    # ── Trigo & hyperboliques complexes ──────────────────────────────────────
+    "im_cos": {
+        "name": "IMCOS", "description": "Cosinus complexe",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_sin": {
+        "name": "IMSIN", "description": "Sinus complexe",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_sinh": {
+        "name": "IMSINH", "description": "Sinus hyperbolique complexe",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_cot": {
+        "name": "IMCOT", "description": "Cotangente complexe cos(z)/sin(z)",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_csc": {
+        "name": "IMCSC", "description": "Cosécante complexe 1/sin(z)",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_csch": {
+        "name": "IMCSCH", "description": "Cosécante hyperbolique complexe 1/sinh(z)",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_sec": {
+        "name": "IMSEC", "description": "Sécante complexe 1/cos(z)",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "im_sech": {
+        "name": "IMSECH", "description": "Sécante hyperbolique complexe 1/cosh(z)",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "complexe", "label": "z", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    # ── v8 — Ingénierie (suite) & Finance Obligations/Titres (Groupe 3) ──
+    "sinh": {
+        "name": "SINH", "description": "Sinus hyperbolique de x",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "tanh": {
+        "name": "TANH", "description": "Tangente hyperbolique de x",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "sec": {
+        "name": "SEC", "description": "Sécante = 1/cos(x) en radians",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "x", "label": "x (radians)", "type": "number", "required": True, "placeholder": "0"},
+        ],
+    },
+    "sech": {
+        "name": "SECH", "description": "Sécante hyperbolique = 1/cosh(x)",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "0"},
+        ],
+    },
+    "imtan": {
+        "name": "IMTAN", "description": "Tangente d'un nombre complexe",
+        "category": "Nombres Complexes",
+        "variables": [
+            {"name": "nombre", "label": "z", "type": "text", "required": True, "placeholder": "1+2i"},
+        ],
+    },
+    "oct2bin": {
+        "name": "OCT2BIN", "description": "Convertit un octal en binaire",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Octal", "type": "text", "required": True, "placeholder": "10"},
+        ],
+    },
+    "oct2dec": {
+        "name": "OCT2DEC", "description": "Convertit un octal en décimal",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Octal", "type": "text", "required": True, "placeholder": "10"},
+        ],
+    },
+    "oct2hex": {
+        "name": "OCT2HEX", "description": "Convertit un octal en hexadécimal",
+        "category": "Ingénierie & Conversion",
+        "variables": [
+            {"name": "nombre", "label": "Octal", "type": "text", "required": True, "placeholder": "77"},
+        ],
+    },
+    "accrint": {
+        "name": "ACCRINT", "description": "Intérêts courus d'un titre à coupons périodiques",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "emission", "label": "Date d'émission", "type": "text", "required": True, "placeholder": "2024-01-01"},
+            {"name": "reglement", "label": "Date de règlement", "type": "text", "required": True, "placeholder": "2024-07-01"},
+            {"name": "taux", "label": "Taux coupon", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "valeur_nominale", "label": "Valeur nominale", "type": "number", "required": False, "placeholder": "1000"},
+            {"name": "base", "label": "Base (0-4)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "accrintm": {
+        "name": "ACCRINTM", "description": "Intérêts courus à échéance (paiement unique)",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "emission", "label": "Date d'émission", "type": "text", "required": True, "placeholder": "2024-01-01"},
+            {"name": "echeance", "label": "Date d'échéance", "type": "text", "required": True, "placeholder": "2024-12-31"},
+            {"name": "taux", "label": "Taux", "type": "number", "required": True, "placeholder": "0.06"},
+            {"name": "valeur_nominale", "label": "Valeur nominale", "type": "number", "required": False, "placeholder": "1000"},
+            {"name": "base", "label": "Base (0-4)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "amorlinc": {
+        "name": "AMORLINC", "description": "Amortissement linéaire prorata (convention française)",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "cout", "label": "Coût", "type": "number", "required": True, "placeholder": "10000"},
+            {"name": "taux", "label": "Taux", "type": "number", "required": True, "placeholder": "0.2"},
+            {"name": "periode", "label": "Période", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "valeur_residuelle", "label": "Valeur résiduelle", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "amordegrc": {
+        "name": "AMORDEGRC", "description": "Amortissement dégressif avec coefficient (convention française)",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "cout", "label": "Coût", "type": "number", "required": True, "placeholder": "10000"},
+            {"name": "taux", "label": "Taux", "type": "number", "required": True, "placeholder": "0.2"},
+            {"name": "periode", "label": "Période", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "valeur_residuelle", "label": "Valeur résiduelle", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "coupdaybs": {
+        "name": "COUPDAYBS", "description": "Jours entre le dernier coupon et le règlement",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Date de règlement", "type": "text", "required": True, "placeholder": "2024-03-15"},
+            {"name": "echeance", "label": "Date d'échéance", "type": "text", "required": True, "placeholder": "2027-01-15"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "base", "label": "Base (0-4)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "coupdays": {
+        "name": "COUPDAYS", "description": "Jours dans la période de coupon contenant le règlement",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Date de règlement", "type": "text", "required": True, "placeholder": "2024-03-15"},
+            {"name": "echeance", "label": "Date d'échéance", "type": "text", "required": True, "placeholder": "2027-01-15"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "base", "label": "Base (0-4)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "coupdaysnc": {
+        "name": "COUPDAYSNC", "description": "Jours entre le règlement et le prochain coupon",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Date de règlement", "type": "text", "required": True, "placeholder": "2024-03-15"},
+            {"name": "echeance", "label": "Date d'échéance", "type": "text", "required": True, "placeholder": "2027-01-15"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "base", "label": "Base (0-4)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "coupncd": {
+        "name": "COUPNCD", "description": "Date du prochain coupon après le règlement",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Date de règlement", "type": "text", "required": True, "placeholder": "2024-03-15"},
+            {"name": "echeance", "label": "Date d'échéance", "type": "text", "required": True, "placeholder": "2027-01-15"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    "coupnum": {
+        "name": "COUPNUM", "description": "Nombre de coupons payables entre règlement et échéance",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Date de règlement", "type": "text", "required": True, "placeholder": "2024-03-15"},
+            {"name": "echeance", "label": "Date d'échéance", "type": "text", "required": True, "placeholder": "2027-01-15"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    "couppcd": {
+        "name": "COUPPCD", "description": "Date du coupon précédent le règlement",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Date de règlement", "type": "text", "required": True, "placeholder": "2024-03-15"},
+            {"name": "echeance", "label": "Date d'échéance", "type": "text", "required": True, "placeholder": "2027-01-15"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    "disc": {
+        "name": "DISC", "description": "Taux d'escompte d'un titre",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Date de règlement", "type": "text", "required": True, "placeholder": "2024-01-01"},
+            {"name": "echeance", "label": "Date d'échéance", "type": "text", "required": True, "placeholder": "2025-01-01"},
+            {"name": "prix", "label": "Prix", "type": "number", "required": True, "placeholder": "95"},
+            {"name": "remboursement", "label": "Remboursement", "type": "number", "required": True, "placeholder": "100"},
+            {"name": "base", "label": "Base (0-4)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "dollarde": {
+        "name": "DOLLARDE", "description": "Convertit un prix fractionnaire en prix décimal",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "prix_fractionnaire", "label": "Prix fractionnaire", "type": "number", "required": True, "placeholder": "1.02"},
+            {"name": "fraction", "label": "Fraction", "type": "number", "required": True, "placeholder": "16"},
+        ],
+    },
+    "dollarfr": {
+        "name": "DOLLARFR", "description": "Convertit un prix décimal en prix fractionnaire",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "prix_decimal", "label": "Prix décimal", "type": "number", "required": True, "placeholder": "1.125"},
+            {"name": "fraction", "label": "Fraction", "type": "number", "required": True, "placeholder": "16"},
+        ],
+    },
+    "duration": {
+        "name": "DURATION", "description": "Duration de Macaulay d'une obligation",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_coupon", "label": "Taux coupon", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "rendement", "label": "Rendement", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "periodes", "label": "Périodes (années)", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": False, "placeholder": "2"},
+            {"name": "valeur_nominale", "label": "Valeur nominale", "type": "number", "required": False, "placeholder": "100"},
+        ],
+    },
+    "effect": {
+        "name": "EFFECT", "description": "Taux d'intérêt annuel effectif",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_nominal", "label": "Taux nominal", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "periodes", "label": "Périodes par an", "type": "number", "required": True, "placeholder": "12"},
+        ],
+    },
+    "intrate": {
+        "name": "INTRATE", "description": "Taux d'intérêt d'un titre entièrement investi",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Date de règlement", "type": "text", "required": True, "placeholder": "2024-01-01"},
+            {"name": "echeance", "label": "Date d'échéance", "type": "text", "required": True, "placeholder": "2025-01-01"},
+            {"name": "investissement", "label": "Investissement", "type": "number", "required": True, "placeholder": "1000"},
+            {"name": "remboursement", "label": "Remboursement", "type": "number", "required": True, "placeholder": "1050"},
+            {"name": "base", "label": "Base (0-4)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "mduration": {
+        "name": "MDURATION", "description": "Duration modifiée d'une obligation",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_coupon", "label": "Taux coupon", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "rendement", "label": "Rendement", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "periodes", "label": "Périodes (années)", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": False, "placeholder": "2"},
+            {"name": "valeur_nominale", "label": "Valeur nominale", "type": "number", "required": False, "placeholder": "100"},
+        ],
+    },
+    "nominal": {
+        "name": "NOMINAL", "description": "Taux d'intérêt annuel nominal",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_effectif", "label": "Taux effectif", "type": "number", "required": True, "placeholder": "0.05116"},
+            {"name": "periodes", "label": "Périodes par an", "type": "number", "required": True, "placeholder": "12"},
+        ],
+    },
+    "oddfprice": {
+        "name": "ODDFPRICE", "description": "Prix d'une obligation avec première période atypique",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_coupon", "label": "Taux coupon", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "rendement", "label": "Rendement", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "periodes", "label": "Périodes (années)", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": False, "placeholder": "2"},
+            {"name": "premier_coupon_jours", "label": "Jours 1er coupon", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "oddfyield": {
+        "name": "ODDFYIELD", "description": "Rendement d'une obligation avec première période atypique",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_coupon", "label": "Taux coupon", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "prix", "label": "Prix", "type": "number", "required": True, "placeholder": "100"},
+            {"name": "periodes", "label": "Périodes (années)", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": False, "placeholder": "2"},
+            {"name": "premier_coupon_jours", "label": "Jours 1er coupon", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "oddlprice": {
+        "name": "ODDLPRICE", "description": "Prix d'une obligation avec dernière période atypique",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_coupon", "label": "Taux coupon", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "rendement", "label": "Rendement", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "periodes", "label": "Périodes (années)", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": False, "placeholder": "2"},
+            {"name": "dernier_coupon_jours", "label": "Jours dernier coupon", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "oddlyield": {
+        "name": "ODDLYIELD", "description": "Rendement d'une obligation avec dernière période atypique",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_coupon", "label": "Taux coupon", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "prix", "label": "Prix", "type": "number", "required": True, "placeholder": "100"},
+            {"name": "periodes", "label": "Périodes (années)", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": False, "placeholder": "2"},
+            {"name": "dernier_coupon_jours", "label": "Jours dernier coupon", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    # ── v9 — Finance (Titres/Bons) & Distributions (Groupe 4) ──
+    "price": {
+        "name": "PRICE", "description": "Prix d'une obligation à coupons périodiques",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_coupon", "label": "Taux coupon", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "rendement", "label": "Rendement", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "periodes", "label": "Périodes (années)", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": False, "placeholder": "2"},
+            {"name": "valeur_nominale", "label": "Valeur nominale", "type": "number", "required": False, "placeholder": "100"},
+        ],
+    },
+    "pricedisc": {
+        "name": "PRICEDISC", "description": "Prix d'un titre escompté",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Date de règlement", "type": "text", "required": True, "placeholder": "2024-01-01"},
+            {"name": "echeance", "label": "Date d'échéance", "type": "text", "required": True, "placeholder": "2025-01-01"},
+            {"name": "escompte", "label": "Taux d'escompte", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "remboursement", "label": "Remboursement", "type": "number", "required": False, "placeholder": "100"},
+        ],
+    },
+    "pricemat": {
+        "name": "PRICEMAT", "description": "Prix d'un titre payant les intérêts à échéance",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Règlement", "type": "text", "required": True, "placeholder": "2024-01-01"},
+            {"name": "echeance", "label": "Échéance", "type": "text", "required": True, "placeholder": "2025-01-01"},
+            {"name": "emission", "label": "Émission", "type": "text", "required": True, "placeholder": "2023-01-01"},
+            {"name": "taux", "label": "Taux", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "rendement", "label": "Rendement", "type": "number", "required": True, "placeholder": "0.05"},
+        ],
+    },
+    "received": {
+        "name": "RECEIVED", "description": "Montant reçu à échéance d'un titre entièrement investi",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Règlement", "type": "text", "required": True, "placeholder": "2024-01-01"},
+            {"name": "echeance", "label": "Échéance", "type": "text", "required": True, "placeholder": "2025-01-01"},
+            {"name": "investissement", "label": "Investissement", "type": "number", "required": True, "placeholder": "1000"},
+            {"name": "escompte", "label": "Taux d'escompte", "type": "number", "required": True, "placeholder": "0.05"},
+        ],
+    },
+    "tbilleq": {
+        "name": "TBILLEQ", "description": "Rendement équivalent obligation d'un bon du Trésor",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Règlement", "type": "text", "required": True, "placeholder": "2024-01-01"},
+            {"name": "echeance", "label": "Échéance", "type": "text", "required": True, "placeholder": "2024-07-01"},
+            {"name": "escompte", "label": "Taux d'escompte", "type": "number", "required": True, "placeholder": "0.05"},
+        ],
+    },
+    "tbillprice": {
+        "name": "TBILLPRICE", "description": "Prix d'un bon du Trésor",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Règlement", "type": "text", "required": True, "placeholder": "2024-01-01"},
+            {"name": "echeance", "label": "Échéance", "type": "text", "required": True, "placeholder": "2024-07-01"},
+            {"name": "escompte", "label": "Taux d'escompte", "type": "number", "required": True, "placeholder": "0.05"},
+        ],
+    },
+    "tbillyield": {
+        "name": "TBILLYIELD", "description": "Rendement d'un bon du Trésor",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Règlement", "type": "text", "required": True, "placeholder": "2024-01-01"},
+            {"name": "echeance", "label": "Échéance", "type": "text", "required": True, "placeholder": "2024-07-01"},
+            {"name": "prix", "label": "Prix", "type": "number", "required": True, "placeholder": "97.5"},
+        ],
+    },
+    "vdb": {
+        "name": "VDB", "description": "Amortissement dégressif variable (DDB puis linéaire)",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "cout", "label": "Coût", "type": "number", "required": True, "placeholder": "10000"},
+            {"name": "valeur_residuelle", "label": "Valeur résiduelle", "type": "number", "required": True, "placeholder": "1000"},
+            {"name": "duree", "label": "Durée (périodes)", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "debut", "label": "Début", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "fin", "label": "Fin", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "yield_val": {
+        "name": "YIELD", "description": "Rendement d'une obligation à coupons",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "taux_coupon", "label": "Taux coupon", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "prix", "label": "Prix", "type": "number", "required": True, "placeholder": "100"},
+            {"name": "periodes", "label": "Périodes (années)", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "frequence", "label": "Fréquence (1/2/4)", "type": "number", "required": False, "placeholder": "2"},
+        ],
+    },
+    "yielddisc": {
+        "name": "YIELDDISC", "description": "Rendement d'un titre escompté",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Règlement", "type": "text", "required": True, "placeholder": "2024-01-01"},
+            {"name": "echeance", "label": "Échéance", "type": "text", "required": True, "placeholder": "2025-01-01"},
+            {"name": "prix", "label": "Prix", "type": "number", "required": True, "placeholder": "95"},
+            {"name": "remboursement", "label": "Remboursement", "type": "number", "required": False, "placeholder": "100"},
+        ],
+    },
+    "yieldmat": {
+        "name": "YIELDMAT", "description": "Rendement d'un titre à intérêts à échéance",
+        "category": "Finance Professionnelle",
+        "variables": [
+            {"name": "reglement", "label": "Règlement", "type": "text", "required": True, "placeholder": "2024-01-01"},
+            {"name": "echeance", "label": "Échéance", "type": "text", "required": True, "placeholder": "2025-01-01"},
+            {"name": "emission", "label": "Émission", "type": "text", "required": True, "placeholder": "2023-01-01"},
+            {"name": "taux", "label": "Taux", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "prix", "label": "Prix", "type": "number", "required": True, "placeholder": "100"},
+        ],
+    },
+    "avedev": {
+        "name": "AVEDEV", "description": "Écart absolu moyen",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[4,5,6,7,8]"},
+        ],
+    },
+    "beta_dist": {
+        "name": "BETA.DIST", "description": "Distribution bêta (CDF ou PDF)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "alpha", "label": "Alpha", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "beta", "label": "Bêta", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "beta_inv": {
+        "name": "BETA.INV", "description": "Inverse de la distribution bêta",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "alpha", "label": "Alpha", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "beta", "label": "Bêta", "type": "number", "required": True, "placeholder": "5"},
+        ],
+    },
+    "binom_dist": {
+        "name": "BINOM.DIST", "description": "Distribution binomiale",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "succes", "label": "Succès", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "essais", "label": "Essais", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "binom_dist_range": {
+        "name": "BINOM.DIST.RANGE", "description": "Probabilité binomiale sur un intervalle",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "essais", "label": "Essais", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "succes_min", "label": "Min succès", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "succes_max", "label": "Max succès", "type": "number", "required": False, "placeholder": "5"},
+        ],
+    },
+    "binom_inv": {
+        "name": "BINOM.INV", "description": "Inverse de la distribution binomiale",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "essais", "label": "Essais", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "alpha", "label": "Alpha", "type": "number", "required": True, "placeholder": "0.5"},
+        ],
+    },
+    "chisq_dist": {
+        "name": "CHISQ.DIST", "description": "Distribution du chi-deux",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "chisq_dist_rt": {
+        "name": "CHISQ.DIST.RT", "description": "Queue droite du chi-deux",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "chisq_inv": {
+        "name": "CHISQ.INV", "description": "Inverse du chi-deux (queue gauche)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.95"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "chisq_inv_rt": {
+        "name": "CHISQ.INV.RT", "description": "Inverse du chi-deux (queue droite)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "chisq_test": {
+        "name": "CHISQ.TEST", "description": "Test d'indépendance du chi-deux",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "observees", "label": "Valeurs observées", "type": "array", "required": True, "placeholder": "[10,20,30]"},
+            {"name": "attendues", "label": "Valeurs attendues", "type": "array", "required": True, "placeholder": "[15,15,30]"},
+        ],
+    },
+    "confidence_norm": {
+        "name": "CONFIDENCE.NORM", "description": "Demi-intervalle de confiance (loi normale)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "alpha", "label": "Alpha", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "ecart_type", "label": "Écart-type", "type": "number", "required": True, "placeholder": "2.5"},
+            {"name": "taille", "label": "Taille échantillon", "type": "number", "required": True, "placeholder": "50"},
+        ],
+    },
+    "confidence_t": {
+        "name": "CONFIDENCE.T", "description": "Demi-intervalle de confiance (loi t de Student)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "alpha", "label": "Alpha", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "ecart_type", "label": "Écart-type", "type": "number", "required": True, "placeholder": "2.5"},
+            {"name": "taille", "label": "Taille échantillon", "type": "number", "required": True, "placeholder": "20"},
+        ],
+    },
+    "covariance_s": {
+        "name": "COVARIANCE.S", "description": "Covariance d'échantillon",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "array", "required": True, "placeholder": "[1,2,3]"},
+            {"name": "y", "label": "y", "type": "array", "required": True, "placeholder": "[2,4,6]"},
+        ],
+    },
+    "devsq": {
+        "name": "DEVSQ", "description": "Somme des carrés des écarts à la moyenne",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[4,5,6,7,8]"},
+        ],
+    },
+    "expon_dist": {
+        "name": "EXPON.DIST", "description": "Distribution exponentielle",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "lambda", "label": "Lambda", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "f_dist": {
+        "name": "F.DIST", "description": "Distribution F de Fisher-Snedecor",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "d1", "label": "d1", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "d2", "label": "d2", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "f_dist_rt": {
+        "name": "F.DIST.RT", "description": "Queue droite de la distribution F",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "d1", "label": "d1", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "d2", "label": "d2", "type": "number", "required": True, "placeholder": "10"},
+        ],
+    },
+    # ── v10 — Statistiques Avancées (Groupe 5) ──
+    "f_inv": {
+        "name": "F.INV", "description": "Inverse de la distribution F (queue gauche)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.95"},
+            {"name": "d1", "label": "d1", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "d2", "label": "d2", "type": "number", "required": True, "placeholder": "10"},
+        ],
+    },
+    "f_inv_rt": {
+        "name": "F.INV.RT", "description": "Inverse de la distribution F (queue droite)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "d1", "label": "d1", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "d2", "label": "d2", "type": "number", "required": True, "placeholder": "10"},
+        ],
+    },
+    "f_test": {
+        "name": "F.TEST", "description": "Test F (rapport des variances)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "Échantillon 1", "type": "array", "required": True, "placeholder": "[1,2,3]"},
+            {"name": "y", "label": "Échantillon 2", "type": "array", "required": True, "placeholder": "[2,4,6]"},
+        ],
+    },
+    "fisher": {
+        "name": "FISHER", "description": "Transformation de Fisher",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "0.5"},
+        ],
+    },
+    "fisherinv": {
+        "name": "FISHERINV", "description": "Inverse de la transformation de Fisher",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "y", "label": "y", "type": "number", "required": True, "placeholder": "0.5"},
+        ],
+    },
+    "gamma_val": {
+        "name": "GAMMA", "description": "Fonction gamma Γ(x)",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "5"},
+        ],
+    },
+    "gamma_dist": {
+        "name": "GAMMA.DIST", "description": "Distribution gamma",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "alpha", "label": "Alpha", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "beta", "label": "Bêta", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "gamma_inv": {
+        "name": "GAMMA.INV", "description": "Inverse de la distribution gamma",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "alpha", "label": "Alpha", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "beta", "label": "Bêta", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "gammaln": {
+        "name": "GAMMALN", "description": "Logarithme de la fonction gamma",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "5"},
+        ],
+    },
+    "gammaln_precis": {
+        "name": "GAMMALN.PRECISE", "description": "Logarithme précis de la fonction gamma",
+        "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "5"},
+        ],
+    },
+    "gauss": {
+        "name": "GAUSS", "description": "Probabilité entre 0 et x (loi normale standard)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1.96"},
+        ],
+    },
+    "harmean": {
+        "name": "HARMEAN", "description": "Moyenne harmonique",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[2,4,4]"},
+        ],
+    },
+    "hypgeom_dist": {
+        "name": "HYPGEOM.DIST", "description": "Distribution hypergéométrique",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "succes_echantillon", "label": "Succès échantillon", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "taille_echantillon", "label": "Taille échantillon", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "succes_population", "label": "Succès population", "type": "number", "required": True, "placeholder": "20"},
+            {"name": "taille_population", "label": "Taille population", "type": "number", "required": True, "placeholder": "50"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "kurt": {
+        "name": "KURT", "description": "Kurtosis (excès) d'un échantillon",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[1,2,3,4,5]"},
+        ],
+    },
+    "lognorm_dist": {
+        "name": "LOGNORM.DIST", "description": "Distribution log-normale",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "moyenne", "label": "Moyenne (ln)", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "ecart_type", "label": "Écart-type (ln)", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "lognorm_inv": {
+        "name": "LOGNORM.INV", "description": "Inverse de la distribution log-normale",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "moyenne", "label": "Moyenne (ln)", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "ecart_type", "label": "Écart-type (ln)", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "negbinom_dist": {
+        "name": "NEGBINOM.DIST", "description": "Distribution binomiale négative",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "echecs", "label": "Échecs", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "succes", "label": "Succès requis", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "norm_dist": {
+        "name": "NORM.DIST", "description": "Distribution normale",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "moyenne", "label": "Moyenne", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "ecart_type", "label": "Écart-type", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "norm_inv": {
+        "name": "NORM.INV", "description": "Inverse de la distribution normale",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "moyenne", "label": "Moyenne", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "ecart_type", "label": "Écart-type", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "norm_s_dist": {
+        "name": "NORM.S.DIST", "description": "Distribution normale standard",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "z", "label": "z", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "norm_s_inv": {
+        "name": "NORM.S.INV", "description": "Inverse de la distribution normale standard",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.5"},
+        ],
+    },
+    "pearson": {
+        "name": "PEARSON", "description": "Coefficient de corrélation de Pearson",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "array", "required": True, "placeholder": "[1,2,3]"},
+            {"name": "y", "label": "y", "type": "array", "required": True, "placeholder": "[2,4,6]"},
+        ],
+    },
+    "percentrank": {
+        "name": "PERCENTRANK", "description": "Rang en pourcentage (inclusif)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[1,2,3,4,5]"},
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "percentrank_exc": {
+        "name": "PERCENTRANK.EXC", "description": "Rang en pourcentage (exclusif)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[1,2,3,4,5]"},
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "percentrank_inc": {
+        "name": "PERCENTRANK.INC", "description": "Rang en pourcentage (inclusif)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[1,2,3,4,5]"},
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "phi": {
+        "name": "PHI", "description": "Densité de la loi normale standard φ(x)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "0"},
+        ],
+    },
+    "poisson_dist": {
+        "name": "POISSON.DIST", "description": "Distribution de Poisson",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "moyenne", "label": "Moyenne (λ)", "type": "number", "required": True, "placeholder": "2.5"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "prob": {
+        "name": "PROB", "description": "Probabilité d'un intervalle",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[1,2,3]"},
+            {"name": "probabilites", "label": "Probabilités", "type": "array", "required": True, "placeholder": "[0.3,0.4,0.3]"},
+            {"name": "borne_inf", "label": "Borne inférieure", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "borne_sup", "label": "Borne supérieure", "type": "number", "required": False, "placeholder": "2"},
+        ],
+    },
+    "quartile_exc": {
+        "name": "QUARTILE.EXC", "description": "Quartile exclusif (1, 2 ou 3)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[1,2,3,4,5]"},
+            {"name": "quart", "label": "Quartile (1-3)", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    # ── v11 — Statistiques, D-Functions & Texte/Octets (Groupe 6) ──
+    "rsq": {
+        "name": "RSQ", "description": "Coefficient de détermination R²",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "array", "required": True, "placeholder": "[1,2,3]"},
+            {"name": "y", "label": "y", "type": "array", "required": True, "placeholder": "[2,4,6]"},
+        ],
+    },
+    "skew": {
+        "name": "SKEW", "description": "Asymétrie d'un échantillon",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[1,2,3,4,10]"},
+        ],
+    },
+    "skew_p": {
+        "name": "SKEW.P", "description": "Asymétrie d'une population",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[1,2,3,4,10]"},
+        ],
+    },
+    "standardize": {
+        "name": "STANDARDIZE", "description": "Valeur centrée réduite (z-score)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "75"},
+            {"name": "moyenne", "label": "Moyenne", "type": "number", "required": True, "placeholder": "70"},
+            {"name": "ecart_type", "label": "Écart-type", "type": "number", "required": True, "placeholder": "5"},
+        ],
+    },
+    "t_dist": {
+        "name": "T.DIST", "description": "Distribution t de Student (queue gauche)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1.96"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "30"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "t_dist_2t": {
+        "name": "T.DIST.2T", "description": "Distribution t bilatérale",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x (>= 0)", "type": "number", "required": True, "placeholder": "1.96"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "30"},
+        ],
+    },
+    "t_dist_rt": {
+        "name": "T.DIST.RT", "description": "Distribution t (queue droite)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1.96"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "30"},
+        ],
+    },
+    "t_inv": {
+        "name": "T.INV", "description": "Inverse de la distribution t (queue gauche)",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.975"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "30"},
+        ],
+    },
+    "t_inv_2t": {
+        "name": "T.INV.2T", "description": "Inverse bilatéral de la distribution t",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "30"},
+        ],
+    },
+    "t_test": {
+        "name": "T.TEST", "description": "Test t de Student",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "Échantillon 1", "type": "array", "required": True, "placeholder": "[1,2,3]"},
+            {"name": "y", "label": "Échantillon 2", "type": "array", "required": True, "placeholder": "[2,3,4]"},
+            {"name": "queues", "label": "Queues (1 ou 2)", "type": "number", "required": False, "placeholder": "2"},
+            {"name": "type", "label": "Type (1=apparié, 2=égal, 3=inégal)", "type": "number", "required": False, "placeholder": "2"},
+        ],
+    },
+    "weibull_dist": {
+        "name": "WEIBULL.DIST", "description": "Distribution de Weibull",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "alpha", "label": "Alpha (forme)", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "beta", "label": "Bêta (échelle)", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "z_test": {
+        "name": "Z.TEST", "description": "P-value d'un test z unilatéral",
+        "category": "Statistiques Avancées",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs", "type": "array", "required": True, "placeholder": "[1,2,3,4,5]"},
+            {"name": "mu", "label": "Moyenne hypothétique", "type": "number", "required": True, "placeholder": "2.5"},
+            {"name": "sigma", "label": "Écart-type (optionnel)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "daverage": {
+        "name": "DAVERAGE", "description": "Moyenne d'un champ filtré dans une base",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dcount": {
+        "name": "DCOUNT", "description": "Nombre de cellules numériques dans un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dcounta": {
+        "name": "DCOUNTA", "description": "Nombre de cellules non vides dans un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dget": {
+        "name": "DGET", "description": "Extrait une valeur unique d'un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dmax": {
+        "name": "DMAX", "description": "Valeur maximale d'un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dmin": {
+        "name": "DMIN", "description": "Valeur minimale d'un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dproduct": {
+        "name": "DPRODUCT", "description": "Produit des valeurs d'un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dstdev": {
+        "name": "DSTDEV", "description": "Écart-type échantillon d'un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dstdevp": {
+        "name": "DSTDEVP", "description": "Écart-type population d'un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dsum": {
+        "name": "DSUM", "description": "Somme des valeurs d'un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dvar": {
+        "name": "DVAR", "description": "Variance échantillon d'un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "dvarp": {
+        "name": "DVARP", "description": "Variance population d'un champ filtré",
+        "category": "Bases de Données",
+        "variables": [
+            {"name": "base", "label": "Base de données", "type": "array", "required": True, "placeholder": "[]"},
+            {"name": "champ", "label": "Champ", "type": "text", "required": True, "placeholder": "valeur"},
+            {"name": "criteres", "label": "Critères", "type": "object", "required": True, "placeholder": "{}"},
+        ],
+    },
+    "asc_val": {
+        "name": "ASC", "description": "Convertit les caractères pleine largeur en demi-largeur",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Ａｌｉｃｅ"},
+        ],
+    },
+    "bahttext": {
+        "name": "BAHTTEXT", "description": "Nombre en texte baht thaïlandais",
+        "category": "Texte",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "12.5"},
+        ],
+    },
+    "dbcs": {
+        "name": "DBCS", "description": "Convertit les caractères demi-largeur en pleine largeur",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Hello"},
+        ],
+    },
+    "findb": {
+        "name": "FINDB", "description": "Position d'un texte en octets (UTF-8)",
+        "category": "Texte",
+        "variables": [
+            {"name": "cherche", "label": "Texte cherché", "type": "text", "required": True, "placeholder": "lo"},
+            {"name": "texte", "label": "Dans le texte", "type": "text", "required": True, "placeholder": "Hello"},
+            {"name": "debut", "label": "Position de départ", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "leftb": {
+        "name": "LEFTB", "description": "N premiers octets d'une chaîne (UTF-8)",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Héllo"},
+            {"name": "nb_octets", "label": "Nombre d'octets", "type": "number", "required": False, "placeholder": "3"},
+        ],
+    },
+    "lenb": {
+        "name": "LENB", "description": "Longueur d'une chaîne en octets (UTF-8)",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Héllo"},
+        ],
+    },
+    # ── v12 : Texte Avancé & Recherche Moderne (Groupe 7) ──
+    "midb": {
+        "name": "MIDB", "description": "Extrait des octets au milieu d'une chaîne (UTF-8)",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Héllo"},
+            {"name": "position", "label": "Position (octet)", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "nb_octets", "label": "Nombre d'octets", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "phonetic": {
+        "name": "PHONETIC", "description": "Extrait la lecture phonétique (furigana) d'un texte",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "東京"},
+        ],
+    },
+    "replaceb": {
+        "name": "REPLACEB", "description": "Remplace des octets dans une chaîne (UTF-8)",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte original", "type": "text", "required": True, "placeholder": "Hello"},
+            {"name": "position", "label": "Position (octet)", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "nb_octets", "label": "Nombre d'octets à remplacer", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "nouveau_texte", "label": "Nouveau texte", "type": "text", "required": True, "placeholder": "Hi"},
+        ],
+    },
+    "rightb": {
+        "name": "RIGHTB", "description": "Renvoie les n derniers octets d'une chaîne (UTF-8)",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Hello"},
+            {"name": "nb_octets", "label": "Nombre d'octets", "type": "number", "required": False, "placeholder": "3"},
+        ],
+    },
+    "searchb": {
+        "name": "SEARCHB", "description": "Recherche insensible à la casse en octets (UTF-8)",
+        "category": "Texte",
+        "variables": [
+            {"name": "cherche", "label": "Texte à chercher", "type": "text", "required": True, "placeholder": "lo"},
+            {"name": "texte", "label": "Texte source", "type": "text", "required": True, "placeholder": "Hello World"},
+            {"name": "debut", "label": "Position de début", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "t_val": {
+        "name": "T", "description": "Renvoie le texte si la valeur est du texte, sinon chaîne vide",
+        "category": "Texte",
+        "variables": [
+            {"name": "valeur", "label": "Valeur", "type": "text", "required": True, "placeholder": "Hello"},
+        ],
+    },
+    "unichar": {
+        "name": "UNICHAR", "description": "Renvoie le caractère Unicode d'un code point",
+        "category": "Texte",
+        "variables": [
+            {"name": "nombre", "label": "Code point Unicode", "type": "number", "required": True, "placeholder": "65"},
+        ],
+    },
+    "unicode_val": {
+        "name": "UNICODE", "description": "Renvoie le code point Unicode du premier caractère",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "A"},
+        ],
+    },
+    "valuetotext": {
+        "name": "VALUETOTEXT", "description": "Convertit une valeur en représentation textuelle",
+        "category": "Texte",
+        "variables": [
+            {"name": "valeur", "label": "Valeur", "type": "text", "required": True, "placeholder": "123.45"},
+            {"name": "format", "label": "Format (0=concis, 1=strict)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "arraytotext": {
+        "name": "ARRAYTOTEXT", "description": "Convertit un tableau en représentation textuelle",
+        "category": "Texte",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3]"},
+            {"name": "format", "label": "Format (0=concis, 1=strict)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "call_val": {
+        "name": "CALL", "description": "Appel de fonction externe (simulation)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "nom_fonction", "label": "Nom de la fonction", "type": "text", "required": True, "placeholder": "myFunc"},
+            {"name": "arguments", "label": "Arguments (JSON)", "type": "json", "required": False, "placeholder": "[]"},
+        ],
+    },
+    "register_id": {
+        "name": "REGISTER.ID", "description": "Identifiant de registre d'une fonction externe (simulation)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "module", "label": "Module DLL", "type": "text", "required": True, "placeholder": "user32"},
+            {"name": "procedure", "label": "Procédure", "type": "text", "required": True, "placeholder": "GetActiveWindow"},
+        ],
+    },
+    "choosecols": {
+        "name": "CHOOSECOLS", "description": "Sélectionne des colonnes spécifiques d'un tableau",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON 2D)", "type": "json", "required": True, "placeholder": "[[1,2,3],[4,5,6]]"},
+            {"name": "colonnes", "label": "Indices des colonnes (JSON)", "type": "json", "required": True, "placeholder": "[1, 3]"},
+        ],
+    },
+    "chooserows": {
+        "name": "CHOOSEROWS", "description": "Sélectionne des lignes spécifiques d'un tableau",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON 2D)", "type": "json", "required": True, "placeholder": "[[1,2,3],[4,5,6]]"},
+            {"name": "lignes", "label": "Indices des lignes (JSON)", "type": "json", "required": True, "placeholder": "[1, -1]"},
+        ],
+    },
+    "drop_val": {
+        "name": "DROP", "description": "Supprime des lignes/colonnes du début ou de la fin d'un tableau",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON 2D)", "type": "json", "required": True, "placeholder": "[[1,2,3],[4,5,6],[7,8,9]]"},
+            {"name": "lignes", "label": "Lignes à supprimer (+ début, − fin)", "type": "number", "required": False, "placeholder": "1"},
+            {"name": "colonnes", "label": "Colonnes à supprimer (+ début, − fin)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "expand": {
+        "name": "EXPAND", "description": "Étend un tableau aux dimensions spécifiées",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON 2D)", "type": "json", "required": True, "placeholder": "[[1,2],[3,4]]"},
+            {"name": "lignes", "label": "Nombre de lignes cible", "type": "number", "required": True, "placeholder": "4"},
+            {"name": "colonnes", "label": "Nombre de colonnes cible", "type": "number", "required": True, "placeholder": "4"},
+            {"name": "pad", "label": "Valeur de remplissage", "type": "text", "required": False, "placeholder": "0"},
+        ],
+    },
+    "hstack": {
+        "name": "HSTACK", "description": "Empile horizontalement plusieurs tableaux",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "tableaux", "label": "Tableaux à empiler (JSON)", "type": "json", "required": True, "placeholder": "[[[1],[2]],[[3],[4]]]"},
+        ],
+    },
+    "take_val": {
+        "name": "TAKE", "description": "Prend des lignes/colonnes du début ou de la fin d'un tableau",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON 2D)", "type": "json", "required": True, "placeholder": "[[1,2,3],[4,5,6],[7,8,9]]"},
+            {"name": "lignes", "label": "Lignes à prendre (+ début, − fin)", "type": "number", "required": False, "placeholder": "2"},
+            {"name": "colonnes", "label": "Colonnes à prendre (+ début, − fin)", "type": "number", "required": False, "placeholder": ""},
+        ],
+    },
+    "tocol": {
+        "name": "TOCOL", "description": "Convertit un tableau en une seule colonne",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON 2D)", "type": "json", "required": True, "placeholder": "[[1,2],[3,4]]"},
+            {"name": "ignore", "label": "Ignorer (0=rien, 1=vides, 2=erreurs, 3=les deux)", "type": "number", "required": False, "placeholder": "0"},
+            {"name": "scan_par_colonne", "label": "Scanner par colonne (0/1)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "torow": {
+        "name": "TOROW", "description": "Convertit un tableau en une seule ligne",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON 2D)", "type": "json", "required": True, "placeholder": "[[1,2],[3,4]]"},
+            {"name": "ignore", "label": "Ignorer (0=rien, 1=vides, 2=erreurs, 3=les deux)", "type": "number", "required": False, "placeholder": "0"},
+            {"name": "scan_par_colonne", "label": "Scanner par colonne (0/1)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "wrapcols": {
+        "name": "WRAPCOLS", "description": "Enveloppe un vecteur en colonnes de taille fixe",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "vecteur", "label": "Vecteur (JSON)", "type": "json", "required": True, "placeholder": "[1,2,3,4,5,6]"},
+            {"name": "taille", "label": "Éléments par colonne", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "pad", "label": "Valeur de remplissage", "type": "text", "required": False, "placeholder": ""},
+        ],
+    },
+    "wraprows": {
+        "name": "WRAPROWS", "description": "Enveloppe un vecteur en lignes de taille fixe",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "vecteur", "label": "Vecteur (JSON)", "type": "json", "required": True, "placeholder": "[1,2,3,4,5,6]"},
+            {"name": "taille", "label": "Éléments par ligne", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "pad", "label": "Valeur de remplissage", "type": "text", "required": False, "placeholder": ""},
+        ],
+    },
+    "isomitted": {
+        "name": "ISOMITTED", "description": "Vérifie si un paramètre LAMBDA est omis",
+        "category": "Lambda",
+        "variables": [
+            {"name": "valeur", "label": "Valeur à tester", "type": "text", "required": False, "placeholder": ""},
+        ],
+    },
+    "lambda_val": {
+        "name": "LAMBDA", "description": "Crée et évalue une fonction lambda personnalisée",
+        "category": "Lambda",
+        "variables": [
+            {"name": "parametres", "label": "Paramètres (JSON objet)", "type": "json", "required": False, "placeholder": "{\"x\": 5, \"y\": 3}"},
+            {"name": "expression", "label": "Expression", "type": "text", "required": True, "placeholder": "x + y"},
+        ],
+    },
+    "map_val": {
+        "name": "MAP", "description": "Applique une expression à chaque élément d'un tableau",
+        "category": "Lambda",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4]"},
+            {"name": "expression", "label": "Expression (variable x)", "type": "text", "required": True, "placeholder": "x * 2"},
+        ],
+    },
+    "reduce_val": {
+        "name": "REDUCE", "description": "Réduit un tableau avec un accumulateur",
+        "category": "Lambda",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4]"},
+            {"name": "initial", "label": "Valeur initiale", "type": "number", "required": False, "placeholder": "0"},
+            {"name": "expression", "label": "Expression (acc, x)", "type": "text", "required": True, "placeholder": "acc + x"},
+        ],
+    },
+    "scan_val": {
+        "name": "SCAN", "description": "Comme REDUCE mais renvoie les résultats intermédiaires",
+        "category": "Lambda",
+        "variables": [
+            {"name": "tableau", "label": "Tableau (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4]"},
+            {"name": "initial", "label": "Valeur initiale", "type": "number", "required": False, "placeholder": "0"},
+            {"name": "expression", "label": "Expression (acc, x)", "type": "text", "required": True, "placeholder": "acc + x"},
+        ],
+    },
+    # ── v13 : Web, Cube, Information & Maths (Groupe 8) ──
+    "encodeurl": {
+        "name": "ENCODEURL", "description": "Encode une chaîne pour utilisation dans une URL",
+        "category": "Web",
+        "variables": [
+            {"name": "texte", "label": "Texte à encoder", "type": "text", "required": True, "placeholder": "Hello World"},
+        ],
+    },
+    "filterxml": {
+        "name": "FILTERXML", "description": "Extrait des données d'un contenu XML via XPath",
+        "category": "Web",
+        "variables": [
+            {"name": "xml", "label": "Contenu XML", "type": "text", "required": True, "placeholder": "<root><item>A</item></root>"},
+            {"name": "xpath", "label": "Expression XPath", "type": "text", "required": True, "placeholder": ".//item"},
+        ],
+    },
+    "webservice": {
+        "name": "WEBSERVICE", "description": "Appel de service web (simulation)",
+        "category": "Web",
+        "variables": [
+            {"name": "url", "label": "URL du service", "type": "text", "required": True, "placeholder": "https://api.example.com/data"},
+        ],
+    },
+    "cubekpimember": {
+        "name": "CUBEKPIMEMBER", "description": "KPI d'un cube OLAP (simulation)",
+        "category": "Cube",
+        "variables": [
+            {"name": "connexion", "label": "Connexion", "type": "text", "required": True, "placeholder": "MyCube"},
+            {"name": "expression", "label": "Expression KPI", "type": "text", "required": True, "placeholder": "[Measures].[Revenue]"},
+        ],
+    },
+    "cubemember": {
+        "name": "CUBEMEMBER", "description": "Membre d'un cube OLAP (simulation)",
+        "category": "Cube",
+        "variables": [
+            {"name": "connexion", "label": "Connexion", "type": "text", "required": True, "placeholder": "MyCube"},
+            {"name": "expression", "label": "Expression membre", "type": "text", "required": True, "placeholder": "[Product].[Category].[Bikes]"},
+        ],
+    },
+    "cubememberproperty": {
+        "name": "CUBEMEMBERPROPERTY", "description": "Propriété d'un membre du cube (simulation)",
+        "category": "Cube",
+        "variables": [
+            {"name": "connexion", "label": "Connexion", "type": "text", "required": True, "placeholder": "MyCube"},
+            {"name": "expression", "label": "Expression membre", "type": "text", "required": True, "placeholder": "[Product].[Category].[Bikes]"},
+            {"name": "propriete", "label": "Propriété", "type": "text", "required": True, "placeholder": "Name"},
+        ],
+    },
+    "cuberankedmember": {
+        "name": "CUBERANKEDMEMBER", "description": "Membre classé dans un ensemble du cube (simulation)",
+        "category": "Cube",
+        "variables": [
+            {"name": "connexion", "label": "Connexion", "type": "text", "required": True, "placeholder": "MyCube"},
+            {"name": "expression", "label": "Expression ensemble", "type": "text", "required": True, "placeholder": "[Product].[Category].Members"},
+            {"name": "rang", "label": "Rang", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "cubeset": {
+        "name": "CUBESET", "description": "Ensemble de membres du cube (simulation)",
+        "category": "Cube",
+        "variables": [
+            {"name": "connexion", "label": "Connexion", "type": "text", "required": True, "placeholder": "MyCube"},
+            {"name": "expression", "label": "Expression ensemble", "type": "text", "required": True, "placeholder": "[Product].[Category].Members"},
+        ],
+    },
+    "cubesetcount": {
+        "name": "CUBESETCOUNT", "description": "Nombre d'éléments dans un ensemble du cube (simulation)",
+        "category": "Cube",
+        "variables": [
+            {"name": "ensemble", "label": "Ensemble", "type": "text", "required": True, "placeholder": "MonEnsemble"},
+        ],
+    },
+    "cubevalue": {
+        "name": "CUBEVALUE", "description": "Valeur agrégée du cube (simulation)",
+        "category": "Cube",
+        "variables": [
+            {"name": "connexion", "label": "Connexion", "type": "text", "required": True, "placeholder": "MyCube"},
+            {"name": "expression", "label": "Expression", "type": "text", "required": True, "placeholder": "[Measures].[Revenue]"},
+        ],
+    },
+    "error_type": {
+        "name": "ERROR.TYPE", "description": "Numéro correspondant à un type d'erreur Excel",
+        "category": "Information",
+        "variables": [
+            {"name": "valeur", "label": "Valeur d'erreur", "type": "text", "required": True, "placeholder": "#DIV/0!"},
+        ],
+    },
+    "info_val": {
+        "name": "INFO", "description": "Informations sur l'environnement d'exécution",
+        "category": "Information",
+        "variables": [
+            {"name": "type_info", "label": "Type d'info (directory, osversion, release, system)", "type": "text", "required": True, "placeholder": "system"},
+        ],
+    },
+    "isformula": {
+        "name": "ISFORMULA", "description": "Vérifie si une valeur est une formule (commence par =)",
+        "category": "Information",
+        "variables": [
+            {"name": "valeur", "label": "Valeur à tester", "type": "text", "required": True, "placeholder": "=A1+B1"},
+        ],
+    },
+    "isnontext": {
+        "name": "ISNONTEXT", "description": "Renvoie VRAI si la valeur n'est pas du texte",
+        "category": "Information",
+        "variables": [
+            {"name": "valeur", "label": "Valeur à tester", "type": "text", "required": True, "placeholder": "123"},
+        ],
+    },
+    "n_val": {
+        "name": "N", "description": "Convertit une valeur en nombre",
+        "category": "Information",
+        "variables": [
+            {"name": "valeur", "label": "Valeur", "type": "text", "required": True, "placeholder": "42"},
+        ],
+    },
+    "sheet": {
+        "name": "SHEET", "description": "Numéro de la feuille active",
+        "category": "Information",
+        "variables": [],
+    },
+    "sheets": {
+        "name": "SHEETS", "description": "Nombre de feuilles dans le classeur",
+        "category": "Information",
+        "variables": [
+            {"name": "nombre", "label": "Nombre de feuilles", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "aggregate": {
+        "name": "AGGREGATE", "description": "Applique une fonction d'agrégation (1-12) sur des valeurs",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "num_fonction", "label": "N° de fonction (1=MOY, 4=MAX, 5=MIN, 9=SOMME…)", "type": "number", "required": True, "placeholder": "9"},
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4, 5]"},
+        ],
+    },
+    "arabic": {
+        "name": "ARABIC", "description": "Convertit un nombre romain en nombre arabe",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "texte", "label": "Nombre romain", "type": "text", "required": True, "placeholder": "MCMXCIV"},
+        ],
+    },
+    "ceiling_precise": {
+        "name": "CEILING.PRECISE", "description": "Arrondit au multiple supérieur le plus proche",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "4.3"},
+            {"name": "precision", "label": "Précision", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "factdouble": {
+        "name": "FACTDOUBLE", "description": "Double factorielle n!!",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "nombre", "label": "Nombre entier", "type": "number", "required": True, "placeholder": "7"},
+        ],
+    },
+    "floor_precise": {
+        "name": "FLOOR.PRECISE", "description": "Arrondit au multiple inférieur le plus proche",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "4.7"},
+            {"name": "precision", "label": "Précision", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "iso_ceiling": {
+        "name": "ISO.CEILING", "description": "Arrondit au multiple entier supérieur (norme ISO)",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "4.3"},
+            {"name": "precision", "label": "Précision", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "munit": {
+        "name": "MUNIT", "description": "Matrice identité de dimension n×n",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "dimension", "label": "Dimension", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "multinomial": {
+        "name": "MULTINOMIAL", "description": "Coefficient multinomial (n1+n2+…)! / (n1!×n2!×…)",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[2, 3, 4]"},
+        ],
+    },
+    "roman": {
+        "name": "ROMAN", "description": "Convertit un nombre arabe en nombre romain",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "nombre", "label": "Nombre (0-3999)", "type": "number", "required": True, "placeholder": "1994"},
+        ],
+    },
+    "seriessum": {
+        "name": "SERIESSUM", "description": "Somme d'une série de puissances Σ aᵢ·x^(n+i·m)",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "x", "label": "Variable x", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "n", "label": "Puissance initiale n", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "m", "label": "Incrément m", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "coefficients", "label": "Coefficients (JSON)", "type": "json", "required": True, "placeholder": "[1, 1, 1]"},
+        ],
+    },
+    "sqrtpi": {
+        "name": "SQRTPI", "description": "Racine carrée de (nombre × π)",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    # ── v14 : Compatibilité anciennes fonctions (Groupe 9) ──
+    "sumsq": {
+        "name": "SUMSQ", "description": "Somme des carrés des valeurs",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[3, 4]"},
+        ],
+    },
+    "sumx2my2": {
+        "name": "SUMX2MY2", "description": "Somme des différences des carrés Σ(x²−y²)",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "x", "label": "Série X (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3]"},
+            {"name": "y", "label": "Série Y (JSON)", "type": "json", "required": True, "placeholder": "[4, 5, 6]"},
+        ],
+    },
+    "sumx2py2": {
+        "name": "SUMX2PY2", "description": "Somme des sommes des carrés Σ(x²+y²)",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "x", "label": "Série X (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3]"},
+            {"name": "y", "label": "Série Y (JSON)", "type": "json", "required": True, "placeholder": "[4, 5, 6]"},
+        ],
+    },
+    "sumxmy2": {
+        "name": "SUMXMY2", "description": "Somme des carrés des écarts Σ(x−y)²",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "x", "label": "Série X (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3]"},
+            {"name": "y", "label": "Série Y (JSON)", "type": "json", "required": True, "placeholder": "[4, 5, 6]"},
+        ],
+    },
+    "betadist": {
+        "name": "BETADIST", "description": "Distribution bêta cumulative (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Valeur x", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "alpha", "label": "Alpha", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "beta", "label": "Bêta", "type": "number", "required": True, "placeholder": "5"},
+        ],
+    },
+    "betainv": {
+        "name": "BETAINV", "description": "Inverse de la distribution bêta (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "alpha", "label": "Alpha", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "beta", "label": "Bêta", "type": "number", "required": True, "placeholder": "5"},
+        ],
+    },
+    "binomdist": {
+        "name": "BINOMDIST", "description": "Distribution binomiale (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "succes", "label": "Nombre de succès", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "essais", "label": "Nombre d'essais", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "probabilite", "label": "Probabilité de succès", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "boolean", "required": False, "placeholder": "true"},
+        ],
+    },
+    "chidist": {
+        "name": "CHIDIST", "description": "Queue droite du chi-deux (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Valeur x", "type": "number", "required": True, "placeholder": "7.815"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "chiinv": {
+        "name": "CHIINV", "description": "Inverse queue droite du chi-deux (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "chitest": {
+        "name": "CHITEST", "description": "Test du chi-deux (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "observees", "label": "Valeurs observées (JSON)", "type": "json", "required": True, "placeholder": "[10, 20, 30]"},
+            {"name": "attendues", "label": "Valeurs attendues (JSON)", "type": "json", "required": True, "placeholder": "[15, 15, 30]"},
+        ],
+    },
+    "covar": {
+        "name": "COVAR", "description": "Covariance de population",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Série X (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3]"},
+            {"name": "y", "label": "Série Y (JSON)", "type": "json", "required": True, "placeholder": "[2, 4, 6]"},
+        ],
+    },
+    "critbinom": {
+        "name": "CRITBINOM", "description": "Inverse binomiale (compatibilité, alias BINOM.INV)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "essais", "label": "Nombre d'essais", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "probabilite", "label": "Probabilité de succès", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "alpha", "label": "Seuil alpha", "type": "number", "required": True, "placeholder": "0.5"},
+        ],
+    },
+    "expondist": {
+        "name": "EXPONDIST", "description": "Distribution exponentielle (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Valeur x", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "lambda", "label": "Lambda", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "boolean", "required": False, "placeholder": "true"},
+        ],
+    },
+    "fdist": {
+        "name": "FDIST", "description": "Queue droite F (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Valeur x", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "d1", "label": "d1", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "d2", "label": "d2", "type": "number", "required": True, "placeholder": "10"},
+        ],
+    },
+    "finv": {
+        "name": "FINV", "description": "Inverse F (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.95"},
+            {"name": "d1", "label": "d1", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "d2", "label": "d2", "type": "number", "required": True, "placeholder": "10"},
+        ],
+    },
+    "ftest": {
+        "name": "FTEST", "description": "Test F (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Série X (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4, 5]"},
+            {"name": "y", "label": "Série Y (JSON)", "type": "json", "required": True, "placeholder": "[2, 4, 6, 8, 10]"},
+        ],
+    },
+    "gammadist": {
+        "name": "GAMMADIST", "description": "Distribution gamma (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Valeur x", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "alpha", "label": "Alpha", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "beta", "label": "Bêta", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "gammainv": {
+        "name": "GAMMAINV", "description": "Inverse gamma (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "alpha", "label": "Alpha", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "beta", "label": "Bêta", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "hypgeomdist": {
+        "name": "HYPGEOMDIST", "description": "Distribution hypergéométrique (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "succes_echantillon", "label": "Succès échantillon", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "taille_echantillon", "label": "Taille échantillon", "type": "number", "required": True, "placeholder": "4"},
+            {"name": "succes_population", "label": "Succès population", "type": "number", "required": True, "placeholder": "8"},
+            {"name": "taille_population", "label": "Taille population", "type": "number", "required": True, "placeholder": "20"},
+        ],
+    },
+    "lognormdist": {
+        "name": "LOGNORMDIST", "description": "Distribution log-normale (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Valeur x", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "moyenne", "label": "Moyenne", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "ecart_type", "label": "Écart-type", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "loginv": {
+        "name": "LOGINV", "description": "Inverse log-normale (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "moyenne", "label": "Moyenne", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "ecart_type", "label": "Écart-type", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "negbinomdist": {
+        "name": "NEGBINOMDIST", "description": "Distribution binomiale négative (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "echecs", "label": "Échecs", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "succes", "label": "Succès requis", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "boolean", "required": False, "placeholder": "false"},
+        ],
+    },
+    "normdist": {
+        "name": "NORMDIST", "description": "Distribution normale (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Valeur x", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "moyenne", "label": "Moyenne", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "ecart_type", "label": "Écart-type", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "norminv": {
+        "name": "NORMINV", "description": "Inverse de la distribution normale (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.975"},
+            {"name": "moyenne", "label": "Moyenne", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "ecart_type", "label": "Écart-type", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "normsdist": {
+        "name": "NORMSDIST", "description": "Distribution normale standard (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "z", "label": "Valeur z", "type": "number", "required": True, "placeholder": "1.96"},
+        ],
+    },
+    "normsinv": {
+        "name": "NORMSINV", "description": "Inverse normale standard (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.975"},
+        ],
+    },
+    "poisson": {
+        "name": "POISSON", "description": "Distribution de Poisson (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Valeur x", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "moyenne", "label": "Moyenne (λ)", "type": "number", "required": True, "placeholder": "2.5"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "boolean", "required": False, "placeholder": "true"},
+        ],
+    },
+    # ── v15 : Compatibilité & Nouveautés Regex/Texte (Groupe 10) ──
+    "rank": {
+        "name": "RANK", "description": "Rang d'une valeur dans une liste (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4, 5]"},
+            {"name": "ordre", "label": "Ordre (0=desc, 1=asc)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "stdev": {
+        "name": "STDEV", "description": "Écart-type échantillon (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4, 5]"},
+        ],
+    },
+    "stdevp": {
+        "name": "STDEVP", "description": "Écart-type population (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4, 5]"},
+        ],
+    },
+    "tdist": {
+        "name": "TDIST", "description": "Distribution t de Student (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Valeur x", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "10"},
+        ],
+    },
+    "tinv": {
+        "name": "TINV", "description": "Inverse t de Student (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.975"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "30"},
+        ],
+    },
+    "ttest": {
+        "name": "TTEST", "description": "Test t de Student (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Série X (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4, 5]"},
+            {"name": "y", "label": "Série Y (JSON)", "type": "json", "required": True, "placeholder": "[2, 3, 4, 5, 6]"},
+            {"name": "queues", "label": "Queues (1 ou 2)", "type": "number", "required": False, "placeholder": "2"},
+            {"name": "type", "label": "Type (1=apparié, 2=homoscédastique, 3=Welch)", "type": "number", "required": False, "placeholder": "2"},
+        ],
+    },
+    "var_val": {
+        "name": "VAR", "description": "Variance échantillon (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4, 5]"},
+        ],
+    },
+    "varp": {
+        "name": "VARP", "description": "Variance population (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4, 5]"},
+        ],
+    },
+    "weibull": {
+        "name": "WEIBULL", "description": "Distribution de Weibull (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Valeur x", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "alpha", "label": "Alpha (forme)", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "beta", "label": "Bêta (échelle)", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "boolean", "required": False, "placeholder": "true"},
+        ],
+    },
+    "ztest": {
+        "name": "ZTEST", "description": "Test Z (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4, 5]"},
+            {"name": "mu", "label": "Moyenne hypothétique", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "regexextract": {
+        "name": "REGEXEXTRACT", "description": "Extrait la première correspondance d'un motif regex",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "abc123def"},
+            {"name": "motif", "label": "Motif regex", "type": "text", "required": True, "placeholder": "\\d+"},
+        ],
+    },
+    "regexmatch": {
+        "name": "REGEXMATCH", "description": "Teste si un texte correspond à un motif regex",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "abc123"},
+            {"name": "motif", "label": "Motif regex", "type": "text", "required": True, "placeholder": "\\d+"},
+        ],
+    },
+    "regexreplace": {
+        "name": "REGEXREPLACE", "description": "Remplace les correspondances d'un motif regex",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "abc123def"},
+            {"name": "motif", "label": "Motif regex", "type": "text", "required": True, "placeholder": "\\d+"},
+            {"name": "remplacement", "label": "Remplacement", "type": "text", "required": True, "placeholder": "#"},
+        ],
+    },
+    "percentof": {
+        "name": "PERCENTOF", "description": "Pourcentage d'une valeur par rapport à un total",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "valeur", "label": "Valeur", "type": "number", "required": True, "placeholder": "25"},
+            {"name": "total", "label": "Total", "type": "number", "required": True, "placeholder": "100"},
+        ],
+    },
+    "textbefore": {
+        "name": "TEXTBEFORE", "description": "Texte avant un délimiteur",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Hello-World"},
+            {"name": "delimiteur", "label": "Délimiteur", "type": "text", "required": True, "placeholder": "-"},
+            {"name": "instance", "label": "N° d'instance", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "textafter": {
+        "name": "TEXTAFTER", "description": "Texte après un délimiteur",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Hello-World"},
+            {"name": "delimiteur", "label": "Délimiteur", "type": "text", "required": True, "placeholder": "-"},
+            {"name": "instance", "label": "N° d'instance", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "textsplit": {
+        "name": "TEXTSPLIT", "description": "Divise un texte par délimiteur(s)",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "A,B,C"},
+            {"name": "delimiteur_col", "label": "Délimiteur colonnes", "type": "text", "required": False, "placeholder": ","},
+            {"name": "delimiteur_ligne", "label": "Délimiteur lignes", "type": "text", "required": False, "placeholder": ""},
+        ],
+    },
+    # ── v16 : Analyse de Données & Divers (Groupe 11) ──
+    "image": {
+        "name": "IMAGE", "description": "Insère une image depuis une URL (simulation)",
+        "category": "Web",
+        "variables": [
+            {"name": "url", "label": "URL de l'image", "type": "text", "required": True, "placeholder": "https://example.com/img.png"},
+            {"name": "alt_text", "label": "Texte alternatif", "type": "text", "required": False, "placeholder": "Description"},
+        ],
+    },
+    "anchorarray": {
+        "name": "ANCHORARRAY", "description": "Référence la plage d'un tableau dynamique (simulation)",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "reference", "label": "Référence cellule", "type": "text", "required": True, "placeholder": "A1"},
+        ],
+    },
+    "formulatext": {
+        "name": "FORMULATEXT", "description": "Renvoie la formule sous forme de texte",
+        "category": "Information",
+        "variables": [
+            {"name": "formule", "label": "Formule", "type": "text", "required": True, "placeholder": "=SUM(A1:A10)"},
+        ],
+    },
+    "getpivotdata": {
+        "name": "GETPIVOTDATA", "description": "Extrait des données d'un tableau croisé dynamique (simulation)",
+        "category": "Information",
+        "variables": [
+            {"name": "champ", "label": "Champ de données", "type": "text", "required": True, "placeholder": "Revenue"},
+        ],
+    },
+    "hyperlink": {
+        "name": "HYPERLINK", "description": "Crée un lien hypertexte",
+        "category": "Web",
+        "variables": [
+            {"name": "url", "label": "URL", "type": "text", "required": True, "placeholder": "https://example.com"},
+            {"name": "texte", "label": "Texte affiché", "type": "text", "required": False, "placeholder": "Cliquez ici"},
+        ],
+    },
+    "rtd": {
+        "name": "RTD", "description": "Données en temps réel depuis un serveur COM (simulation)",
+        "category": "Information",
+        "variables": [],
+    },
+    "euroconvert": {
+        "name": "EUROCONVERT", "description": "Convertit entre devises de la zone euro (taux fixes 1999)",
+        "category": "Finance",
+        "variables": [
+            {"name": "nombre", "label": "Montant", "type": "number", "required": True, "placeholder": "100"},
+            {"name": "source", "label": "Devise source (EUR, DEM, FRF…)", "type": "text", "required": True, "placeholder": "FRF"},
+            {"name": "cible", "label": "Devise cible", "type": "text", "required": True, "placeholder": "EUR"},
+        ],
+    },
+    "stockhistory": {
+        "name": "STOCKHISTORY", "description": "Historique boursier (simulation)",
+        "category": "Finance",
+        "variables": [
+            {"name": "symbole", "label": "Symbole boursier", "type": "text", "required": True, "placeholder": "AAPL"},
+        ],
+    },
+    "single": {
+        "name": "SINGLE", "description": "Renvoie une valeur unique d'un tableau (opérateur @)",
+        "category": "Tableaux Dynamiques",
+        "variables": [
+            {"name": "valeur", "label": "Valeur ou tableau", "type": "json", "required": True, "placeholder": "[[1,2],[3,4]]"},
+        ],
+    },
+    "let_val": {
+        "name": "LET", "description": "Définit des variables nommées et évalue une expression",
+        "category": "Lambda",
+        "variables": [
+            {"name": "variables", "label": "Variables (JSON objet)", "type": "json", "required": False, "placeholder": "{\"x\": 10, \"y\": 20}"},
+            {"name": "expression", "label": "Expression", "type": "text", "required": True, "placeholder": "x + y"},
+        ],
+    },
+    "ispmt": {
+        "name": "ISPMT", "description": "Intérêts payés pendant une période (méthode linéaire)",
+        "category": "Finance",
+        "variables": [
+            {"name": "taux", "label": "Taux par période", "type": "number", "required": True, "placeholder": "0.01"},
+            {"name": "periode", "label": "Période", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "nb_periodes", "label": "Nombre total de périodes", "type": "number", "required": True, "placeholder": "36"},
+            {"name": "valeur_actuelle", "label": "Valeur actuelle", "type": "number", "required": True, "placeholder": "100000"},
+        ],
+    },
+    "cumipmt": {
+        "name": "CUMIPMT", "description": "Intérêts cumulés entre deux périodes",
+        "category": "Finance",
+        "variables": [
+            {"name": "taux", "label": "Taux par période", "type": "number", "required": True, "placeholder": "0.01"},
+            {"name": "nb_periodes", "label": "Nombre total de périodes", "type": "number", "required": True, "placeholder": "36"},
+            {"name": "valeur_actuelle", "label": "Valeur actuelle", "type": "number", "required": True, "placeholder": "100000"},
+            {"name": "periode_debut", "label": "Période de début", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "periode_fin", "label": "Période de fin", "type": "number", "required": True, "placeholder": "12"},
+        ],
+    },
+    "cumprinc": {
+        "name": "CUMPRINC", "description": "Principal cumulé entre deux périodes",
+        "category": "Finance",
+        "variables": [
+            {"name": "taux", "label": "Taux par période", "type": "number", "required": True, "placeholder": "0.01"},
+            {"name": "nb_periodes", "label": "Nombre total de périodes", "type": "number", "required": True, "placeholder": "36"},
+            {"name": "valeur_actuelle", "label": "Valeur actuelle", "type": "number", "required": True, "placeholder": "100000"},
+            {"name": "periode_debut", "label": "Période de début", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "periode_fin", "label": "Période de fin", "type": "number", "required": True, "placeholder": "12"},
+        ],
+    },
+    "pduration": {
+        "name": "PDURATION", "description": "Nombre de périodes pour atteindre une valeur cible",
+        "category": "Finance",
+        "variables": [
+            {"name": "taux", "label": "Taux par période", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "valeur_actuelle", "label": "Valeur actuelle", "type": "number", "required": True, "placeholder": "1000"},
+            {"name": "valeur_future", "label": "Valeur future", "type": "number", "required": True, "placeholder": "2000"},
+        ],
+    },
+    "rri": {
+        "name": "RRI", "description": "Taux de rendement équivalent d'un investissement",
+        "category": "Finance",
+        "variables": [
+            {"name": "nb_periodes", "label": "Nombre de périodes", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "valeur_actuelle", "label": "Valeur actuelle", "type": "number", "required": True, "placeholder": "1000"},
+            {"name": "valeur_future", "label": "Valeur future", "type": "number", "required": True, "placeholder": "2000"},
+        ],
+    },
+    "isoweeknum": {
+        "name": "ISOWEEKNUM", "description": "Numéro de semaine ISO 8601",
+        "category": "Date et Heure",
+        "variables": [
+            {"name": "date", "label": "Date", "type": "text", "required": True, "placeholder": "2024-01-15"},
+        ],
+    },
+    "networkdays_intl": {
+        "name": "NETWORKDAYS.INTL", "description": "Jours ouvrés entre deux dates (week-end configurable)",
+        "category": "Date et Heure",
+        "variables": [
+            {"name": "date_debut", "label": "Date de début", "type": "text", "required": True, "placeholder": "2024-01-01"},
+            {"name": "date_fin", "label": "Date de fin", "type": "text", "required": True, "placeholder": "2024-01-31"},
+            {"name": "weekend", "label": "Masque week-end (lun-dim, 1=repos)", "type": "text", "required": False, "placeholder": "0000011"},
+            {"name": "jours_feries", "label": "Jours fériés (JSON)", "type": "json", "required": False, "placeholder": "[]"},
+        ],
+    },
+    "workday_intl": {
+        "name": "WORKDAY.INTL", "description": "Date après N jours ouvrés (week-end configurable)",
+        "category": "Date et Heure",
+        "variables": [
+            {"name": "date_debut", "label": "Date de début", "type": "text", "required": True, "placeholder": "2024-01-01"},
+            {"name": "jours", "label": "Nombre de jours ouvrés", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "weekend", "label": "Masque week-end (lun-dim, 1=repos)", "type": "text", "required": False, "placeholder": "0000011"},
+            {"name": "jours_feries", "label": "Jours fériés (JSON)", "type": "json", "required": False, "placeholder": "[]"},
+        ],
+    },
+    "bitxor": {
+        "name": "BITXOR", "description": "XOR bit à bit de deux entiers",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre1", "label": "Nombre 1", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "nombre2", "label": "Nombre 2", "type": "number", "required": True, "placeholder": "3"},
         ],
     },
 }
