@@ -284,6 +284,6 @@ def test_quartile_exc_invalid():
 # ─────────────────────────────────────────────────────────────────────────────
 def test_registre_complet_v10():
     from app.engine.logic import FORMULA_META
-    assert len(FORMULAS) == 385
-    assert len(FORMULA_META) == 385
+    assert len(FORMULAS) == 429
+    assert len(FORMULA_META) == 429
     assert set(FORMULAS.keys()) == set(FORMULA_META.keys())

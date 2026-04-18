@@ -23,6 +23,8 @@ from app.engine import _v10
 from app.engine import _v11
 from app.engine import _v12
 from app.engine import _v13
+from app.engine import _v14
+from app.engine import _v15
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -2777,6 +2779,52 @@ FORMULAS: dict[str, callable] = {
     "roman": _v13.formule_roman,
     "seriessum": _v13.formule_seriessum,
     "sqrtpi": _v13.formule_sqrtpi,
+    # ── v14 : Compatibilité anciennes fonctions (Groupe 9) ──
+    "sumsq": _v14.formule_sumsq,
+    "sumx2my2": _v14.formule_sumx2my2,
+    "sumx2py2": _v14.formule_sumx2py2,
+    "sumxmy2": _v14.formule_sumxmy2,
+    "betadist": _v14.formule_betadist,
+    "betainv": _v14.formule_betainv,
+    "binomdist": _v14.formule_binomdist,
+    "chidist": _v14.formule_chidist,
+    "chiinv": _v14.formule_chiinv,
+    "chitest": _v14.formule_chitest,
+    "covar": _v14.formule_covar,
+    "critbinom": _v14.formule_critbinom,
+    "expondist": _v14.formule_expondist,
+    "fdist": _v14.formule_fdist,
+    "finv": _v14.formule_finv,
+    "ftest": _v14.formule_ftest,
+    "gammadist": _v14.formule_gammadist,
+    "gammainv": _v14.formule_gammainv,
+    "hypgeomdist": _v14.formule_hypgeomdist,
+    "lognormdist": _v14.formule_lognormdist,
+    "loginv": _v14.formule_loginv,
+    "negbinomdist": _v14.formule_negbinomdist,
+    "normdist": _v14.formule_normdist,
+    "norminv": _v14.formule_norminv,
+    "normsdist": _v14.formule_normsdist,
+    "normsinv": _v14.formule_normsinv,
+    "poisson": _v14.formule_poisson,
+    # ── v15 : Compatibilité & Nouveautés Regex/Texte (Groupe 10) ──
+    "rank": _v15.formule_rank,
+    "stdev": _v15.formule_stdev,
+    "stdevp": _v15.formule_stdevp,
+    "tdist": _v15.formule_tdist,
+    "tinv": _v15.formule_tinv,
+    "ttest": _v15.formule_ttest,
+    "var_val": _v15.formule_var_val,
+    "varp": _v15.formule_varp,
+    "weibull": _v15.formule_weibull,
+    "ztest": _v15.formule_ztest,
+    "regexextract": _v15.formule_regexextract,
+    "regexmatch": _v15.formule_regexmatch,
+    "regexreplace": _v15.formule_regexreplace,
+    "percentof": _v15.formule_percentof,
+    "textbefore": _v15.formule_textbefore,
+    "textafter": _v15.formule_textafter,
+    "textsplit": _v15.formule_textsplit,
 }
 
 
@@ -6298,6 +6346,381 @@ FORMULA_META: dict[str, dict] = {
         "category": "Mathématiques",
         "variables": [
             {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    # ── v14 : Compatibilité anciennes fonctions (Groupe 9) ──
+    "sumsq": {
+        "name": "SUMSQ", "description": "Somme des carrés des valeurs",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[3, 4]"},
+        ],
+    },
+    "sumx2my2": {
+        "name": "SUMX2MY2", "description": "Somme des différences des carrés Σ(x²−y²)",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "x", "label": "Série X (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3]"},
+            {"name": "y", "label": "Série Y (JSON)", "type": "json", "required": True, "placeholder": "[4, 5, 6]"},
+        ],
+    },
+    "sumx2py2": {
+        "name": "SUMX2PY2", "description": "Somme des sommes des carrés Σ(x²+y²)",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "x", "label": "Série X (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3]"},
+            {"name": "y", "label": "Série Y (JSON)", "type": "json", "required": True, "placeholder": "[4, 5, 6]"},
+        ],
+    },
+    "sumxmy2": {
+        "name": "SUMXMY2", "description": "Somme des carrés des écarts Σ(x−y)²",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "x", "label": "Série X (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3]"},
+            {"name": "y", "label": "Série Y (JSON)", "type": "json", "required": True, "placeholder": "[4, 5, 6]"},
+        ],
+    },
+    "betadist": {
+        "name": "BETADIST", "description": "Distribution bêta cumulative (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Valeur x", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "alpha", "label": "Alpha", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "beta", "label": "Bêta", "type": "number", "required": True, "placeholder": "5"},
+        ],
+    },
+    "betainv": {
+        "name": "BETAINV", "description": "Inverse de la distribution bêta (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "alpha", "label": "Alpha", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "beta", "label": "Bêta", "type": "number", "required": True, "placeholder": "5"},
+        ],
+    },
+    "binomdist": {
+        "name": "BINOMDIST", "description": "Distribution binomiale (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "succes", "label": "Nombre de succès", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "essais", "label": "Nombre d'essais", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "probabilite", "label": "Probabilité de succès", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "boolean", "required": False, "placeholder": "true"},
+        ],
+    },
+    "chidist": {
+        "name": "CHIDIST", "description": "Queue droite du chi-deux (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Valeur x", "type": "number", "required": True, "placeholder": "7.815"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "chiinv": {
+        "name": "CHIINV", "description": "Inverse queue droite du chi-deux (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.05"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "chitest": {
+        "name": "CHITEST", "description": "Test du chi-deux (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "observees", "label": "Valeurs observées (JSON)", "type": "json", "required": True, "placeholder": "[10, 20, 30]"},
+            {"name": "attendues", "label": "Valeurs attendues (JSON)", "type": "json", "required": True, "placeholder": "[15, 15, 30]"},
+        ],
+    },
+    "covar": {
+        "name": "COVAR", "description": "Covariance de population",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Série X (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3]"},
+            {"name": "y", "label": "Série Y (JSON)", "type": "json", "required": True, "placeholder": "[2, 4, 6]"},
+        ],
+    },
+    "critbinom": {
+        "name": "CRITBINOM", "description": "Inverse binomiale (compatibilité, alias BINOM.INV)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "essais", "label": "Nombre d'essais", "type": "number", "required": True, "placeholder": "10"},
+            {"name": "probabilite", "label": "Probabilité de succès", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "alpha", "label": "Seuil alpha", "type": "number", "required": True, "placeholder": "0.5"},
+        ],
+    },
+    "expondist": {
+        "name": "EXPONDIST", "description": "Distribution exponentielle (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Valeur x", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "lambda", "label": "Lambda", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "boolean", "required": False, "placeholder": "true"},
+        ],
+    },
+    "fdist": {
+        "name": "FDIST", "description": "Queue droite F (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Valeur x", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "d1", "label": "d1", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "d2", "label": "d2", "type": "number", "required": True, "placeholder": "10"},
+        ],
+    },
+    "finv": {
+        "name": "FINV", "description": "Inverse F (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.95"},
+            {"name": "d1", "label": "d1", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "d2", "label": "d2", "type": "number", "required": True, "placeholder": "10"},
+        ],
+    },
+    "ftest": {
+        "name": "FTEST", "description": "Test F (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Série X (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4, 5]"},
+            {"name": "y", "label": "Série Y (JSON)", "type": "json", "required": True, "placeholder": "[2, 4, 6, 8, 10]"},
+        ],
+    },
+    "gammadist": {
+        "name": "GAMMADIST", "description": "Distribution gamma (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Valeur x", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "alpha", "label": "Alpha", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "beta", "label": "Bêta", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "gammainv": {
+        "name": "GAMMAINV", "description": "Inverse gamma (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "alpha", "label": "Alpha", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "beta", "label": "Bêta", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "hypgeomdist": {
+        "name": "HYPGEOMDIST", "description": "Distribution hypergéométrique (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "succes_echantillon", "label": "Succès échantillon", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "taille_echantillon", "label": "Taille échantillon", "type": "number", "required": True, "placeholder": "4"},
+            {"name": "succes_population", "label": "Succès population", "type": "number", "required": True, "placeholder": "8"},
+            {"name": "taille_population", "label": "Taille population", "type": "number", "required": True, "placeholder": "20"},
+        ],
+    },
+    "lognormdist": {
+        "name": "LOGNORMDIST", "description": "Distribution log-normale (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Valeur x", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "moyenne", "label": "Moyenne", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "ecart_type", "label": "Écart-type", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "loginv": {
+        "name": "LOGINV", "description": "Inverse log-normale (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "moyenne", "label": "Moyenne", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "ecart_type", "label": "Écart-type", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "negbinomdist": {
+        "name": "NEGBINOMDIST", "description": "Distribution binomiale négative (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "echecs", "label": "Échecs", "type": "number", "required": True, "placeholder": "2"},
+            {"name": "succes", "label": "Succès requis", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.5"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "boolean", "required": False, "placeholder": "false"},
+        ],
+    },
+    "normdist": {
+        "name": "NORMDIST", "description": "Distribution normale (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Valeur x", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "moyenne", "label": "Moyenne", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "ecart_type", "label": "Écart-type", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "norminv": {
+        "name": "NORMINV", "description": "Inverse de la distribution normale (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.975"},
+            {"name": "moyenne", "label": "Moyenne", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "ecart_type", "label": "Écart-type", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "normsdist": {
+        "name": "NORMSDIST", "description": "Distribution normale standard (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "z", "label": "Valeur z", "type": "number", "required": True, "placeholder": "1.96"},
+        ],
+    },
+    "normsinv": {
+        "name": "NORMSINV", "description": "Inverse normale standard (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.975"},
+        ],
+    },
+    "poisson": {
+        "name": "POISSON", "description": "Distribution de Poisson (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Valeur x", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "moyenne", "label": "Moyenne (λ)", "type": "number", "required": True, "placeholder": "2.5"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "boolean", "required": False, "placeholder": "true"},
+        ],
+    },
+    # ── v15 : Compatibilité & Nouveautés Regex/Texte (Groupe 10) ──
+    "rank": {
+        "name": "RANK", "description": "Rang d'une valeur dans une liste (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4, 5]"},
+            {"name": "ordre", "label": "Ordre (0=desc, 1=asc)", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "stdev": {
+        "name": "STDEV", "description": "Écart-type échantillon (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4, 5]"},
+        ],
+    },
+    "stdevp": {
+        "name": "STDEVP", "description": "Écart-type population (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4, 5]"},
+        ],
+    },
+    "tdist": {
+        "name": "TDIST", "description": "Distribution t de Student (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Valeur x", "type": "number", "required": True, "placeholder": "0"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "10"},
+        ],
+    },
+    "tinv": {
+        "name": "TINV", "description": "Inverse t de Student (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "probabilite", "label": "Probabilité", "type": "number", "required": True, "placeholder": "0.975"},
+            {"name": "df", "label": "Degrés de liberté", "type": "number", "required": True, "placeholder": "30"},
+        ],
+    },
+    "ttest": {
+        "name": "TTEST", "description": "Test t de Student (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Série X (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4, 5]"},
+            {"name": "y", "label": "Série Y (JSON)", "type": "json", "required": True, "placeholder": "[2, 3, 4, 5, 6]"},
+            {"name": "queues", "label": "Queues (1 ou 2)", "type": "number", "required": False, "placeholder": "2"},
+            {"name": "type", "label": "Type (1=apparié, 2=homoscédastique, 3=Welch)", "type": "number", "required": False, "placeholder": "2"},
+        ],
+    },
+    "var_val": {
+        "name": "VAR", "description": "Variance échantillon (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4, 5]"},
+        ],
+    },
+    "varp": {
+        "name": "VARP", "description": "Variance population (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4, 5]"},
+        ],
+    },
+    "weibull": {
+        "name": "WEIBULL", "description": "Distribution de Weibull (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "x", "label": "Valeur x", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "alpha", "label": "Alpha (forme)", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "beta", "label": "Bêta (échelle)", "type": "number", "required": True, "placeholder": "1"},
+            {"name": "cumulatif", "label": "Cumulatif", "type": "boolean", "required": False, "placeholder": "true"},
+        ],
+    },
+    "ztest": {
+        "name": "ZTEST", "description": "Test Z (compatibilité)",
+        "category": "Compatibilité",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[1, 2, 3, 4, 5]"},
+            {"name": "mu", "label": "Moyenne hypothétique", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "regexextract": {
+        "name": "REGEXEXTRACT", "description": "Extrait la première correspondance d'un motif regex",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "abc123def"},
+            {"name": "motif", "label": "Motif regex", "type": "text", "required": True, "placeholder": "\\d+"},
+        ],
+    },
+    "regexmatch": {
+        "name": "REGEXMATCH", "description": "Teste si un texte correspond à un motif regex",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "abc123"},
+            {"name": "motif", "label": "Motif regex", "type": "text", "required": True, "placeholder": "\\d+"},
+        ],
+    },
+    "regexreplace": {
+        "name": "REGEXREPLACE", "description": "Remplace les correspondances d'un motif regex",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "abc123def"},
+            {"name": "motif", "label": "Motif regex", "type": "text", "required": True, "placeholder": "\\d+"},
+            {"name": "remplacement", "label": "Remplacement", "type": "text", "required": True, "placeholder": "#"},
+        ],
+    },
+    "percentof": {
+        "name": "PERCENTOF", "description": "Pourcentage d'une valeur par rapport à un total",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "valeur", "label": "Valeur", "type": "number", "required": True, "placeholder": "25"},
+            {"name": "total", "label": "Total", "type": "number", "required": True, "placeholder": "100"},
+        ],
+    },
+    "textbefore": {
+        "name": "TEXTBEFORE", "description": "Texte avant un délimiteur",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Hello-World"},
+            {"name": "delimiteur", "label": "Délimiteur", "type": "text", "required": True, "placeholder": "-"},
+            {"name": "instance", "label": "N° d'instance", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "textafter": {
+        "name": "TEXTAFTER", "description": "Texte après un délimiteur",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "Hello-World"},
+            {"name": "delimiteur", "label": "Délimiteur", "type": "text", "required": True, "placeholder": "-"},
+            {"name": "instance", "label": "N° d'instance", "type": "number", "required": False, "placeholder": "1"},
+        ],
+    },
+    "textsplit": {
+        "name": "TEXTSPLIT", "description": "Divise un texte par délimiteur(s)",
+        "category": "Texte",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "A,B,C"},
+            {"name": "delimiteur_col", "label": "Délimiteur colonnes", "type": "text", "required": False, "placeholder": ","},
+            {"name": "delimiteur_ligne", "label": "Délimiteur lignes", "type": "text", "required": False, "placeholder": ""},
         ],
     },
 }
