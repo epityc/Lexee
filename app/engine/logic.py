@@ -26,6 +26,7 @@ from app.engine import _v13
 from app.engine import _v14
 from app.engine import _v15
 from app.engine import _v16
+from app.engine import _v17
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -2846,6 +2847,23 @@ FORMULAS: dict[str, callable] = {
     "networkdays_intl": _v16.formule_networkdays_intl,
     "workday_intl": _v16.formule_workday_intl,
     "bitxor": _v16.formule_bitxor,
+    # ── v17 : Ingénierie/Maths & Logique moderne (Groupe 12) ──
+    "bitrshift": _v17.formule_bitrshift,
+    "bitlshift": _v17.formule_bitlshift,
+    "bitor": _v17.formule_bitor,
+    "bitand": _v17.formule_bitand,
+    "acot": _v17.formule_acot,
+    "acoth": _v17.formule_acoth,
+    "base_val": _v17.formule_base_val,
+    "decimal_val": _v17.formule_decimal_val,
+    "combina": _v17.formule_combina,
+    "textjoin": _v17.formule_textjoin,
+    "ifs": _v17.formule_ifs,
+    "switch": _v17.formule_switch,
+    "maxifs": _v17.formule_maxifs,
+    "minifs": _v17.formule_minifs,
+    "sumifs": _v17.formule_sumifs,
+    "countifs": _v17.formule_countifs,
 }
 
 
@@ -6901,6 +6919,134 @@ FORMULA_META: dict[str, dict] = {
         "variables": [
             {"name": "nombre1", "label": "Nombre 1", "type": "number", "required": True, "placeholder": "5"},
             {"name": "nombre2", "label": "Nombre 2", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    # ── v17 : Ingénierie/Maths & Logique moderne (Groupe 12) ──
+    "bitrshift": {
+        "name": "BITRSHIFT", "description": "Décalage à droite bit à bit",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "16"},
+            {"name": "decalage", "label": "Décalage", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    "bitlshift": {
+        "name": "BITLSHIFT", "description": "Décalage à gauche bit à bit",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "4"},
+            {"name": "decalage", "label": "Décalage", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    "bitor": {
+        "name": "BITOR", "description": "OR bit à bit de deux entiers",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre1", "label": "Nombre 1", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "nombre2", "label": "Nombre 2", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "bitand": {
+        "name": "BITAND", "description": "AND bit à bit de deux entiers",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre1", "label": "Nombre 1", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "nombre2", "label": "Nombre 2", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "acot": {
+        "name": "ACOT", "description": "Arc cotangente (résultat en radians)",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "1"},
+        ],
+    },
+    "acoth": {
+        "name": "ACOTH", "description": "Arc cotangente hyperbolique",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "nombre", "label": "Nombre (|x| > 1)", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    "base_val": {
+        "name": "BASE", "description": "Convertit un nombre en texte dans une base donnée",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "nombre", "label": "Nombre", "type": "number", "required": True, "placeholder": "255"},
+            {"name": "base", "label": "Base (2-36)", "type": "number", "required": True, "placeholder": "16"},
+            {"name": "longueur_min", "label": "Longueur minimale", "type": "number", "required": False, "placeholder": "0"},
+        ],
+    },
+    "decimal_val": {
+        "name": "DECIMAL", "description": "Convertit un texte d'une base en nombre décimal",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "texte", "label": "Texte", "type": "text", "required": True, "placeholder": "FF"},
+            {"name": "base", "label": "Base (2-36)", "type": "number", "required": True, "placeholder": "16"},
+        ],
+    },
+    "combina": {
+        "name": "COMBINA", "description": "Combinaisons avec répétition C(n+k-1, k)",
+        "category": "Mathématiques",
+        "variables": [
+            {"name": "nombre", "label": "Nombre n", "type": "number", "required": True, "placeholder": "5"},
+            {"name": "choisi", "label": "Choisi k", "type": "number", "required": True, "placeholder": "3"},
+        ],
+    },
+    "textjoin": {
+        "name": "TEXTJOIN", "description": "Joint des textes avec un délimiteur",
+        "category": "Texte",
+        "variables": [
+            {"name": "delimiteur", "label": "Délimiteur", "type": "text", "required": True, "placeholder": ", "},
+            {"name": "ignorer_vides", "label": "Ignorer les vides", "type": "boolean", "required": False, "placeholder": "true"},
+            {"name": "textes", "label": "Textes (JSON)", "type": "json", "required": True, "placeholder": "[\"A\", \"B\", \"C\"]"},
+        ],
+    },
+    "ifs": {
+        "name": "IFS", "description": "Évalue plusieurs conditions, renvoie la première vraie",
+        "category": "Logique",
+        "variables": [
+            {"name": "conditions", "label": "Conditions (JSON [{test, valeur}])", "type": "json", "required": True, "placeholder": "[{\"test\": true, \"valeur\": \"Oui\"}]"},
+        ],
+    },
+    "switch": {
+        "name": "SWITCH", "description": "Compare une expression à des valeurs et renvoie le résultat",
+        "category": "Logique",
+        "variables": [
+            {"name": "expression", "label": "Expression à comparer", "type": "text", "required": True, "placeholder": "A"},
+            {"name": "cas", "label": "Cas (JSON [{valeur, resultat}])", "type": "json", "required": True, "placeholder": "[{\"valeur\": \"A\", \"resultat\": 1}]"},
+            {"name": "defaut", "label": "Valeur par défaut", "type": "text", "required": False, "placeholder": ""},
+        ],
+    },
+    "maxifs": {
+        "name": "MAXIFS", "description": "Maximum des valeurs satisfaisant des critères",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[10, 20, 30, 40]"},
+            {"name": "criteres", "label": "Critères (JSON [{plage, critere}])", "type": "json", "required": True, "placeholder": "[{\"plage\": [\"A\",\"B\",\"A\",\"B\"], \"critere\": \"A\"}]"},
+        ],
+    },
+    "minifs": {
+        "name": "MINIFS", "description": "Minimum des valeurs satisfaisant des critères",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[10, 20, 30, 40]"},
+            {"name": "criteres", "label": "Critères (JSON [{plage, critere}])", "type": "json", "required": True, "placeholder": "[{\"plage\": [\"A\",\"B\",\"A\",\"B\"], \"critere\": \"A\"}]"},
+        ],
+    },
+    "sumifs": {
+        "name": "SUMIFS", "description": "Somme des valeurs satisfaisant des critères",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "valeurs", "label": "Valeurs (JSON)", "type": "json", "required": True, "placeholder": "[10, 20, 30, 40]"},
+            {"name": "criteres", "label": "Critères (JSON [{plage, critere}])", "type": "json", "required": True, "placeholder": "[{\"plage\": [\"A\",\"B\",\"A\",\"B\"], \"critere\": \"A\"}]"},
+        ],
+    },
+    "countifs": {
+        "name": "COUNTIFS", "description": "Compte les éléments satisfaisant des critères",
+        "category": "Statistiques",
+        "variables": [
+            {"name": "criteres", "label": "Critères (JSON [{plage, critere}])", "type": "json", "required": True, "placeholder": "[{\"plage\": [\"A\",\"B\",\"A\",\"B\"], \"critere\": \"A\"}]"},
         ],
     },
 }

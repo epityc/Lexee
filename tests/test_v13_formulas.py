@@ -315,6 +315,6 @@ def test_sqrtpi_negative():
 # ─────────────────────────────────────────────────────────────────────────────
 def test_registre_complet_v13():
     from app.engine.logic import FORMULA_META
-    assert len(FORMULAS) == 448
-    assert len(FORMULA_META) == 448
+    assert len(FORMULAS) == 464
+    assert len(FORMULA_META) == 464
     assert set(FORMULAS.keys()) == set(FORMULA_META.keys())
