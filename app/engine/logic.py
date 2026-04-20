@@ -2675,6 +2675,7 @@ FORMULAS: dict[str, callable] = {
     "gamma_inv": _v10.formule_gamma_inv,
     "gammaln": _v10.formule_gammaln,
     "gammaln_precis": _v10.formule_gammaln_precis,
+    "gammaln_precise": _v10.formule_gammaln_precis,
     "gauss": _v10.formule_gauss,
     "harmean": _v10.formule_harmean,
     "hypgeom_dist": _v10.formule_hypgeom_dist,
@@ -5563,6 +5564,13 @@ FORMULA_META: dict[str, dict] = {
     "gammaln_precis": {
         "name": "GAMMALN.PRECISE", "description": "Logarithme précis de la fonction gamma",
         "category": "Mathématiques Spécialisées",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "5"},
+        ],
+    },
+    "gammaln_precise": {
+        "name": "GAMMALN.PRECISE", "description": "Logarithme précis de la fonction gamma (alias)",
+        "category": "Statistiques de Précision",
         "variables": [
             {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "5"},
         ],

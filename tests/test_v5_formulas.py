@@ -400,6 +400,6 @@ def test_ecart_moyen():
 # ─────────────────────────────────────────────────────────────────────────────
 def test_registre_complet():
     from app.engine.logic import FORMULA_META
-    assert len(FORMULAS) == 493
-    assert len(FORMULA_META) == 493
+    assert len(FORMULAS) == 494
+    assert len(FORMULA_META) == 494
     assert set(FORMULAS.keys()) == set(FORMULA_META.keys())

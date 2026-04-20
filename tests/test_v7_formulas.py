@@ -254,6 +254,6 @@ def test_parse_reel_pur():
 # ─────────────────────────────────────────────────────────────────────────────
 def test_registre_complet_v7():
     from app.engine.logic import FORMULA_META
-    assert len(FORMULAS) == 493
-    assert len(FORMULA_META) == 493
+    assert len(FORMULAS) == 494
+    assert len(FORMULA_META) == 494
     assert set(FORMULAS.keys()) == set(FORMULA_META.keys())

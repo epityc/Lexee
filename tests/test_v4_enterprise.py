@@ -70,10 +70,10 @@ from app.engine.logic import (
 
 class TestRegistryV4:
     def test_total_count(self):
-        assert len(FORMULAS) == 493
+        assert len(FORMULAS) == 494
 
     def test_meta_count_matches(self):
-        assert len(FORMULA_META) == 493
+        assert len(FORMULA_META) == 494
 
     def test_all_v4_audit_keys(self):
         audit_keys = ["intper", "princper", "cumul_inter", "cumul_princ", "amorl", "amordegr", "syd"]
