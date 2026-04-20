@@ -319,6 +319,36 @@ def formule_imsin(v: dict) -> dict:
     return {"resultat": _format_complex(cmath.sin(c))}
 
 
+def formule_imsinh(v: dict) -> dict:
+    """IMSINH — sinus hyperbolique d'un nombre complexe."""
+    c = _parse_complex(v["nombre"])
+    return {"resultat": _format_complex(cmath.sinh(c))}
+
+
+def formule_imsqrt(v: dict) -> dict:
+    """IMSQRT — racine carrée d'un nombre complexe."""
+    c = _parse_complex(v["nombre"])
+    return {"resultat": _format_complex(cmath.sqrt(c))}
+
+
+def formule_imsub(v: dict) -> dict:
+    """IMSUB — soustraction de deux nombres complexes."""
+    a = _parse_complex(v["nombre1"])
+    b = _parse_complex(v["nombre2"])
+    return {"resultat": _format_complex(a - b)}
+
+
+def formule_imsum(v: dict) -> dict:
+    """IMSUM — somme de nombres complexes."""
+    nombres = v["nombres"]
+    if not isinstance(nombres, list):
+        nombres = [nombres]
+    result = complex(0, 0)
+    for n in nombres:
+        result += _parse_complex(n)
+    return {"resultat": _format_complex(result)}
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # CONVERT — Conversion d'unités
 # ═══════════════════════════════════════════════════════════════════════════════

@@ -288,10 +288,62 @@ def test_convert_energy():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# IMSINH / IMSQRT / IMSUB / IMSUM (Groupe 14)
+# ─────────────────────────────────────────────────────────────────────────────
+def test_imsinh():
+    from app.engine._v18 import _parse_complex
+    r = FORMULAS["imsinh"]({"nombre": "0"})
+    c = _parse_complex(r["resultat"])
+    assert abs(c) < 1e-9
+
+
+def test_imsinh_real():
+    from app.engine._v18 import _parse_complex
+    r = FORMULAS["imsinh"]({"nombre": "1"})
+    c = _parse_complex(r["resultat"])
+    assert abs(c.real - math.sinh(1)) < 1e-6
+
+
+def test_imsqrt():
+    from app.engine._v18 import _parse_complex
+    r = FORMULAS["imsqrt"]({"nombre": "3+4i"})
+    c = _parse_complex(r["resultat"])
+    assert abs(c - (2 + 1j)) < 1e-9
+
+
+def test_imsqrt_negative():
+    from app.engine._v18 import _parse_complex
+    r = FORMULAS["imsqrt"]({"nombre": "-1"})
+    c = _parse_complex(r["resultat"])
+    assert abs(c - 1j) < 1e-9
+
+
+def test_imsub():
+    from app.engine._v18 import _parse_complex
+    r = FORMULAS["imsub"]({"nombre1": "5+3i", "nombre2": "2+i"})
+    c = _parse_complex(r["resultat"])
+    assert abs(c - (3 + 2j)) < 1e-9
+
+
+def test_imsum():
+    from app.engine._v18 import _parse_complex
+    r = FORMULAS["imsum"]({"nombres": ["1+2i", "3+4i", "5+6i"]})
+    c = _parse_complex(r["resultat"])
+    assert abs(c - (9 + 12j)) < 1e-9
+
+
+def test_imsum_single():
+    from app.engine._v18 import _parse_complex
+    r = FORMULAS["imsum"]({"nombres": ["3+4i"]})
+    c = _parse_complex(r["resultat"])
+    assert abs(c - (3 + 4j)) < 1e-9
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Smoke test registre
 # ─────────────────────────────────────────────────────────────────────────────
 def test_registre_complet_v18():
     from app.engine.logic import FORMULA_META
-    assert len(FORMULAS) == 489
-    assert len(FORMULA_META) == 489
+    assert len(FORMULAS) == 493
+    assert len(FORMULA_META) == 493
     assert set(FORMULAS.keys()) == set(FORMULA_META.keys())

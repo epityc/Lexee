@@ -234,6 +234,6 @@ def test_bitxor_negative():
 # ─────────────────────────────────────────────────────────────────────────────
 def test_registre_complet_v16():
     from app.engine.logic import FORMULA_META
-    assert len(FORMULAS) == 489
-    assert len(FORMULA_META) == 489
+    assert len(FORMULAS) == 493
+    assert len(FORMULA_META) == 493
     assert set(FORMULAS.keys()) == set(FORMULA_META.keys())

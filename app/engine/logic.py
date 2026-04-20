@@ -2891,6 +2891,11 @@ FORMULAS: dict[str, callable] = {
     "imsec": _v18.formule_imsec,
     "imsech": _v18.formule_imsech,
     "imsin": _v18.formule_imsin,
+    # ── v18 suite : Groupe 14 ──
+    "imsinh": _v18.formule_imsinh,
+    "imsqrt": _v18.formule_imsqrt,
+    "imsub": _v18.formule_imsub,
+    "imsum": _v18.formule_imsum,
 }
 
 
@@ -7259,6 +7264,36 @@ FORMULA_META: dict[str, dict] = {
         "category": "Ingénierie",
         "variables": [
             {"name": "nombre", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    # ── v18 suite : Groupe 14 ──
+    "imsinh": {
+        "name": "IMSINH", "description": "Sinus hyperbolique d'un nombre complexe",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "imsqrt": {
+        "name": "IMSQRT", "description": "Racine carrée d'un nombre complexe",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "3+4i"},
+        ],
+    },
+    "imsub": {
+        "name": "IMSUB", "description": "Soustraction de deux nombres complexes",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre1", "label": "Nombre 1", "type": "text", "required": True, "placeholder": "5+3i"},
+            {"name": "nombre2", "label": "Nombre 2", "type": "text", "required": True, "placeholder": "2+i"},
+        ],
+    },
+    "imsum": {
+        "name": "IMSUM", "description": "Somme de nombres complexes",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombres", "label": "Nombres complexes (JSON)", "type": "json", "required": True, "placeholder": "[\"3+4i\", \"1+2i\"]"},
         ],
     },
 }
