@@ -27,6 +27,7 @@ from app.engine import _v14
 from app.engine import _v15
 from app.engine import _v16
 from app.engine import _v17
+from app.engine import _v18
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -2864,6 +2865,32 @@ FORMULAS: dict[str, callable] = {
     "minifs": _v17.formule_minifs,
     "sumifs": _v17.formule_sumifs,
     "countifs": _v17.formule_countifs,
+    # ── v18 : Ingénierie & Nombres Complexes (Groupe 13) ──
+    "besseli": _v18.formule_besseli,
+    "besselj": _v18.formule_besselj,
+    "besselk": _v18.formule_besselk,
+    "bessely": _v18.formule_bessely,
+    "complex_val": _v18.formule_complex_val,
+    "convert": _v18.formule_convert,
+    "imabs": _v18.formule_imabs,
+    "imaginary": _v18.formule_imaginary,
+    "imargument": _v18.formule_imargument,
+    "imconjugate": _v18.formule_imconjugate,
+    "imcos": _v18.formule_imcos,
+    "imcot": _v18.formule_imcot,
+    "imcsc": _v18.formule_imcsc,
+    "imcsch": _v18.formule_imcsch,
+    "imdiv": _v18.formule_imdiv,
+    "imexp": _v18.formule_imexp,
+    "imln": _v18.formule_imln,
+    "imlog10": _v18.formule_imlog10,
+    "imlog2": _v18.formule_imlog2,
+    "impower": _v18.formule_impower,
+    "improduct": _v18.formule_improduct,
+    "imreal": _v18.formule_imreal,
+    "imsec": _v18.formule_imsec,
+    "imsech": _v18.formule_imsech,
+    "imsin": _v18.formule_imsin,
 }
 
 
@@ -7047,6 +7074,191 @@ FORMULA_META: dict[str, dict] = {
         "category": "Statistiques",
         "variables": [
             {"name": "criteres", "label": "Critères (JSON [{plage, critere}])", "type": "json", "required": True, "placeholder": "[{\"plage\": [\"A\",\"B\",\"A\",\"B\"], \"critere\": \"A\"}]"},
+        ],
+    },
+    # ── v18 : Ingénierie & Nombres Complexes (Groupe 13) ──
+    "besseli": {
+        "name": "BESSELI", "description": "Fonction de Bessel modifiée I_n(x)",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1.5"},
+            {"name": "n", "label": "Ordre n", "type": "number", "required": True, "placeholder": "0"},
+        ],
+    },
+    "besselj": {
+        "name": "BESSELJ", "description": "Fonction de Bessel J_n(x)",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1.5"},
+            {"name": "n", "label": "Ordre n", "type": "number", "required": True, "placeholder": "0"},
+        ],
+    },
+    "besselk": {
+        "name": "BESSELK", "description": "Fonction de Bessel modifiée K_n(x)",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1.5"},
+            {"name": "n", "label": "Ordre n", "type": "number", "required": True, "placeholder": "0"},
+        ],
+    },
+    "bessely": {
+        "name": "BESSELY", "description": "Fonction de Bessel Y_n(x)",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "x", "label": "x", "type": "number", "required": True, "placeholder": "1.5"},
+            {"name": "n", "label": "Ordre n", "type": "number", "required": True, "placeholder": "0"},
+        ],
+    },
+    "complex_val": {
+        "name": "COMPLEX", "description": "Crée un nombre complexe à partir de réel et imaginaire",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "reel", "label": "Partie réelle", "type": "number", "required": True, "placeholder": "3"},
+            {"name": "imaginaire", "label": "Partie imaginaire", "type": "number", "required": True, "placeholder": "4"},
+        ],
+    },
+    "convert": {
+        "name": "CONVERT", "description": "Convertit une valeur d'une unité à une autre",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Valeur", "type": "number", "required": True, "placeholder": "100"},
+            {"name": "de", "label": "Unité source", "type": "text", "required": True, "placeholder": "km"},
+            {"name": "a", "label": "Unité cible", "type": "text", "required": True, "placeholder": "mi"},
+        ],
+    },
+    "imabs": {
+        "name": "IMABS", "description": "Module d'un nombre complexe",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "3+4i"},
+        ],
+    },
+    "imaginary": {
+        "name": "IMAGINARY", "description": "Partie imaginaire d'un nombre complexe",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "3+4i"},
+        ],
+    },
+    "imargument": {
+        "name": "IMARGUMENT", "description": "Argument (angle) d'un nombre complexe",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "3+4i"},
+        ],
+    },
+    "imconjugate": {
+        "name": "IMCONJUGATE", "description": "Conjugué d'un nombre complexe",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "3+4i"},
+        ],
+    },
+    "imcos": {
+        "name": "IMCOS", "description": "Cosinus d'un nombre complexe",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "imcot": {
+        "name": "IMCOT", "description": "Cotangente d'un nombre complexe",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "imcsc": {
+        "name": "IMCSC", "description": "Cosécante d'un nombre complexe",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "imcsch": {
+        "name": "IMCSCH", "description": "Cosécante hyperbolique d'un nombre complexe",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "imdiv": {
+        "name": "IMDIV", "description": "Division de deux nombres complexes",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre1", "label": "Numérateur", "type": "text", "required": True, "placeholder": "3+4i"},
+            {"name": "nombre2", "label": "Dénominateur", "type": "text", "required": True, "placeholder": "1+2i"},
+        ],
+    },
+    "imexp": {
+        "name": "IMEXP", "description": "Exponentielle d'un nombre complexe",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "imln": {
+        "name": "IMLN", "description": "Logarithme naturel d'un nombre complexe",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "3+4i"},
+        ],
+    },
+    "imlog10": {
+        "name": "IMLOG10", "description": "Logarithme base 10 d'un nombre complexe",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "3+4i"},
+        ],
+    },
+    "imlog2": {
+        "name": "IMLOG2", "description": "Logarithme base 2 d'un nombre complexe",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "3+4i"},
+        ],
+    },
+    "impower": {
+        "name": "IMPOWER", "description": "Puissance d'un nombre complexe",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "3+4i"},
+            {"name": "puissance", "label": "Puissance", "type": "number", "required": True, "placeholder": "2"},
+        ],
+    },
+    "improduct": {
+        "name": "IMPRODUCT", "description": "Produit de nombres complexes",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombres", "label": "Nombres complexes (JSON)", "type": "json", "required": True, "placeholder": "[\"3+4i\", \"1+2i\"]"},
+        ],
+    },
+    "imreal": {
+        "name": "IMREAL", "description": "Partie réelle d'un nombre complexe",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "3+4i"},
+        ],
+    },
+    "imsec": {
+        "name": "IMSEC", "description": "Sécante d'un nombre complexe",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "imsech": {
+        "name": "IMSECH", "description": "Sécante hyperbolique d'un nombre complexe",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "1+i"},
+        ],
+    },
+    "imsin": {
+        "name": "IMSIN", "description": "Sinus d'un nombre complexe",
+        "category": "Ingénierie",
+        "variables": [
+            {"name": "nombre", "label": "Nombre complexe", "type": "text", "required": True, "placeholder": "1+i"},
         ],
     },
 }
