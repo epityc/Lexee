@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import ThemePicker from "@/components/ThemePicker";
 import SpreadsheetGrid, { setCellValue, cellToColRow } from "@/components/SpreadsheetGrid";
 import CligChat from "@/components/CligChat";
-import type { CellData } from "@/components/SpreadsheetGrid";
+import type { CellData, CellFormulas } from "@/components/SpreadsheetGrid";
 import { getMe, getFormulas } from "@/lib/api";
 import type { ClientInfo } from "@/lib/api";
 
@@ -19,6 +19,7 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<"clig" | "engine">("clig");
 
   const [gridData, setGridData] = useState<CellData>({});
+  const [cellFormulas, setCellFormulas] = useState<CellFormulas>({});
   const [selectedCell, setSelectedCell] = useState<string | null>("A1");
 
   useEffect(() => {
@@ -55,10 +56,11 @@ export default function DashboardPage() {
     setClient((prev) => (prev ? { ...prev, credits } : prev));
   }, []);
 
-  const handleInsertValue = useCallback((cell: string, value: string) => {
+  const handleInsertValue = useCallback((cell: string, value: string, formula: string) => {
     const parsed = cellToColRow(cell);
     if (parsed) {
       setGridData((prev) => setCellValue(prev, parsed.col, parsed.row, value));
+      setCellFormulas((prev) => ({ ...prev, [cell]: formula }));
       setSelectedCell(cell);
     }
   }, []);
@@ -142,6 +144,7 @@ export default function DashboardPage() {
         <main className="flex-1 flex flex-col overflow-hidden">
           <SpreadsheetGrid
             data={gridData}
+            formulas={cellFormulas}
             onDataChange={setGridData}
             selectedCell={selectedCell}
             onSelectCell={setSelectedCell}

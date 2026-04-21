@@ -3,9 +3,11 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 
 export type CellData = Record<string, Record<number, string>>;
+export type CellFormulas = Record<string, string>;
 
 interface SpreadsheetGridProps {
   data: CellData;
+  formulas: CellFormulas;
   onDataChange: (data: CellData) => void;
   selectedCell: string | null;
   onSelectCell: (cell: string | null) => void;
@@ -63,6 +65,7 @@ export function getNumericValues(data: CellData, range: string): number[] {
 
 export default function SpreadsheetGrid({
   data,
+  formulas,
   onDataChange,
   selectedCell,
   onSelectCell,
@@ -106,17 +109,17 @@ export default function SpreadsheetGrid({
   }, [commitEdit]);
 
   const fxDisplay = selectedCell
-    ? getCellValue(data, ...(() => { const p = cellToColRow(selectedCell); return p ? [p.col, p.row] as const : ["A", 1] as const; })())
+    ? (formulas[selectedCell] || getCellValue(data, ...(() => { const p = cellToColRow(selectedCell); return p ? [p.col, p.row] as const : ["A", 1] as const; })()))
     : "";
 
   return (
     <div className="flex flex-col h-full">
       {/* Formula bar */}
       <div className="flex items-center bg-white border-b border-theme-grid px-2 py-1.5 gap-2 theme-transition">
-        <span className="text-xs font-mono bg-gray-100 border border-gray-300 rounded px-2 py-1 text-gray-600 w-12 text-center">
+        <span className="text-xs font-mono bg-gray-100 border border-gray-300 rounded px-2 py-1 text-gray-600 w-14 text-center">
           {selectedCell || ""}
         </span>
-        <span className="text-xs text-gray-400">fx</span>
+        <span className="text-xs text-gray-400 px-1">fx</span>
         <span className="text-sm text-gray-700 font-mono flex-1 truncate">
           {fxDisplay}
         </span>
@@ -149,6 +152,7 @@ export default function SpreadsheetGrid({
                   const isSelected = selectedCell === cellId;
                   const isEditing = editingCell === cellId;
                   const value = getCellValue(data, col, row);
+                  const hasFormula = !!formulas[cellId];
 
                   return (
                     <td
@@ -172,7 +176,9 @@ export default function SpreadsheetGrid({
                           className="w-full h-full border-none outline-none bg-transparent text-sm"
                         />
                       ) : (
-                        <span className={`text-sm ${!isNaN(Number(value)) && value !== "" ? "text-right block" : ""}`}>
+                        <span className={`text-sm block ${
+                          !isNaN(Number(value)) && value !== "" ? "text-right" : ""
+                        } ${hasFormula ? "text-gray-900 font-medium" : ""}`}>
                           {value}
                         </span>
                       )}

@@ -9,7 +9,7 @@ interface CligChatProps {
   apiKey: string;
   gridData: CellData;
   selectedCell: string | null;
-  onInsertValue: (cell: string, value: string) => void;
+  onInsertValue: (cell: string, value: string, formula: string) => void;
   onCreditsUpdate: (credits: number) => void;
   engineOnline: boolean;
 }
@@ -252,8 +252,8 @@ export default function CligChat({
   }, [input, gridData, selectedCell, apiKey, engineOnline, onInsertValue, onCreditsUpdate]);
 
   const handleInsert = useCallback((msg: ChatMessage) => {
-    if (msg.computedValue && msg.targetCell) {
-      onInsertValue(msg.targetCell, msg.computedValue);
+    if (msg.computedValue && msg.targetCell && msg.formula) {
+      onInsertValue(msg.targetCell, msg.computedValue, msg.formula);
     }
   }, [onInsertValue]);
 
