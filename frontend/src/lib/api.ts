@@ -80,4 +80,21 @@ export function calculate(
   });
 }
 
+export const FORMULA_NAME_MAP: Record<string, { key: string; resultField: string }> = {
+  "MOYENNE": { key: "somme_moyenne", resultField: "moyenne" },
+  "SOMME": { key: "somme_moyenne", resultField: "somme" },
+  "MIN": { key: "somme_moyenne", resultField: "min" },
+  "MAX": { key: "somme_moyenne", resultField: "max" },
+  "NB": { key: "somme_moyenne", resultField: "count" },
+  "MEDIANE": { key: "mediane", resultField: "mediane" },
+  "ECARTYPE": { key: "somme_moyenne", resultField: "somme" },
+  "SI": { key: "si", resultField: "resultat" },
+  "ARRONDI": { key: "arrondi", resultField: "resultat" },
+  "CONCATENER": { key: "concat", resultField: "resultat" },
+  "MAJUSCULE": { key: "nompropre", resultField: "resultat" },
+  "VPM": { key: "vpm", resultField: "mensualite" },
+  "VAN": { key: "van", resultField: "van" },
+  "TRI": { key: "tri", resultField: "tri" },
+};
+
 export type { ClientInfo, FormulaMeta, CalculationResponse };
