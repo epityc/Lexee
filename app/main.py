@@ -113,6 +113,17 @@ app.add_middleware(
 @app.on_event("startup")
 def on_startup():
     init_db()
+    db = next(get_db())
+    if db.query(Client).count() == 0:
+        demo = Client(
+            name="Demo",
+            api_key="ng_demo_clig_2026",
+            status="active",
+            credits=999999,
+        )
+        db.add(demo)
+        db.commit()
+    db.close()
 
 
 # Enregistrer le routeur API
