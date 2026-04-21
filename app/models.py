@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, Integer, String
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
 
 from app.database import Base
 
@@ -14,6 +14,7 @@ class Client(Base):
     api_key = Column(String, unique=True, nullable=False, index=True)
     status = Column(String, nullable=False, default="pending_payment")  # active | pending_payment
     credits = Column(Integer, nullable=False, default=0)
+    plan = Column(String, nullable=False, default="free")  # free | pro
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
 
     @staticmethod
@@ -22,3 +23,18 @@ class Client(Base):
 
     def __repr__(self) -> str:
         return f"<Client id={self.id} name={self.name!r} status={self.status} credits={self.credits}>"
+
+
+class Workbook(Base):
+    __tablename__ = "workbooks"
+
+    id = Column(Integer, primary_key=True, index=True)
+    client_id = Column(Integer, ForeignKey("clients.id"), nullable=False, index=True)
+    name = Column(String, nullable=False, default="Sans titre")
+    data = Column(Text, nullable=False, default="{}")
+    formulas = Column(Text, nullable=False, default="{}")
+    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+
+    def __repr__(self) -> str:
+        return f"<Workbook id={self.id} name={self.name!r} client_id={self.client_id}>"

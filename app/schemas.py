@@ -58,6 +58,39 @@ class ClientInfo(BaseModel):
     name: str
     status: str
     credits: int
+    plan: str = "free"
+
+    class Config:
+        from_attributes = True
+
+
+class WorkbookCreate(BaseModel):
+    name: str = Field("Sans titre", description="Nom du classeur")
+
+
+class WorkbookUpdate(BaseModel):
+    name: str | None = None
+    data: dict | None = None
+    formulas: dict | None = None
+
+
+class WorkbookInfo(BaseModel):
+    id: int
+    name: str
+    data: dict
+    formulas: dict
+    created_at: str
+    updated_at: str
+
+    class Config:
+        from_attributes = True
+
+
+class WorkbookSummary(BaseModel):
+    id: int
+    name: str
+    created_at: str
+    updated_at: str
 
     class Config:
         from_attributes = True

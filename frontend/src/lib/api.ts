@@ -5,6 +5,7 @@ interface ClientInfo {
   name: string;
   status: string;
   credits: number;
+  plan: string;
 }
 
 interface FormulaMeta {
@@ -79,6 +80,99 @@ export function calculate(
     body: JSON.stringify({ formula, variables }),
   });
 }
+
+// ─── Workbook types ──────────────────────────────────────────────────────────
+
+export interface WorkbookSummary {
+  id: number;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface WorkbookFull {
+  id: number;
+  name: string;
+  data: Record<string, Record<string, string>>;
+  formulas: Record<string, string>;
+  created_at: string;
+  updated_at: string;
+}
+
+// ─── Workbook API ────────────────────────────────────────────────────────────
+
+export function listWorkbooks(
+  apiKey: string
+): Promise<{ workbooks: WorkbookSummary[] }> {
+  return request("/workbooks", {
+    headers: { "X-API-KEY": apiKey },
+  });
+}
+
+export function createWorkbook(
+  apiKey: string,
+  name: string = "Sans titre"
+): Promise<WorkbookFull> {
+  return request<WorkbookFull>("/workbooks", {
+    method: "POST",
+    headers: { "X-API-KEY": apiKey },
+    body: JSON.stringify({ name }),
+  });
+}
+
+export function getWorkbook(
+  apiKey: string,
+  id: number
+): Promise<WorkbookFull> {
+  return request<WorkbookFull>(`/workbooks/${id}`, {
+    headers: { "X-API-KEY": apiKey },
+  });
+}
+
+export function updateWorkbook(
+  apiKey: string,
+  id: number,
+  payload: { name?: string; data?: Record<string, unknown>; formulas?: Record<string, string> }
+): Promise<WorkbookFull> {
+  return request<WorkbookFull>(`/workbooks/${id}`, {
+    method: "PUT",
+    headers: { "X-API-KEY": apiKey },
+    body: JSON.stringify(payload),
+  });
+}
+
+export function deleteWorkbook(
+  apiKey: string,
+  id: number
+): Promise<void> {
+  return request(`/workbooks/${id}`, {
+    method: "DELETE",
+    headers: { "X-API-KEY": apiKey },
+  });
+}
+
+export async function importWorkbook(
+  apiKey: string,
+  file: File
+): Promise<WorkbookFull> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch(`${API_BASE}/workbooks/import`, {
+    method: "POST",
+    headers: { "X-API-KEY": apiKey },
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.detail || `Erreur ${res.status}`);
+  }
+
+  return res.json();
+}
+
+// ─── Formula name mapping ────────────────────────────────────────────────────
 
 export const FORMULA_NAME_MAP: Record<string, { key: string; resultField: string }> = {
   "MOYENNE": { key: "somme_moyenne", resultField: "moyenne" },
