@@ -111,9 +111,23 @@ function detectFormulaIntent(
     lastDataRow = parseInt(rowsMatch[2]);
   }
 
-  let targetCell = selectedCell || "";
-  if (!targetCell && dataCol) {
-    targetCell = `${dataCol}${lastDataRow + 1}`;
+  const COLS = ["A", "B", "C", "D", "E", "F", "G"];
+  let targetCell = "";
+
+  const usedCols = new Set<string>();
+  for (const col of COLS) {
+    for (let r = 1; r <= 20; r++) {
+      if (getCellValue(gridData, col, r) !== "") {
+        usedCols.add(col);
+        break;
+      }
+    }
+  }
+  const nextFreeCol = COLS.find((c) => !usedCols.has(c));
+  if (nextFreeCol) {
+    targetCell = `${nextFreeCol}1`;
+  } else {
+    targetCell = "G1";
   }
 
   const rangeCells = parseCellRange(dataRange);
