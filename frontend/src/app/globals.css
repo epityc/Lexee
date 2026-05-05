@@ -243,3 +243,50 @@ body {
 .theme-transition {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PRINT STYLES — Export PDF / Impression
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media print {
+  body {
+    background: white !important;
+    font-size: 10pt;
+  }
+
+  .print\:hidden {
+    display: none !important;
+  }
+
+  .print\:bg-white {
+    background: white !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    page-break-inside: auto;
+  }
+
+  th, td {
+    border: 1px solid #d1d5db !important;
+    padding: 4px 6px !important;
+    font-size: 9pt !important;
+  }
+
+  th {
+    background: #f3f4f6 !important;
+    font-weight: 600 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  tr {
+    page-break-inside: avoid;
+  }
+
+  @page {
+    size: A4 landscape;
+    margin: 1cm;
+  }
+}
