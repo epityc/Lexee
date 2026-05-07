@@ -90,11 +90,22 @@ export interface WorkbookSummary {
   updated_at: string;
 }
 
+export interface WorkbookSheet {
+  id: string;
+  name: string;
+  data: Record<string, Record<string, string>>;
+  styles: Record<string, unknown>;
+  validations: Record<string, unknown>;
+  conditionalRules: unknown[];
+  colWidths: Record<string, number>;
+}
+
 export interface WorkbookFull {
   id: number;
   name: string;
   data: Record<string, Record<string, string>>;
   formulas: Record<string, string>;
+  sheets: WorkbookSheet[];
   created_at: string;
   updated_at: string;
 }
@@ -132,7 +143,7 @@ export function getWorkbook(
 export function updateWorkbook(
   apiKey: string,
   id: number,
-  payload: { name?: string; data?: Record<string, unknown>; formulas?: Record<string, string> }
+  payload: { name?: string; data?: Record<string, unknown>; formulas?: Record<string, string>; sheets?: WorkbookSheet[] }
 ): Promise<WorkbookFull> {
   return request<WorkbookFull>(`/workbooks/${id}`, {
     method: "PUT",

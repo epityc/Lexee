@@ -72,6 +72,7 @@ class WorkbookUpdate(BaseModel):
     name: str | None = None
     data: dict | None = None
     formulas: dict | None = None
+    sheets: list | None = None
 
 
 class WorkbookInfo(BaseModel):
