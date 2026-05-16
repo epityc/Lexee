@@ -171,7 +171,7 @@ export default function DashboardPage() {
                     : "bg-gray-500/20 text-gray-300"
                 }`}
               >
-                {client.plan === "pro" ? "PRO" : "FREE"}
+                {client.plan === "pro" ? "LICENCE A VIE" : "GRATUIT"}
               </span>
               <span
                 className={`text-xs px-3 py-1 rounded-full font-medium ${
@@ -209,37 +209,38 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Subscription card */}
+        {/* Licence card */}
         <div className="mb-8 rounded-xl border border-gray-200 bg-white overflow-hidden">
           <div className="p-6 flex items-center justify-between">
             <div>
               <h2 className="text-lg font-semibold text-gray-900">
-                Votre abonnement
+                Clig
               </h2>
               <p className="text-sm text-gray-500 mt-1">
                 {client?.plan === "pro"
-                  ? "Vous beneficiez de toutes les fonctionnalites Pro."
-                  : "Passez a Pro pour debloquer toutes les formules et l'import illimite."}
+                  ? "Licence a vie activee. Acces illimite a toutes les fonctionnalites."
+                  : "Obtenez Clig a vie : 494 formules, IA integree, import/export illimite."}
               </p>
             </div>
             {client?.plan === "pro" ? (
               <div className="text-right">
                 <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold text-gray-900">12</span>
-                  <span className="text-lg text-gray-500">&euro;/mois</span>
+                  <span className="text-3xl font-bold text-gray-900">10</span>
+                  <span className="text-lg text-gray-500">$</span>
                 </div>
                 <span className="inline-block mt-1 text-xs px-3 py-1 rounded-full bg-green-100 text-green-700 font-medium">
-                  Actif
+                  Licence a vie
                 </span>
               </div>
             ) : (
               <div className="text-right">
-                <div className="flex items-baseline gap-1 mb-2">
-                  <span className="text-3xl font-bold text-gray-900">12</span>
-                  <span className="text-lg text-gray-500">&euro;/mois</span>
+                <div className="flex items-baseline gap-1 mb-1">
+                  <span className="text-3xl font-bold text-gray-900">10</span>
+                  <span className="text-lg text-gray-500">$</span>
                 </div>
+                <p className="text-xs text-gray-400 mb-2">Paiement unique, a vie</p>
                 <button className="btn-primary text-white text-sm font-medium px-5 py-2 rounded-lg">
-                  Passer a Pro
+                  Obtenir Clig
                 </button>
               </div>
             )}
