@@ -100,11 +100,13 @@ def calculate(
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _wb_to_dict(wb: Workbook) -> dict:
+    sheets_raw = json.loads(wb.sheets_json) if wb.sheets_json else []
     return {
         "id": wb.id,
         "name": wb.name,
         "data": json.loads(wb.data),
         "formulas": json.loads(wb.formulas),
+        "sheets": sheets_raw if sheets_raw else [],
         "created_at": wb.created_at.isoformat(),
         "updated_at": wb.updated_at.isoformat(),
     }
@@ -169,6 +171,8 @@ def update_workbook(
         wb.data = json.dumps(payload.data)
     if payload.formulas is not None:
         wb.formulas = json.dumps(payload.formulas)
+    if payload.sheets is not None:
+        wb.sheets_json = json.dumps(payload.sheets)
     wb.updated_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(wb)

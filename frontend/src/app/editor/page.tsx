@@ -101,20 +101,41 @@ export default function EditorPage() {
         setEngineOnline(true);
         if (wbData) {
           setWbName(wbData.name);
-          const converted: CellData = {};
-          for (const [col, rows] of Object.entries(wbData.data)) {
-            converted[col] = {};
-            for (const [rowStr, val] of Object.entries(rows as Record<string, string>)) {
-              converted[col][parseInt(rowStr)] = val;
+          if (wbData.sheets && wbData.sheets.length > 0) {
+            const restored: Sheet[] = wbData.sheets.map((s) => {
+              const sData: CellData = {};
+              for (const [col, rows] of Object.entries(s.data || {})) {
+                sData[col] = {};
+                for (const [rowStr, val] of Object.entries(rows as Record<string, string>)) {
+                  sData[col][parseInt(rowStr)] = val;
+                }
+              }
+              return {
+                ...createEmptySheet(s.id, s.name),
+                data: sData,
+                styles: (s.styles || {}) as Record<string, CellStyle>,
+                validations: (s.validations || {}) as Record<string, ValidationRule>,
+                conditionalRules: (s.conditionalRules || []) as ConditionalRule[],
+                colWidths: s.colWidths || {},
+              };
+            });
+            setSheets(restored);
+            setActiveSheetId(restored[0].id);
+          } else {
+            const converted: CellData = {};
+            for (const [col, rows] of Object.entries(wbData.data)) {
+              converted[col] = {};
+              for (const [rowStr, val] of Object.entries(rows as Record<string, string>)) {
+                converted[col][parseInt(rowStr)] = val;
+              }
             }
+            const id = newSheetId();
+            setSheets([{
+              ...createEmptySheet(id, "Feuille 1"),
+              data: converted,
+            }]);
+            setActiveSheetId(id);
           }
-          const id = newSheetId();
-          setSheets([{
-            ...createEmptySheet(id, "Feuille 1"),
-            data: converted,
-            styles: {},
-          }]);
-          setActiveSheetId(id);
         }
       })
       .catch((err) => {
@@ -132,18 +153,31 @@ export default function EditorPage() {
     if (!apiKey || !workbookId) return;
     setSaving(true);
     try {
-      const sheet = latestSheets.current[0];
-      if (!sheet) return;
-      const serialized: Record<string, Record<string, string>> = {};
-      for (const [col, rows] of Object.entries(sheet.data)) {
-        serialized[col] = {};
-        for (const [rowNum, val] of Object.entries(rows)) {
-          if (val !== "") serialized[col][rowNum] = val;
+      const allSheets = latestSheets.current;
+      if (allSheets.length === 0) return;
+      const serializedSheets = allSheets.map((s) => {
+        const sData: Record<string, Record<string, string>> = {};
+        for (const [col, rows] of Object.entries(s.data)) {
+          sData[col] = {};
+          for (const [rowNum, val] of Object.entries(rows)) {
+            if (val !== "") sData[col][rowNum] = String(val);
+          }
         }
-      }
+        return {
+          id: s.id,
+          name: s.name,
+          data: sData,
+          styles: s.styles,
+          validations: s.validations,
+          conditionalRules: s.conditionalRules,
+          colWidths: s.colWidths,
+        };
+      });
+      const firstData = serializedSheets[0]?.data || {};
       await updateWorkbook(apiKey, parseInt(workbookId), {
-        data: serialized,
+        data: firstData,
         formulas: {},
+        sheets: serializedSheets,
       });
     } catch { /* silent */ }
     finally { setSaving(false); }

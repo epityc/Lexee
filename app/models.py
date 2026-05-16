@@ -33,6 +33,7 @@ class Workbook(Base):
     name = Column(String, nullable=False, default="Sans titre")
     data = Column(Text, nullable=False, default="{}")
     formulas = Column(Text, nullable=False, default="{}")
+    sheets_json = Column(Text, nullable=False, default="[]")
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
 
