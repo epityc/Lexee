@@ -50,15 +50,25 @@ class CalculationResponse(BaseModel):
 
 
 class LoginRequest(BaseModel):
-    api_key: str
+    api_key: str | None = None
+    email: str | None = None
+    password: str | None = None
+
+
+class SignupRequest(BaseModel):
+    name: str = Field(..., min_length=2)
+    email: str = Field(..., min_length=5)
+    password: str = Field(..., min_length=6)
 
 
 class ClientInfo(BaseModel):
     id: int
     name: str
+    email: str | None = None
     status: str
     credits: int
     plan: str = "free"
+    api_key: str | None = None
 
     class Config:
         from_attributes = True

@@ -21,6 +21,7 @@ from app.schemas import (
     CalculationResponse,
     ClientInfo,
     LoginRequest,
+    SignupRequest,
     WorkbookCreate,
     WorkbookInfo,
     WorkbookSummary,
@@ -38,12 +39,60 @@ def health():
     return {"status": "ok"}
 
 
-@api.post("/auth/login", response_model=ClientInfo)
+@api.post("/auth/login")
 def login(payload: LoginRequest, db: Session = Depends(get_db)):
-    client = db.query(Client).filter(Client.api_key == payload.api_key).first()
-    if client is None:
-        raise HTTPException(status_code=401, detail="Clé API invalide.")
-    return client
+    import hashlib
+
+    if payload.email and payload.password:
+        client = db.query(Client).filter(Client.email == payload.email.lower().strip()).first()
+        if client is None:
+            raise HTTPException(status_code=401, detail="Email ou mot de passe incorrect.")
+        pw_hash = hashlib.sha256(payload.password.encode()).hexdigest()
+        if client.password_hash != pw_hash:
+            raise HTTPException(status_code=401, detail="Email ou mot de passe incorrect.")
+        return {
+            "id": client.id, "name": client.name, "email": client.email,
+            "status": client.status, "credits": client.credits,
+            "plan": client.plan, "api_key": client.api_key,
+        }
+
+    if payload.api_key:
+        client = db.query(Client).filter(Client.api_key == payload.api_key).first()
+        if client is None:
+            raise HTTPException(status_code=401, detail="Cle API invalide.")
+        return {
+            "id": client.id, "name": client.name, "email": client.email,
+            "status": client.status, "credits": client.credits,
+            "plan": client.plan, "api_key": client.api_key,
+        }
+
+    raise HTTPException(status_code=400, detail="Email/mot de passe ou cle API requis.")
+
+
+@api.post("/auth/signup", status_code=201)
+def signup(payload: SignupRequest, db: Session = Depends(get_db)):
+    import hashlib
+
+    email = payload.email.lower().strip()
+    existing = db.query(Client).filter(Client.email == email).first()
+    if existing:
+        raise HTTPException(status_code=409, detail="Cet email est deja utilise.")
+
+    pw_hash = hashlib.sha256(payload.password.encode()).hexdigest()
+    client = Client(
+        name=payload.name.strip(),
+        email=email,
+        password_hash=pw_hash,
+        api_key=Client.generate_api_key(),
+    )
+    db.add(client)
+    db.commit()
+    db.refresh(client)
+    return {
+        "id": client.id, "name": client.name, "email": client.email,
+        "status": client.status, "credits": client.credits,
+        "plan": client.plan, "api_key": client.api_key,
+    }
 
 
 @api.get("/me", response_model=ClientInfo)

@@ -3,9 +3,11 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || "/api";
 interface ClientInfo {
   id: number;
   name: string;
+  email?: string;
   status: string;
   credits: number;
   plan: string;
+  api_key?: string;
 }
 
 interface FormulaMeta {
@@ -52,6 +54,20 @@ export function login(apiKey: string): Promise<ClientInfo> {
   return request<ClientInfo>("/auth/login", {
     method: "POST",
     body: JSON.stringify({ api_key: apiKey }),
+  });
+}
+
+export function loginWithEmail(email: string, password: string): Promise<ClientInfo> {
+  return request<ClientInfo>("/auth/login", {
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+  });
+}
+
+export function signup(name: string, email: string, password: string): Promise<ClientInfo> {
+  return request<ClientInfo>("/auth/signup", {
+    method: "POST",
+    body: JSON.stringify({ name, email, password }),
   });
 }
 
