@@ -11,9 +11,11 @@ class Client(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
+    email = Column(String, unique=True, nullable=True, index=True)
+    password_hash = Column(String, nullable=True)
     api_key = Column(String, unique=True, nullable=False, index=True)
-    status = Column(String, nullable=False, default="pending_payment")  # active | pending_payment
-    credits = Column(Integer, nullable=False, default=0)
+    status = Column(String, nullable=False, default="active")
+    credits = Column(Integer, nullable=False, default=50)
     plan = Column(String, nullable=False, default="free")  # free | pro
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
 
