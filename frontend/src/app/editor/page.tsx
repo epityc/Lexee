@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ThemePicker from "@/components/ThemePicker";
+import DataWranglingMenu from "@/components/DataWranglingMenu";
 import SpreadsheetGrid, { setCellValue, cellToColRow, COLS } from "@/components/SpreadsheetGrid";
 import type { CellData, CellFormulas } from "@/components/SpreadsheetGrid";
 import CligChat from "@/components/CligChat";
@@ -373,6 +374,11 @@ export default function EditorPage() {
             </span>
           )}
           <ThemePicker />
+          <DataWranglingMenu
+            selectedCell={selectedCell}
+            data={activeSheet.data}
+            onDataChange={(d) => { updateActiveSheet({ data: d }); scheduleAutoSave(); }}
+          />
           <button onClick={handleLogout} className="text-xs text-white/50 hover:text-white px-2 py-1 rounded hover:bg-white/10">
             Deconnexion
           </button>
