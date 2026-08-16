@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
-import type { CellStyle } from "@/lib/types";
+import type { CellStyle, MergedCell } from "@/lib/types";
 
 interface ToolbarProps {
   selectedCell: string | null;
@@ -11,7 +11,13 @@ interface ToolbarProps {
   onRedo: () => void;
   onExportPDF: () => void;
   onShowChart: () => void;
+  selectionRange?: { start: string; end: string } | null;
+  mergedCells?: Record<string, MergedCell>;
+  onMerge?: () => void;
 }
+
+const FONT_SIZES = [8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48, 72];
+const FONT_FAMILIES = ["Calibri", "Arial", "Times New Roman", "Courier New", "Georgia", "Verdana"];
 
 export default function Toolbar({
   selectedCell,
@@ -21,6 +27,9 @@ export default function Toolbar({
   onRedo,
   onExportPDF,
   onShowChart,
+  selectionRange,
+  mergedCells,
+  onMerge,
 }: ToolbarProps) {
   const current = selectedCell ? styles[selectedCell] || {} : {};
 
@@ -36,25 +45,31 @@ export default function Toolbar({
   );
 
   const toggle = useCallback(
-    (prop: "bold" | "italic") => setStyle({ [prop]: !current[prop] }),
+    (prop: "bold" | "italic" | "underline") => setStyle({ [prop]: !current[prop] }),
     [current, setStyle]
   );
+
+  const isMergeOrigin = selectedCell ? !!mergedCells?.[selectedCell] : false;
+  const canMerge = selectionRange && selectionRange.start !== selectionRange.end;
 
   const Btn = ({
     active,
     onClick,
     children,
     title,
+    disabled,
   }: {
     active?: boolean;
     onClick: () => void;
     children: React.ReactNode;
     title: string;
+    disabled?: boolean;
   }) => (
     <button
       onClick={onClick}
       title={title}
-      className={`px-2 py-1.5 rounded text-sm transition-colors ${
+      disabled={disabled}
+      className={`px-2 py-1.5 rounded text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
         active
           ? "bg-theme-primary-100 text-theme-primary-text"
           : "hover:bg-gray-100 text-gray-600"
@@ -82,12 +97,41 @@ export default function Toolbar({
 
       <Sep />
 
+      {/* Font family */}
+      <select
+        value={current.fontFamily || "Calibri"}
+        onChange={(e) => setStyle({ fontFamily: e.target.value })}
+        className="text-xs border border-gray-200 rounded px-1.5 py-1.5 bg-white text-gray-600 hover:border-gray-300 max-w-[110px]"
+        title="Police de caractere"
+      >
+        {FONT_FAMILIES.map((f) => (
+          <option key={f} value={f} style={{ fontFamily: f }}>{f}</option>
+        ))}
+      </select>
+
+      {/* Font size */}
+      <select
+        value={current.fontSize || 11}
+        onChange={(e) => setStyle({ fontSize: parseInt(e.target.value) })}
+        className="text-xs border border-gray-200 rounded px-1.5 py-1.5 bg-white text-gray-600 hover:border-gray-300 w-14"
+        title="Taille de police"
+      >
+        {FONT_SIZES.map((s) => (
+          <option key={s} value={s}>{s}</option>
+        ))}
+      </select>
+
+      <Sep />
+
       {/* Text formatting */}
       <Btn active={current.bold} onClick={() => toggle("bold")} title="Gras (Ctrl+B)">
         <span className="font-bold">B</span>
       </Btn>
       <Btn active={current.italic} onClick={() => toggle("italic")} title="Italique (Ctrl+I)">
         <span className="italic">I</span>
+      </Btn>
+      <Btn active={current.underline} onClick={() => toggle("underline")} title="Souligne (Ctrl+U)">
+        <span className="underline">U</span>
       </Btn>
 
       <Sep />
@@ -140,6 +184,11 @@ export default function Toolbar({
           <path strokeLinecap="round" d="M3 6h18M9 12h12M3 18h18" />
         </svg>
       </Btn>
+      <Btn active={current.align === "justify"} onClick={() => setStyle({ align: "justify" })} title="Justifier">
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" d="M3 6h18M3 12h18M3 18h18" />
+        </svg>
+      </Btn>
 
       <Sep />
 
@@ -158,6 +207,24 @@ export default function Toolbar({
       </select>
 
       <Sep />
+
+      {/* Merge & Center */}
+      {onMerge && (
+        <Btn
+          active={isMergeOrigin}
+          onClick={onMerge}
+          title={isMergeOrigin ? "Desfusionner" : "Fusionner et centrer"}
+          disabled={!isMergeOrigin && !canMerge}
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <rect x="3" y="3" width="8" height="8" rx="1" strokeLinejoin="round" />
+            <rect x="13" y="3" width="8" height="8" rx="1" strokeLinejoin="round" />
+            <rect x="3" y="13" width="8" height="8" rx="1" strokeLinejoin="round" />
+            <rect x="13" y="13" width="8" height="8" rx="1" strokeLinejoin="round" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 8h4M12 6v4" />
+          </svg>
+        </Btn>
+      )}
 
       {/* Chart */}
       <Btn onClick={onShowChart} title="Inserer un graphique">

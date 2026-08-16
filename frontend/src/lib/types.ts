@@ -1,11 +1,16 @@
 export interface CellStyle {
   bold?: boolean;
   italic?: boolean;
+  underline?: boolean;
   color?: string;
   bgColor?: string;
-  align?: "left" | "center" | "right";
+  align?: "left" | "center" | "right" | "justify";
   numberFormat?: "general" | "number" | "currency" | "percent" | "date";
+  fontSize?: number;
+  fontFamily?: string;
 }
+
+export type MergedCell = { endCol: string; endRow: number };
 
 export interface ValidationRule {
   type: "list" | "number" | "text";
@@ -32,6 +37,7 @@ export interface Sheet {
   colWidths: Record<string, number>;
   sortState: { col: string; dir: "asc" | "desc" } | null;
   filterState: Record<string, string[]>;
+  mergedCells: Record<string, MergedCell>;
 }
 
 export type CellData = Record<string, Record<number, string>>;
@@ -49,5 +55,6 @@ export function createEmptySheet(id: string, name: string): Sheet {
     colWidths: {},
     sortState: null,
     filterState: {},
+    mergedCells: {},
   };
 }

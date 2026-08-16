@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ThemePicker from "@/components/ThemePicker";
-import SpreadsheetGrid, { setCellValue, cellToColRow } from "@/components/SpreadsheetGrid";
+import SpreadsheetGrid, { setCellValue, cellToColRow, COLS } from "@/components/SpreadsheetGrid";
 import type { CellData, CellFormulas } from "@/components/SpreadsheetGrid";
 import CligChat from "@/components/CligChat";
 import Toolbar from "@/components/Toolbar";
@@ -11,7 +11,7 @@ import SheetTabs from "@/components/SheetTabs";
 import ChartPanel from "@/components/ChartPanel";
 import { getMe, getFormulas, getWorkbook, updateWorkbook } from "@/lib/api";
 import type { ClientInfo } from "@/lib/api";
-import type { CellStyle, Sheet, ConditionalRule, ValidationRule } from "@/lib/types";
+import type { CellStyle, Sheet, ConditionalRule, ValidationRule, MergedCell } from "@/lib/types";
 import { createEmptySheet } from "@/lib/types";
 
 let sheetCounter = 1;
@@ -42,6 +42,7 @@ export default function EditorPage() {
   const activeSheet = sheets.find((s) => s.id === activeSheetId) || sheets[0];
 
   const [selectedCell, setSelectedCell] = useState<string | null>("A1");
+  const [selectionRange, setSelectionRange] = useState<{ start: string; end: string } | null>(null);
 
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const latestSheets = useRef(sheets);
@@ -117,6 +118,7 @@ export default function EditorPage() {
                 validations: (s.validations || {}) as Record<string, ValidationRule>,
                 conditionalRules: (s.conditionalRules || []) as ConditionalRule[],
                 colWidths: s.colWidths || {},
+                mergedCells: (s.mergedCells || {}) as Record<string, MergedCell>,
               };
             });
             setSheets(restored);
@@ -171,6 +173,7 @@ export default function EditorPage() {
           validations: s.validations,
           conditionalRules: s.conditionalRules,
           colWidths: s.colWidths,
+          mergedCells: s.mergedCells || {},
         };
       });
       const firstData = serializedSheets[0]?.data || {};
@@ -249,6 +252,30 @@ export default function EditorPage() {
   }, [editingName]);
 
   const handleExportPDF = useCallback(() => window.print(), []);
+
+  const handleMerge = useCallback(() => {
+    if (!selectedCell) return;
+    const mc = { ...(activeSheet.mergedCells || {}) };
+    if (mc[selectedCell]) {
+      delete mc[selectedCell];
+      updateActiveSheet({ mergedCells: mc });
+    } else if (selectionRange && selectionRange.start !== selectionRange.end) {
+      const s = cellToColRow(selectionRange.start);
+      const e = cellToColRow(selectionRange.end);
+      if (!s || !e) return;
+      const minCi = Math.min(COLS.indexOf(s.col), COLS.indexOf(e.col));
+      const maxCi = Math.max(COLS.indexOf(s.col), COLS.indexOf(e.col));
+      const minRow = Math.min(s.row, e.row);
+      const maxRow = Math.max(s.row, e.row);
+      const originCol = COLS[minCi];
+      const origin = `${originCol}${minRow}`;
+      mc[origin] = { endCol: COLS[maxCi], endRow: maxRow };
+      const newStyles = { ...activeSheet.styles, [origin]: { ...activeSheet.styles[origin], align: "center" as const } };
+      updateActiveSheet({ mergedCells: mc, styles: newStyles });
+      setSelectedCell(origin);
+    }
+    scheduleAutoSave();
+  }, [selectedCell, activeSheet, selectionRange, updateActiveSheet, scheduleAutoSave]);
 
   const handleAddSheet = useCallback(() => {
     const id = newSheetId();
@@ -362,6 +389,9 @@ export default function EditorPage() {
           onRedo={redo}
           onExportPDF={handleExportPDF}
           onShowChart={() => setShowChart(!showChart)}
+          selectionRange={selectionRange}
+          mergedCells={activeSheet.mergedCells || {}}
+          onMerge={handleMerge}
         />
       </div>
 
@@ -387,6 +417,9 @@ export default function EditorPage() {
             selectedCell={selectedCell}
             onSelectCell={setSelectedCell}
             onSave={doSave}
+            mergedCells={activeSheet.mergedCells || {}}
+            selectionRange={selectionRange}
+            onSelectionRangeChange={setSelectionRange}
           />
         </main>
 

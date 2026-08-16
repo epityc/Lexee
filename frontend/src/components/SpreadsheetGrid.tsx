@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { evaluate, isFormula, formatResult } from "@/lib/engine";
-import type { CellStyle, ConditionalRule, ValidationRule } from "@/lib/types";
+import type { CellStyle, ConditionalRule, ValidationRule, MergedCell } from "@/lib/types";
 
 export type CellData = Record<string, Record<number, string>>;
 export type CellFormulas = Record<string, string>;
@@ -14,15 +14,18 @@ interface SpreadsheetGridProps {
   validations: Record<string, ValidationRule>;
   conditionalRules: ConditionalRule[];
   colWidths: Record<string, number>;
+  mergedCells?: Record<string, MergedCell>;
   onDataChange: (data: CellData) => void;
   onStylesChange: (styles: Record<string, CellStyle>) => void;
   onColWidthsChange: (widths: Record<string, number>) => void;
   selectedCell: string | null;
   onSelectCell: (cell: string | null) => void;
   onSave?: () => void;
+  selectionRange?: { start: string; end: string } | null;
+  onSelectionRangeChange?: (range: { start: string; end: string } | null) => void;
 }
 
-const COLS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+export const COLS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const ROW_COUNT = 100;
 const DEFAULT_COL_WIDTH = 100;
 
@@ -79,10 +82,7 @@ function evalCell(cellId: string, data: CellData): string {
   return formatResult(evaluate(raw, flat));
 }
 
-function matchesCondition(
-  value: string,
-  rule: ConditionalRule
-): boolean {
+function matchesCondition(value: string, rule: ConditionalRule): boolean {
   const num = parseFloat(value);
   const ruleVal = rule.value ? parseFloat(rule.value) : NaN;
   switch (rule.condition) {
@@ -97,11 +97,7 @@ function matchesCondition(
   }
 }
 
-function getConditionalStyle(
-  cellId: string,
-  value: string,
-  rules: ConditionalRule[]
-): CellStyle | null {
+function getConditionalStyle(cellId: string, value: string, rules: ConditionalRule[]): CellStyle | null {
   for (const rule of rules) {
     const cells = parseCellRange(rule.range);
     const matches = cells.some((c) => `${c.col}${c.row}` === cellId);
@@ -131,6 +127,40 @@ function formatNumber(value: string, fmt?: string): string {
   }
 }
 
+function isCoveredByMerge(col: string, row: number, mergedCells: Record<string, MergedCell>): boolean {
+  for (const [origin, merge] of Object.entries(mergedCells)) {
+    const o = cellToColRow(origin);
+    if (!o) continue;
+    if (col === o.col && row === o.row) continue; // origin itself is not covered
+    const ci = COLS.indexOf(col);
+    const oi = COLS.indexOf(o.col);
+    const ei = COLS.indexOf(merge.endCol);
+    if (ci >= oi && ci <= ei && row >= o.row && row <= merge.endRow) return true;
+  }
+  return false;
+}
+
+function getMergeSpan(col: string, row: number, mergedCells: Record<string, MergedCell>): { colSpan: number; rowSpan: number } {
+  const id = `${col}${row}`;
+  const merge = mergedCells[id];
+  if (!merge) return { colSpan: 1, rowSpan: 1 };
+  const ci = COLS.indexOf(col);
+  const ei = COLS.indexOf(merge.endCol);
+  return { colSpan: ei - ci + 1, rowSpan: merge.endRow - row + 1 };
+}
+
+function isCellInRange(col: string, row: number, range: { start: string; end: string }): boolean {
+  const s = cellToColRow(range.start);
+  const e = cellToColRow(range.end);
+  if (!s || !e) return false;
+  const minCi = Math.min(COLS.indexOf(s.col), COLS.indexOf(e.col));
+  const maxCi = Math.max(COLS.indexOf(s.col), COLS.indexOf(e.col));
+  const minRow = Math.min(s.row, e.row);
+  const maxRow = Math.max(s.row, e.row);
+  const ci = COLS.indexOf(col);
+  return ci >= minCi && ci <= maxCi && row >= minRow && row <= maxRow;
+}
+
 export default function SpreadsheetGrid({
   data,
   formulas,
@@ -138,12 +168,15 @@ export default function SpreadsheetGrid({
   validations,
   conditionalRules,
   colWidths,
+  mergedCells = {},
   onDataChange,
   onStylesChange,
   onColWidthsChange,
   selectedCell,
   onSelectCell,
   onSave,
+  selectionRange: externalSelectionRange,
+  onSelectionRangeChange,
 }: SpreadsheetGridProps) {
   const [editingCell, setEditingCell] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -155,13 +188,23 @@ export default function SpreadsheetGrid({
   const [showFilter, setShowFilter] = useState<string | null>(null);
   const [sortState, setSortState] = useState<{ col: string; dir: "asc" | "desc" } | null>(null);
   const [filterState, setFilterState] = useState<Record<string, Set<string>>>({});
-  const [selectionRange, setSelectionRange] = useState<{ start: string; end: string } | null>(null);
+  const [internalSelectionRange, setInternalSelectionRange] = useState<{ start: string; end: string } | null>(null);
   const [autofillDragging, setAutofillDragging] = useState(false);
   const [autofillTarget, setAutofillTarget] = useState<number | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fxInputRef = useRef<HTMLInputElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+  const dragStartRef = useRef<string | null>(null);
+
+  const selectionRange = externalSelectionRange !== undefined ? externalSelectionRange : internalSelectionRange;
+  const setSelectionRange = useCallback(
+    (range: { start: string; end: string } | null) => {
+      if (onSelectionRangeChange) onSelectionRangeChange(range);
+      else setInternalSelectionRange(range);
+    },
+    [onSelectionRangeChange]
+  );
 
   useEffect(() => {
     if (editingCell && inputRef.current) inputRef.current.focus();
@@ -365,6 +408,7 @@ export default function SpreadsheetGrid({
           case "s": e.preventDefault(); onSave?.(); return;
           case "b": e.preventDefault(); toggleStyle("bold"); return;
           case "i": e.preventDefault(); toggleStyle("italic"); return;
+          case "u": e.preventDefault(); toggleStyle("underline"); return;
         }
       }
 
@@ -390,7 +434,7 @@ export default function SpreadsheetGrid({
   );
 
   const toggleStyle = useCallback(
-    (prop: "bold" | "italic") => {
+    (prop: "bold" | "italic" | "underline") => {
       if (!selectedCell) return;
       const current = styles[selectedCell] || {};
       onStylesChange({
@@ -401,31 +445,25 @@ export default function SpreadsheetGrid({
     [selectedCell, styles, onStylesChange]
   );
 
-  const handleSort = useCallback(
-    (col: string) => {
-      setSortState((prev) => {
-        if (prev?.col === col) {
-          if (prev.dir === "asc") return { col, dir: "desc" };
-          return null;
-        }
-        return { col, dir: "asc" };
-      });
-      setShowFilter(null);
-    },
-    []
-  );
+  const handleSort = useCallback((col: string) => {
+    setSortState((prev) => {
+      if (prev?.col === col) {
+        if (prev.dir === "asc") return { col, dir: "desc" };
+        return null;
+      }
+      return { col, dir: "asc" };
+    });
+    setShowFilter(null);
+  }, []);
 
-  const handleFilter = useCallback(
-    (col: string, values: Set<string>) => {
-      setFilterState((prev) => {
-        const next = { ...prev };
-        if (values.size === 0) delete next[col];
-        else next[col] = values;
-        return next;
-      });
-    },
-    []
-  );
+  const handleFilter = useCallback((col: string, values: Set<string>) => {
+    setFilterState((prev) => {
+      const next = { ...prev };
+      if (values.size === 0) delete next[col];
+      else next[col] = values;
+      return next;
+    });
+  }, []);
 
   const colUniqueValues = useCallback(
     (col: string): string[] => {
@@ -439,13 +477,10 @@ export default function SpreadsheetGrid({
     [computedValues]
   );
 
-  const handleResizeStart = useCallback(
-    (col: string, clientX: number) => {
-      setResizingCol(col);
-      setResizeStart(clientX);
-    },
-    []
-  );
+  const handleResizeStart = useCallback((col: string, clientX: number) => {
+    setResizingCol(col);
+    setResizeStart(clientX);
+  }, []);
 
   useEffect(() => {
     if (!resizingCol) return;
@@ -643,6 +678,8 @@ export default function SpreadsheetGrid({
                   {row}
                 </td>
                 {COLS.map((col) => {
+                  if (isCoveredByMerge(col, row, mergedCells)) return null;
+
                   const id = `${col}${row}`;
                   const isSelected = selectedCell === id;
                   const isEditing = editingCell === id;
@@ -655,6 +692,13 @@ export default function SpreadsheetGrid({
                   const merged = { ...cellStyle, ...condStyle };
                   const formatted = formatNumber(displayValue, merged.numberFormat);
                   const validation = validations[id];
+                  const { colSpan, rowSpan } = getMergeSpan(col, row, mergedCells);
+
+                  const isInRange = selectionRange
+                    ? isCellInRange(col, row, selectionRange)
+                    : false;
+                  const isRangeOnly = isInRange && !isSelected;
+
                   const isAutofillTarget =
                     autofillDragging && autofillTarget !== null && selectedCell &&
                     col === cellToColRow(selectedCell)?.col &&
@@ -664,18 +708,36 @@ export default function SpreadsheetGrid({
                   return (
                     <td
                       key={col}
+                      colSpan={colSpan > 1 ? colSpan : undefined}
+                      rowSpan={rowSpan > 1 ? rowSpan : undefined}
                       className={`border border-gray-200 px-1.5 py-0.5 cursor-cell h-7 relative ${
-                        isSelected ? "outline outline-2 outline-blue-500 bg-blue-50/30 z-[2]" : "hover:bg-gray-50/50"
+                        isSelected ? "outline outline-2 outline-blue-500 bg-blue-50/30 z-[2]"
+                          : isRangeOnly ? "bg-blue-100/60"
+                          : "hover:bg-gray-50/50"
                       } ${isError ? "text-red-600 text-xs" : ""} ${isAutofillTarget ? "bg-blue-100/50" : ""}`}
                       style={{
                         width: colWidths[col] ?? DEFAULT_COL_WIDTH,
                         fontWeight: merged.bold ? 700 : undefined,
                         fontStyle: merged.italic ? "italic" : undefined,
+                        textDecoration: merged.underline ? "underline" : undefined,
                         color: merged.color || undefined,
                         backgroundColor: isSelected ? undefined : merged.bgColor || undefined,
                         textAlign: merged.align || (!isNaN(Number(displayValue)) && displayValue !== "" ? "right" : "left"),
+                        fontSize: merged.fontSize ? `${merged.fontSize}px` : undefined,
+                        fontFamily: merged.fontFamily || undefined,
                       }}
-                      onClick={() => { onSelectCell(id); setShowFilter(null); }}
+                      onMouseDown={(e) => {
+                        onSelectCell(id);
+                        setShowFilter(null);
+                        dragStartRef.current = id;
+                        setSelectionRange({ start: id, end: id });
+                      }}
+                      onMouseEnter={(e) => {
+                        if (e.buttons === 1 && dragStartRef.current) {
+                          setSelectionRange({ start: dragStartRef.current, end: id });
+                        }
+                      }}
+                      onMouseUp={() => { dragStartRef.current = null; }}
                       onDoubleClick={() => startEdit(id)}
                     >
                       {isEditing ? (

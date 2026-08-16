@@ -114,6 +114,7 @@ export interface WorkbookSheet {
   validations: Record<string, unknown>;
   conditionalRules: unknown[];
   colWidths: Record<string, number>;
+  mergedCells?: Record<string, unknown>;
 }
 
 export interface WorkbookFull {
